@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Creativa Solutions - Marketplace Ide Konten Kreator</title>
+    <meta name="description" content="Platform marketplace terbaik untuk jual beli ide konten kreatif. Ribuan ide viral siap mengubah channelmu!">
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar" id="navbar">
+        <div class="nav-container">
+            <div class="nav-logo" onclick="navigateTo('home')" style="cursor:pointer;">
+                <img src="logo.png" alt="Logo Creativa" class="custom-logo">
+                <span>Creativa Solutions</span>
+            </div>
+            <ul class="nav-menu" id="navMenu">
+                <li class="nav-item">
+                    <a href="#" class="nav-link active" id="nav-home" onclick="navigateTo('home'); return false;">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link" id="nav-explore" onclick="navigateTo('explore'); return false;">Jelajahi Ide</a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link" id="nav-sell" onclick="navigateTo('sell'); return false;">Jual Ide</a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link" id="nav-about" onclick="navigateTo('about'); return false;">Tentang</a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link" id="nav-myideas" onclick="navigateTo('myideas'); return false;">Ide Saya</a>
+                </li>
+            </ul>
+            <div class="nav-cta">
+                <button class="btn btn-primary" id="mulaiJualBtn" onclick="navigateTo('sell')">Mulai Jual</button>
+            </div>
+            <div class="hamburger" id="hamburger" onclick="toggleMenu()">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- ================================
+         PAGE: HOME
+    ================================ -->
+    <div class="page active" id="page-home">
+        <!-- Hero Section -->
+        <section class="hero">
+            <div class="hero-container">
+                <div class="hero-content">
+                    <div class="hero-badge"><i class="fas fa-fire"></i> Platform #1 Ide Konten Indonesia</div>
+                    <h1 class="hero-title">Temukan Ide Kontenmu yang Viral</h1>
+                    <p class="hero-subtitle">Platform marketplace untuk jual beli ide konten kreatif. Ribuan ide siap mengubah channelmu!</p>
+                    <div class="hero-buttons">
+                        <button class="btn btn-primary btn-large" onclick="navigateTo('explore')">
+                            <i class="fas fa-compass"></i> Jelajahi Ide
+                        </button>
+                        <button class="btn btn-outline btn-large" onclick="navigateTo('sell')">
+                            <i class="fas fa-lightbulb"></i> Jual Ide Saya
+                        </button>
+                    </div>
+                    <div class="hero-stats">
+                        <div class="stat-item">
+                            <span class="stat-number">2.500+</span>
+                            <span class="stat-label">Ide Tersedia</span>
+                        </div>
+                        <div class="stat-divider"></div>
+                        <div class="stat-item">
+                            <span class="stat-number">850+</span>
+                            <span class="stat-label">Kreator Aktif</span>
+                        </div>
+                        <div class="stat-divider"></div>
+                        <div class="stat-item">
+                            <span class="stat-number">98%</span>
+                            <span class="stat-label">Kepuasan</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Cara Kerja Section -->
+        <section class="how-it-works">
+            <div class="container">
+                <h2 class="section-title">Cara Kerja Creativa</h2>
+                <p class="section-subtitle">Simpel, cepat, dan menguntungkan untuk semua pihak</p>
+                <div class="steps-grid">
+                    <div class="step-card">
+                        <div class="step-number">1</div>
+                        <div class="step-icon"><i class="fas fa-lightbulb"></i></div>
+                        <h3>Jual Ide</h3>
+                        <p>Bagikan ide konten kreatifmu dengan detail lengkap dan harga yang kamu tentukan sendiri.</p>
+                    </div>
+                    <div class="step-card">
+                        <div class="step-number">2</div>
+                        <div class="step-icon"><i class="fas fa-search-plus"></i></div>
+                        <h3>Kami Kurasi</h3>
+                        <p>Tim Creativa review dan pastikan ide berkualitas tinggi sebelum dipublikasikan ke marketplace.</p>
+                    </div>
+                    <div class="step-card">
+                        <div class="step-number">3</div>
+                        <div class="step-icon"><i class="fas fa-shopping-cart"></i></div>
+                        <h3>Kreator Beli</h3>
+                        <p>Konten kreator membeli ide dan langsung bisa produksi konten viral!</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Benefits Section -->
+        <section class="benefits">
+            <div class="container">
+                <h2 class="section-title">Mengapa Memilih Creativa?</h2>
+                <p class="section-subtitle">Keunggulan yang membuat kami berbeda dari platform lainnya</p>
+                <div class="benefits-grid">
+                    <div class="benefit-item">
+                        <i class="fas fa-check-circle"></i>
+                        <h3>100% Original</h3>
+                        <p>Semua ide dijamin orisinal dan belum pernah dipakai oleh siapapun sebelumnya.</p>
+                    </div>
+                    <div class="benefit-item">
+                        <i class="fas fa-shield-alt"></i>
+                        <h3>Terjamin Aman</h3>
+                        <p>Sistem pembayaran aman dengan garansi kepuasan dan perlindungan pembeli.</p>
+                    </div>
+                    <div class="benefit-item">
+                        <i class="fas fa-chart-line"></i>
+                        <h3>Potensi Viral</h3>
+                        <p>Ide dirancang untuk engagement tinggi dan potensi viral yang luar biasa.</p>
+                    </div>
+                    <div class="benefit-item">
+                        <i class="fas fa-headset"></i>
+                        <h3>Support 24/7</h3>
+                        <p>Tim kami siap membantu kamu kapan saja selama 24 jam penuh 7 hari seminggu.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Testimonials Section -->
+        <section class="testimonials">
+            <div class="container">
+                <h2 class="section-title">Apa Kata Kreator?</h2>
+                <div class="testimonials-grid">
+                    <div class="testimonial-card">
+                        <div class="stars">
+                            <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+                        </div>
+                        <p>"Ide dari Creativa bikin video saya viral! 1M views dalam 3 hari! Benar-benar worth it!"</p>
+                        <div class="author">
+                            <div class="author-avatar">RK</div>
+                            <div>
+                                <h4>Rina K</h4>
+                                <span>500K Subscribers</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="testimonial-card">
+                        <div class="stars">
+                            <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+                        </div>
+                        <p>"Platform terbaik buat dapet ide segar. Sudah jual 15 ide di Creativa dan hasilnya memuaskan!"</p>
+                        <div class="author">
+                            <div class="author-avatar">BA</div>
+                            <div>
+                                <h4>Budi A</h4>
+                                <span>Penjual Ide Pro</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- ================================
+         PAGE: JELAJAHI IDE
+    ================================ -->
+    <div class="page" id="page-explore">
+        <section class="page-hero">
+            <div class="container">
+                <h1 class="page-hero-title"><i class="fas fa-compass"></i> Jelajahi Ide</h1>
+                <p class="page-hero-subtitle">Temukan ribuan ide konten kreatif dari para kreator terbaik Indonesia</p>
+                <!-- Search Bar -->
+                <div class="search-bar">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="searchInput" placeholder="Cari ide konten..." oninput="filterIdeas()">
+                </div>
+                <!-- Filter Kategori -->
+                <div class="filter-tabs" id="filterTabs">
+                    <button class="filter-tab active" onclick="setFilter('semua', this)">Semua</button>
+                    <button class="filter-tab" onclick="setFilter('youtube', this)">YouTube</button>
+                    <button class="filter-tab" onclick="setFilter('tiktok', this)">TikTok</button>
+                    <button class="filter-tab" onclick="setFilter('instagram', this)">Instagram</button>
+                    <button class="filter-tab" onclick="setFilter('podcast', this)">Podcast</button>
+                    <button class="filter-tab" onclick="setFilter('blog', this)">Blog</button>
+                </div>
+            </div>
+        </section>
+        <section class="ideas-section" style="padding-top: 2rem;">
+            <div class="container">
+                <div class="ideas-grid" id="ideasGrid"></div>
+                <div class="load-more">
+                    <button class="btn btn-secondary" onclick="loadMoreIdeas()">
+                        Muat Lebih Banyak
+                    </button>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- ================================
+         PAGE: JUAL IDE
+    ================================ -->
+    <div class="page" id="page-sell">
+        <section class="page-hero">
+            <div class="container">
+                <h1 class="page-hero-title"><i class="fas fa-lightbulb"></i> Jual Ide</h1>
+                <p class="page-hero-subtitle">Ubah ide kreatifmu menjadi penghasilan nyata. Bergabung dengan ribuan penjual sukses kami!</p>
+            </div>
+        </section>
+        <section class="sell-section">
+            <div class="container">
+                <div class="sell-layout">
+                    <!-- Form Submit Ide -->
+                    <div class="sell-form-wrapper">
+                        <div class="form-card">
+                            <h2 class="form-title"><i class="fas fa-plus-circle"></i> Submit Ide Baru</h2>
+                            <form id="sellForm" onsubmit="submitIdea(event)">
+                                <div class="form-group">
+                                    <label for="ideaTitle">Judul Ide <span class="required">*</span></label>
+                                    <input type="text" id="ideaTitle" class="form-input" placeholder="Contoh: 10 Rahasia Viral TikTok yang Jarang Diketahui" required>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="ideaCategory">Kategori <span class="required">*</span></label>
+                                        <select id="ideaCategory" class="form-input" required>
+                                            <option value="">Pilih Kategori</option>
+                                            <option value="youtube">YouTube</option>
+                                            <option value="tiktok">TikTok</option>
+                                            <option value="instagram">Instagram</option>
+                                            <option value="podcast">Podcast</option>
+                                            <option value="blog">Blog</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="ideaPrice">Harga (Rp) <span class="required">*</span></label>
+                                        <input type="number" id="ideaPrice" class="form-input" placeholder="50000" min="10000" required>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="ideaDesc">Deskripsi Ide <span class="required">*</span></label>
+                                    <textarea id="ideaDesc" class="form-input form-textarea" rows="5" placeholder="Jelaskan ide kontenmu secara detail: konsep, target audiens, potensi viral, dll..." required></textarea>
+                                </div>
+                                <div class="form-group">
+                                    <label for="ideaTags">Tags (pisah dengan koma)</label>
+                                    <input type="text" id="ideaTags" class="form-input" placeholder="viral, tips, edukatif, hiburan">
+                                </div>
+                                <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem;">
+                                    <i class="fas fa-paper-plane"></i> Submit Ide Sekarang
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                    <!-- Keuntungan Jual -->
+                    <div class="sell-benefits">
+                        <div class="sell-benefit-card">
+                            <div class="sb-icon"><i class="fas fa-money-bill-wave"></i></div>
+                            <h3>Penghasilan Menarik</h3>
+                            <p>Dapatkan 80% dari setiap penjualan ideamu langsung ke rekeningmu.</p>
+                        </div>
+                        <div class="sell-benefit-card">
+                            <div class="sb-icon"><i class="fas fa-users"></i></div>
+                            <h3>Jangkauan Luas</h3>
+                            <p>Idemu akan dilihat oleh ribuan kreator aktif setiap harinya.</p>
+                        </div>
+                        <div class="sell-benefit-card">
+                            <div class="sb-icon"><i class="fas fa-star"></i></div>
+                            <h3>Bangun Reputasi</h3>
+                            <p>Kumpulkan rating dan review positif untuk meningkatkan kepercayaan.</p>
+                        </div>
+                        <div class="sell-benefit-card">
+                            <div class="sb-icon"><i class="fas fa-chart-bar"></i></div>
+                            <h3>Statistik Lengkap</h3>
+                            <p>Pantau performa penjualan idemu secara real-time dengan dashboard.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- ================================
+         PAGE: TENTANG
+    ================================ -->
+    <div class="page" id="page-about">
+        <section class="page-hero">
+            <div class="container">
+                <h1 class="page-hero-title"><i class="fas fa-info-circle"></i> Tentang Creativa</h1>
+                <p class="page-hero-subtitle">Mengenal lebih dekat platform ide konten terbesar di Indonesia</p>
+            </div>
+        </section>
+        <section class="about-section">
+            <div class="container">
+                <div class="about-story">
+                    <div class="about-text">
+                        <h2 class="about-heading">Cerita di Balik Creativa</h2>
+                        <p>Creativa lahir dari sebuah kefrustasian nyata — seorang kreator konten yang kehabisan ide di tengah tekanan jadwal upload. Kami percaya bahwa kreativitas seharusnya tidak terbatas hanya karena satu orang tidak bisa memikirkan semuanya sendiri.</p>
+                        <p>Sejak 2024, kami telah menghubungkan ribuan kreator konten dengan para pemikir kreatif berbakat yang memiliki ide-ide segar dan berpotensi viral.</p>
+                        <div class="about-stats">
+                            <div class="about-stat">
+                                <span class="about-stat-num">2024</span>
+                                <span class="about-stat-label">Didirikan</span>
+                            </div>
+                            <div class="about-stat">
+                                <span class="about-stat-num">850+</span>
+                                <span class="about-stat-label">Kreator Aktif</span>
+                            </div>
+                            <div class="about-stat">
+                                <span class="about-stat-num">2.500+</span>
+                                <span class="about-stat-label">Ide Terjual</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="about-visual">
+                        <div class="about-card-visual">
+                            <div class="av-icon"><i class="fas fa-rocket"></i></div>
+                            <h3>Misi Kami</h3>
+                            <p>Menjadi jembatan antara kreativitas dan kreator, memungkinkan setiap ide brilian menemukan rumahnya yang tepat.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tim -->
+                <div class="team-section">
+                    <h2 class="section-title">Tim Kami</h2>
+                    <div class="team-grid">
+                        <div class="team-card">
+                            <div class="team-avatar">RD</div>
+                            <h3>Radit D.</h3>
+                            <span>CEO & Co-Founder</span>
+                            <p>Visioner di balik Creativa dengan passion di dunia konten digital.</p>
+                        </div>
+                        <div class="team-card">
+                            <div class="team-avatar">SA</div>
+                            <h3>Sari A.</h3>
+                            <span>Head of Curation</span>
+                            <p>Memastikan setiap ide yang masuk memenuhi standar kualitas tertinggi.</p>
+                        </div>
+                        <div class="team-card">
+                            <div class="team-avatar">BW</div>
+                            <h3>Bima W.</h3>
+                            <span>CTO</span>
+                            <p>Membangun teknologi yang menghubungkan kreator dengan ide-ide terbaik.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Nilai Perusahaan -->
+                <div class="values-section">
+                    <h2 class="section-title">Nilai-Nilai Kami</h2>
+                    <div class="values-grid">
+                        <div class="value-card">
+                            <i class="fas fa-heart"></i>
+                            <h3>Passion</h3>
+                            <p>Kami mencintai kreativitas dan berkomitmen untuk mendukung para kreator.</p>
+                        </div>
+                        <div class="value-card">
+                            <i class="fas fa-handshake"></i>
+                            <h3>Integritas</h3>
+                            <p>Transparansi dan kejujuran adalah fondasi dari setiap transaksi kami.</p>
+                        </div>
+                        <div class="value-card">
+                            <i class="fas fa-bolt"></i>
+                            <h3>Inovasi</h3>
+                            <p>Selalu berinovasi untuk memberikan pengalaman terbaik bagi pengguna.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- ================================
+         PAGE: IDE SAYA
+    ================================ -->
+    <div class="page" id="page-myideas">
+        <section class="page-hero">
+            <div class="container">
+                <h1 class="page-hero-title"><i class="fas fa-folder-open"></i> Ide Saya</h1>
+                <p class="page-hero-subtitle">Kelola dan pantau semua ide yang telah kamu submit ke Creativa</p>
+            </div>
+        </section>
+        <section class="myideas-section">
+            <div class="container">
+                <!-- Dashboard Stats -->
+                <div class="dashboard-stats">
+                    <div class="dash-stat-card">
+                        <div class="dash-stat-icon"><i class="fas fa-lightbulb"></i></div>
+                        <div class="dash-stat-info">
+                            <span class="dash-stat-num" id="totalIdeasCount">0</span>
+                            <span class="dash-stat-label">Total Ide</span>
+                        </div>
+                    </div>
+                    <div class="dash-stat-card">
+                        <div class="dash-stat-icon"><i class="fas fa-check-circle"></i></div>
+                        <div class="dash-stat-info">
+                            <span class="dash-stat-num" id="approvedCount">0</span>
+                            <span class="dash-stat-label">Disetujui</span>
+                        </div>
+                    </div>
+                    <div class="dash-stat-card">
+                        <div class="dash-stat-icon"><i class="fas fa-money-bill-wave"></i></div>
+                        <div class="dash-stat-info">
+                            <span class="dash-stat-num" id="totalEarnings">Rp 0</span>
+                            <span class="dash-stat-label">Total Penghasilan</span>
+                        </div>
+                    </div>
+                    <div class="dash-stat-card">
+                        <div class="dash-stat-icon"><i class="fas fa-eye"></i></div>
+                        <div class="dash-stat-info">
+                            <span class="dash-stat-num" id="totalViews">0</span>
+                            <span class="dash-stat-label">Total Views</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- My Ideas List -->
+                <div class="myideas-header">
+                    <h2 class="myideas-title">Daftar Ide Saya</h2>
+                    <button class="btn btn-primary" onclick="navigateTo('sell')">
+                        <i class="fas fa-plus"></i> Tambah Ide Baru
+                    </button>
+                </div>
+                <div id="myIdeasList" class="myideas-list">
+                    <!-- Empty State -->
+                    <div class="empty-state" id="emptyState">
+                        <div class="empty-icon"><i class="fas fa-folder-open"></i></div>
+                        <h3>Belum Ada Ide</h3>
+                        <p>Kamu belum pernah submit ide apapun. Mulai sekarang dan hasilkan uang dari kreativitasmu!</p>
+                        <button class="btn btn-primary" onclick="navigateTo('sell')">
+                            <i class="fas fa-lightbulb"></i> Submit Ide Pertamamu
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Footer (shared) -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <div class="nav-logo" style="cursor:pointer;" onclick="navigateTo('home')">
+                        <img src="logo.png" alt="Logo Creativa" class="custom-logo">
+                        <span>Creativa</span>
+                    </div>
+                    <p>Marketplace ide konten kreator #1 di Indonesia</p>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-tiktok"></i></a>
+                        <a href="#"><i class="fab fa-youtube"></i></a>
+                    </div>
+                </div>
+                <div class="footer-links">
+                    <h4>Produk</h4>
+                    <a href="#" onclick="navigateTo('explore'); return false;">Jelajahi Ide</a>
+                    <a href="#" onclick="navigateTo('sell'); return false;">Jual Ide</a>
+                    <a href="#" onclick="navigateTo('explore'); return false;">Kategori</a>
+                </div>
+                <div class="footer-links">
+                    <h4>Perusahaan</h4>
+                    <a href="#" onclick="navigateTo('about'); return false;">Tentang</a>
+                    <a href="#">Karir</a>
+                    <a href="#">Blog</a>
+                </div>
+                <div class="footer-links">
+                    <h4>Support</h4>
+                    <a href="#">Bantuan</a>
+                    <a href="#">Kontak</a>
+                    <a href="#">Kebijakan</a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 Creativa Solutions. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Modal Detail Ide -->
+    <div class="modal" id="ideaModal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <div class="modal-body" id="modalBody"></div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toast"></div>
+
+    <script src="script.js"></script>
+</body>
+</html>
