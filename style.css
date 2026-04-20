@@ -18,7 +18,7 @@ body {
     font-family: 'Poppins', sans-serif;
     line-height: 1.6;
     color: #e5e5e5;
-    background: #0a0a0a;
+    background: #080808;
     overflow-x: hidden;
 }
 
@@ -116,8 +116,8 @@ body {
    HERO SECTION - GOLDEN GRADIENT
    ======================================= */
 .hero {
-    padding: 140px 0 100px;
-    background: linear-gradient(135deg, #000000 0%, #1a1a1a 50%, #111111 100%);
+    padding: 140px 0 120px;
+    background: #080808;
     color: #e5e5e5;
     min-height: 100vh;
     display: flex;
@@ -126,6 +126,7 @@ body {
     overflow: hidden;
 }
 
+/* Cahaya ambient emas — lembut, tidak keras */
 .hero::before {
     content: '';
     position: absolute;
@@ -133,9 +134,23 @@ body {
     left: 0;
     right: 0;
     bottom: 0;
-    background: radial-gradient(circle at 20% 80%, rgba(245, 158, 11, 0.1) 0%, transparent 50%),
-                radial-gradient(circle at 80% 20%, rgba(245, 158, 11, 0.08) 0%, transparent 50%);
+    background:
+        radial-gradient(ellipse 80% 60% at 15% 70%, rgba(245, 158, 11, 0.07) 0%, transparent 70%),
+        radial-gradient(ellipse 60% 50% at 85% 15%, rgba(245, 158, 11, 0.05) 0%, transparent 70%);
     pointer-events: none;
+}
+
+/* Fade halus ke bawah — menghilangkan garis keras antar section */
+.hero::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 120px;
+    background: linear-gradient(to bottom, transparent 0%, #080808 100%);
+    pointer-events: none;
+    z-index: 1;
 }
 
 .hero-container {
@@ -286,7 +301,19 @@ body {
    ======================================= */
 .how-it-works {
     padding: 120px 0;
-    background: linear-gradient(135deg, #111111 0%, #0a0a0a 100%);
+    background: #080808;
+    position: relative;
+}
+
+/* Pembatas halus bawah section */
+.how-it-works::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 10%;
+    right: 10%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(245, 158, 11, 0.12), transparent);
 }
 
 .steps-grid {
@@ -345,7 +372,18 @@ body {
    ======================================= */
 .ideas-section {
     padding: 120px 0;
-    background: #0a0a0a;
+    background: #080808;
+    position: relative;
+}
+
+.ideas-section::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 10%;
+    right: 10%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(245, 158, 11, 0.12), transparent);
 }
 
 .ideas-grid {
@@ -457,7 +495,18 @@ body {
    ======================================= */
 .benefits, .testimonials {
     padding: 120px 0;
-    background: linear-gradient(135deg, #111 0%, #0a0a0a 100%);
+    background: #080808;
+    position: relative;
+}
+
+.benefits::after, .testimonials::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 10%;
+    right: 10%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(245, 158, 11, 0.12), transparent);
 }
 
 .benefits-grid {
