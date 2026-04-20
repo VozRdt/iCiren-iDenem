@@ -24,42 +24,100 @@ let myIdeas = JSON.parse(localStorage.getItem('myIdeas') || '[]');
 let purchasedIdeas = JSON.parse(localStorage.getItem('purchasedIdeas') || '[]');
 let myIdeasTab = 'submitted'; // 'submitted' | 'purchased'
 
+let isNavigating = false;
+
+// ─── PROGRESS BAR ────────────────────────────────────────────
+function startProgress() {
+  const bar = document.getElementById('nav-progress');
+  bar.style.width = '0%';
+  bar.classList.add('running');
+  // Force reflow
+  void bar.offsetWidth;
+  bar.style.width = '70%';
+}
+
+function finishProgress() {
+  const bar = document.getElementById('nav-progress');
+  bar.style.width = '100%';
+  setTimeout(() => {
+    bar.style.opacity = '0';
+    setTimeout(() => {
+      bar.style.width = '0%';
+      bar.classList.remove('running');
+    }, 300);
+  }, 200);
+}
+
 // ─── SPA NAVIGATION ─────────────────────────────────────────
 function navigateTo(page) {
-  // Hide all pages
-  document.querySelectorAll('.page').forEach(p => {
-    p.classList.remove('active');
-  });
+  // Cegah navigasi ganda saat animasi berjalan
+  if (isNavigating) return;
 
-  // Remove active from all nav links
-  document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
-
-  // Show target page
+  const currentActive = document.querySelector('.page.active');
   const target = document.getElementById('page-' + page);
-  if (target) {
-    target.classList.add('active');
-    // Fade in
-    setTimeout(() => { target.style.opacity = '1'; }, 10);
-  }
 
-  // Mark nav link active
+  // Sudah di halaman ini
+  if (!target || (currentActive && currentActive.id === 'page-' + page)) return;
+
+  isNavigating = true;
+
+  // Update nav links
+  document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
   const navLink = document.getElementById('nav-' + page);
   if (navLink) navLink.classList.add('active');
 
-  // Scroll to top
+  // Tutup hamburger
+  closeHamburger();
+
+  // Scroll ke atas
   window.scrollTo({ top: 0, behavior: 'smooth' });
 
-  // Close hamburger menu
-  document.getElementById('navMenu').classList.remove('open');
-
-  // Page-specific init
+  // Init data halaman lebih awal agar siap saat muncul
   if (page === 'explore') renderIdeas();
   if (page === 'myideas') renderMyIdeas();
+
+  // Mulai progress bar
+  startProgress();
+
+  if (!currentActive) {
+    // Load pertama — langsung masuk
+    target.classList.add('active');
+    finishProgress();
+    isNavigating = false;
+    return;
+  }
+
+  // Animasi KELUAR halaman sekarang
+  currentActive.classList.remove('active');
+  currentActive.classList.add('exiting');
+
+  // Setelah animasi keluar selesai (220ms), tampilkan halaman baru
+  setTimeout(() => {
+    currentActive.classList.remove('exiting');
+
+    // Animasi MASUK halaman baru
+    target.classList.add('active');
+
+    finishProgress();
+
+    // Izinkan navigasi berikutnya setelah animasi masuk selesai
+    setTimeout(() => {
+      isNavigating = false;
+    }, 430);
+  }, 220);
 }
 
 // ─── HAMBURGER MENU ──────────────────────────────────────────
 function toggleMenu() {
-  document.getElementById('navMenu').classList.toggle('open');
+  const menu = document.getElementById('navMenu');
+  const ham  = document.getElementById('hamburger');
+  menu.classList.toggle('open');
+  ham.classList.toggle('open');
+}
+
+function closeHamburger() {
+  document.getElementById('navMenu').classList.remove('open');
+  document.getElementById('hamburger').classList.remove('open');
 }
 
 // ─── RENDER IDEA CARDS ───────────────────────────────────────

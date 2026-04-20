@@ -586,18 +586,67 @@ body {
 }
 
 /* ========================================
-   SPA - PAGE SYSTEM
+   SPA - PAGE SYSTEM + ANIMATIONS
    ======================================= */
+
+/* Keyframe: halaman masuk */
+@keyframes pageEnter {
+    from {
+        opacity: 0;
+        transform: translateY(28px) scale(0.99);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+/* Keyframe: halaman keluar */
+@keyframes pageExit {
+    from {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+    to {
+        opacity: 0;
+        transform: translateY(-18px) scale(0.99);
+    }
+}
+
 .page {
     display: none;
-    opacity: 0;
-    transition: opacity 0.4s ease;
 }
 
 .page.active {
     display: block;
+    animation: pageEnter 0.42s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+
+.page.exiting {
+    display: block;
+    pointer-events: none;
+    animation: pageExit 0.22s ease forwards;
+}
+
+/* Progress bar navigasi di atas */
+#nav-progress {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 3px;
+    width: 0%;
+    background: linear-gradient(90deg, #F59E0B, #FBBF24, #FCD34D);
+    z-index: 9999;
+    border-radius: 0 2px 2px 0;
+    box-shadow: 0 0 10px rgba(245, 158, 11, 0.6);
+    transition: width 0.25s ease, opacity 0.3s ease;
+    opacity: 0;
+}
+
+#nav-progress.running {
     opacity: 1;
 }
+
 
 /* ========================================
    NAVBAR - ACTIVE LINK
@@ -624,6 +673,18 @@ body {
     background: #F59E0B;
     border-radius: 2px;
     transition: all 0.3s ease;
+}
+
+/* Hamburger → ikon X saat menu terbuka */
+.hamburger.open span:nth-child(1) {
+    transform: translateY(7px) rotate(45deg);
+}
+.hamburger.open span:nth-child(2) {
+    opacity: 0;
+    transform: scaleX(0);
+}
+.hamburger.open span:nth-child(3) {
+    transform: translateY(-7px) rotate(-45deg);
 }
 
 /* ========================================
