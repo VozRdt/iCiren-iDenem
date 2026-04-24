@@ -116,14 +116,16 @@ body {
    HERO SECTION - GOLDEN GRADIENT
    ======================================= */
 .hero {
-    padding: 140px 0 120px;
+    padding: 100px 0 40px;
     background: #080808;
     color: #e5e5e5;
     min-height: 100vh;
+    min-height: 100dvh;
     display: flex;
     align-items: center;
     position: relative;
-    overflow: hidden;
+    overflow: visible;
+    box-sizing: border-box;
 }
 
 /* Cahaya ambient emas — lembut, tidak keras */
