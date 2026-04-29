@@ -511,13 +511,17 @@ function navigateTo(page) {
 function toggleMenu() {
   const menu = document.getElementById('navMenu');
   const ham = document.getElementById('hamburger');
+  const cta = document.querySelector('.nav-cta');
   menu.classList.toggle('open');
   ham.classList.toggle('open');
+  if (cta) cta.classList.toggle('open');
 }
 
 function closeHamburger() {
   document.getElementById('navMenu').classList.remove('open');
   document.getElementById('hamburger').classList.remove('open');
+  const cta = document.querySelector('.nav-cta');
+  if (cta) cta.classList.remove('open');
 }
 
 // ─── RENDER IDEA CARDS ───────────────────────────────────────

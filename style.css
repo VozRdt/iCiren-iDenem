@@ -2557,23 +2557,18 @@ body {
     }
 
     .nav-cta {
-        display: flex;
+        display: none;
         flex-direction: column;
-        gap: 0.5rem;
-        padding: 0.75rem 1.5rem;
-        position: absolute;
-        top: 100%;
-        left: 0;
-        right: 0;
+        gap: 0.6rem;
+        padding: 0.75rem 1.5rem 1rem;
         background: rgba(8, 8, 8, 0.98);
         border-bottom: 1px solid rgba(245, 158, 11, 0.2);
         backdrop-filter: blur(20px);
         -webkit-backdrop-filter: blur(20px);
-        z-index: 998;
     }
 
-    .nav-cta:not(.open) {
-        display: none;
+    .nav-cta.open {
+        display: flex;
     }
 
     .nav-user-profile {
@@ -3032,6 +3027,126 @@ body {
     /* --- My ideas tabs --- */
     #myideas-tabs {
         flex-wrap: wrap;
+    }
+
+    /* --- Auth page --- */
+    .auth-card {
+        padding: 1.5rem 1rem;
+        border-radius: 20px;
+    }
+
+    .auth-title {
+        font-size: 1.4rem;
+    }
+
+    .auth-tabs {
+        border-radius: 40px;
+    }
+
+    .auth-tab {
+        font-size: 0.82rem;
+        padding: 0.55rem 0.8rem;
+    }
+
+    .auth-submit-btn {
+        font-size: 0.95rem !important;
+    }
+
+    .auth-deco-card {
+        padding: 1.2rem;
+    }
+
+    /* --- Auth Required Modal --- */
+    .auth-required-content {
+        padding: 2rem 1.2rem;
+        border-radius: 20px;
+    }
+
+    .auth-required-icon {
+        width: 60px;
+        height: 60px;
+        font-size: 1.5rem;
+    }
+
+    .auth-required-content h3 {
+        font-size: 1.2rem;
+    }
+
+    .auth-required-buttons {
+        flex-direction: column;
+    }
+
+    .auth-required-buttons .btn {
+        width: 100%;
+    }
+
+    /* --- Email Verify Modal --- */
+    .email-verify-content {
+        padding: 1.5rem 1.2rem 1.2rem;
+        border-radius: 20px;
+    }
+
+    .email-verify-icon {
+        width: 52px;
+        height: 52px;
+        font-size: 1.3rem;
+        margin-bottom: 0.8rem;
+    }
+
+    .email-verify-content h3 {
+        font-size: 1.1rem;
+    }
+
+    .email-verify-address {
+        font-size: 0.88rem;
+        padding: 0.5rem 1rem;
+    }
+
+    /* --- Terms Modal --- */
+    .terms-modal-content {
+        max-height: 92vh;
+        border-radius: 16px;
+        width: 96%;
+    }
+
+    .terms-modal-header {
+        padding: 1rem 1rem 0;
+    }
+
+    .terms-tab {
+        font-size: 0.72rem;
+        padding: 0.45rem 0.5rem;
+        gap: 0.3rem;
+    }
+
+    .terms-tab i {
+        font-size: 0.7rem;
+    }
+
+    .terms-modal-body {
+        padding: 1rem;
+    }
+
+    .terms-content h3 {
+        font-size: 1rem;
+    }
+
+    .terms-section h4 {
+        font-size: 0.85rem;
+    }
+
+    .terms-section ul li {
+        font-size: 0.8rem;
+        padding-left: 1.2rem;
+    }
+
+    .terms-modal-footer {
+        padding: 0.8rem 1rem;
+    }
+
+    .terms-modal-footer .btn {
+        width: 100%;
+        min-width: unset;
     }
 }
 
