@@ -354,6 +354,45 @@
         </div>
     </div>
 
+    <!-- Email Verification Modal -->
+    <div class="email-verify-modal" id="emailVerifyModal">
+        <div class="email-verify-content">
+            <button class="email-verify-close" id="emailVerifyCloseBtn" onclick="closeEmailVerifyModal()">
+                <i class="fas fa-times"></i>
+            </button>
+            <div class="email-verify-icon">
+                <i class="fas fa-envelope-open-text"></i>
+            </div>
+            <h3>Verifikasi Email Kamu</h3>
+            <p>Kami telah mengirimkan link verifikasi ke:</p>
+            <div class="email-verify-address" id="verifyEmailAddress">email@example.com</div>
+            <p class="email-verify-hint">Silakan buka inbox email kamu dan klik link verifikasi untuk mengaktifkan akun. Cek juga folder <strong>Spam</strong> jika tidak ditemukan di Inbox.</p>
+            <div class="email-verify-steps">
+                <div class="verify-step">
+                    <div class="verify-step-num">1</div>
+                    <span>Buka inbox email kamu</span>
+                </div>
+                <div class="verify-step">
+                    <div class="verify-step-num">2</div>
+                    <span>Cari email dari iCiren iDe'nem</span>
+                </div>
+                <div class="verify-step">
+                    <div class="verify-step-num">3</div>
+                    <span>Klik link verifikasi</span>
+                </div>
+            </div>
+            <div class="email-verify-actions">
+                <button class="btn btn-primary" id="resendVerifyBtn" onclick="resendVerificationEmail()">
+                    <i class="fas fa-paper-plane"></i> Kirim Ulang Email
+                </button>
+                <button class="btn btn-outline" onclick="closeEmailVerifyModal(); navigateTo('auth')">
+                    <i class="fas fa-sign-in-alt"></i> Ke Halaman Login
+                </button>
+            </div>
+            <p class="email-verify-footer">Belum menerima email? Tunggu beberapa menit atau coba kirim ulang.</p>
+        </div>
+    </div>
+
     <!-- ================================
          PAGE: JELAJAHI IDE
     ================================ -->

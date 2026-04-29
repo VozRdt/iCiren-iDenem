@@ -163,11 +163,11 @@ async function handleRegister(e) {
         }
       });
       if (error) throw error;
-      currentUser = {
-        id: data.user.id,
-        email: data.user.email,
-        name: name
-      };
+
+      // Supabase mengirim email verifikasi — jangan langsung login
+      // Tampilkan modal pemberitahuan verifikasi email
+      showEmailVerifyModal(email);
+      resetAuthForms();
     } else {
       // Fallback mode (tanpa Supabase) — simpan ke localStorage
       const users = JSON.parse(localStorage.getItem('iciren_users') || '[]');
@@ -178,13 +178,13 @@ async function handleRegister(e) {
       users.push(newUser);
       localStorage.setItem('iciren_users', JSON.stringify(users));
       currentUser = { id: newUser.id, email, name };
-    }
 
-    localStorage.setItem('iciren_user', JSON.stringify(currentUser));
-    loadUserData();
-    updateAuthUI();
-    showToast('🎉 Registrasi berhasil! Selamat datang, ' + name);
-    setTimeout(() => navigateTo('home'), 1000);
+      localStorage.setItem('iciren_user', JSON.stringify(currentUser));
+      loadUserData();
+      updateAuthUI();
+      showToast('🎉 Registrasi berhasil! Selamat datang, ' + name);
+      setTimeout(() => navigateTo('home'), 1000);
+    }
   } catch (err) {
     showToast('❌ ' + (err.message || 'Registrasi gagal. Coba lagi.'));
   } finally {
@@ -268,7 +268,54 @@ function closeAuthModal() {
 document.addEventListener('click', function (e) {
   const modal = document.getElementById('authRequiredModal');
   if (e.target === modal) closeAuthModal();
+  const emailModal = document.getElementById('emailVerifyModal');
+  if (e.target === emailModal) closeEmailVerifyModal();
 });
+
+// ─── EMAIL VERIFICATION MODAL ───────────────────────────────
+let lastRegisteredEmail = '';
+
+function showEmailVerifyModal(email) {
+  lastRegisteredEmail = email;
+  const modal = document.getElementById('emailVerifyModal');
+  const emailDisplay = document.getElementById('verifyEmailAddress');
+  if (emailDisplay) emailDisplay.textContent = email;
+  if (modal) modal.classList.add('show');
+}
+
+function closeEmailVerifyModal() {
+  const modal = document.getElementById('emailVerifyModal');
+  if (modal) modal.classList.remove('show');
+}
+
+async function resendVerificationEmail() {
+  const btn = document.getElementById('resendVerifyBtn');
+  if (!lastRegisteredEmail) {
+    showToast('❌ Tidak ada email untuk dikirim ulang.');
+    return;
+  }
+
+  btn.disabled = true;
+  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Mengirim...';
+
+  try {
+    if (supabaseClient) {
+      const { error } = await supabaseClient.auth.resend({
+        type: 'signup',
+        email: lastRegisteredEmail
+      });
+      if (error) throw error;
+      showToast('✉️ Email verifikasi telah dikirim ulang ke ' + lastRegisteredEmail);
+    } else {
+      showToast('ℹ️ Mode offline: verifikasi email tidak tersedia.');
+    }
+  } catch (err) {
+    showToast('❌ Gagal mengirim ulang: ' + (err.message || 'Coba lagi nanti.'));
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = '<i class="fas fa-paper-plane"></i> Kirim Ulang Email';
+  }
+}
 
 // ─── CHECK AUTH ON SUPABASE SESSION ──────────────────────────
 async function checkSupabaseSession() {
