@@ -252,12 +252,6 @@
                         <button type="submit" class="btn btn-primary auth-submit-btn" id="loginSubmitBtn">
                             <i class="fas fa-sign-in-alt"></i> Masuk Sekarang
                         </button>
-                        <div class="auth-divider">
-                            <span>atau</span>
-                        </div>
-                        <button type="button" class="btn btn-outline auth-google-btn" id="loginGoogleBtn" onclick="handleGoogleLogin()">
-                            <i class="fab fa-google"></i> Masuk dengan Google
-                        </button>
                         <p class="auth-switch">
                             Belum punya akun? <a href="#" id="switchToRegister" onclick="switchAuthTab('register'); return false;">Daftar sekarang</a>
                         </p>
@@ -294,17 +288,11 @@
                         <div class="form-group">
                             <label class="checkbox-label">
                                 <input type="checkbox" id="registerAgreeTerms" required>
-                                <span>Saya setuju dengan <a href="#" class="auth-link">Syarat & Ketentuan</a> serta <a href="#" class="auth-link">Kebijakan Privasi</a></span>
+                                <span>Saya setuju dengan <a href="#" class="auth-link" onclick="showTermsModal('terms'); return false;">Syarat &amp; Ketentuan</a> serta <a href="#" class="auth-link" onclick="showTermsModal('privacy'); return false;">Kebijakan Privasi</a></span>
                             </label>
                         </div>
                         <button type="submit" class="btn btn-primary auth-submit-btn" id="registerSubmitBtn">
                             <i class="fas fa-user-plus"></i> Daftar Sekarang
-                        </button>
-                        <div class="auth-divider">
-                            <span>atau</span>
-                        </div>
-                        <button type="button" class="btn btn-outline auth-google-btn" id="registerGoogleBtn" onclick="handleGoogleLogin()">
-                            <i class="fab fa-google"></i> Daftar dengan Google
                         </button>
                         <p class="auth-switch">
                             Sudah punya akun? <a href="#" id="switchToLogin" onclick="switchAuthTab('login'); return false;">Masuk di sini</a>
@@ -390,6 +378,136 @@
                 </button>
             </div>
             <p class="email-verify-footer">Belum menerima email? Tunggu beberapa menit atau coba kirim ulang.</p>
+        </div>
+    </div>
+
+    <!-- Terms & Privacy Modal -->
+    <div class="terms-modal" id="termsModal">
+        <div class="terms-modal-content">
+            <button class="terms-modal-close" onclick="closeTermsModal()">
+                <i class="fas fa-times"></i>
+            </button>
+            <div class="terms-modal-header">
+                <div class="terms-tabs">
+                    <button class="terms-tab active" id="termsTabTerms" onclick="switchTermsTab('terms')">
+                        <i class="fas fa-file-contract"></i> Syarat & Ketentuan
+                    </button>
+                    <button class="terms-tab" id="termsTabPrivacy" onclick="switchTermsTab('privacy')">
+                        <i class="fas fa-shield-alt"></i> Kebijakan Privasi
+                    </button>
+                </div>
+            </div>
+            <div class="terms-modal-body" id="termsModalBody">
+                <!-- Terms Content -->
+                <div class="terms-content" id="termsContentTerms">
+                    <h3><i class="fas fa-gavel"></i> Syarat & Ketentuan Penggunaan</h3>
+                    <p class="terms-updated">Terakhir diperbarui: 29 April 2026</p>
+
+                    <div class="terms-section">
+                        <h4>1. Ketentuan Umum</h4>
+                        <ul>
+                            <li>Dengan mendaftar dan menggunakan platform iCiren iDe'nem, Anda menyetujui seluruh syarat dan ketentuan yang berlaku.</li>
+                            <li>iCiren iDe'nem adalah marketplace ide konten kreatif yang menghubungkan penjual dan pembeli ide.</li>
+                            <li>Pengguna wajib berusia minimal 17 tahun atau mendapat izin dari orang tua/wali.</li>
+                        </ul>
+                    </div>
+
+                    <div class="terms-section">
+                        <h4>2. Akun Pengguna</h4>
+                        <ul>
+                            <li>Setiap pengguna bertanggung jawab atas keamanan akunnya masing-masing.</li>
+                            <li>Informasi yang diberikan saat pendaftaran harus akurat dan terkini.</li>
+                            <li>Satu email hanya boleh digunakan untuk satu akun.</li>
+                            <li>iCiren iDe'nem berhak menangguhkan atau menonaktifkan akun yang melanggar ketentuan.</li>
+                        </ul>
+                    </div>
+
+                    <div class="terms-section">
+                        <h4>3. Konten & Ide</h4>
+                        <ul>
+                            <li>Semua ide yang dijual harus orisinal dan belum dipublikasikan di platform lain.</li>
+                            <li>Dilarang menjual ide yang mengandung unsur SARA, kekerasan, pornografi, atau melanggar hukum.</li>
+                            <li>iCiren iDe'nem berhak menolak atau menghapus ide yang tidak memenuhi standar kualitas.</li>
+                            <li>Setelah ide dibeli, hak penggunaan berpindah ke pembeli sesuai lisensi yang berlaku.</li>
+                        </ul>
+                    </div>
+
+                    <div class="terms-section">
+                        <h4>4. Transaksi & Pembayaran</h4>
+                        <ul>
+                            <li>Penjual mendapatkan 80% dari harga jual setiap ide yang terjual.</li>
+                            <li>Pembayaran akan diproses sesuai jadwal yang ditentukan oleh platform.</li>
+                            <li>Semua transaksi bersifat final dan tidak dapat dibatalkan kecuali dalam kondisi tertentu.</li>
+                            <li>iCiren iDe'nem menggunakan sistem pembayaran yang aman dan terenkripsi.</li>
+                        </ul>
+                    </div>
+
+                    <div class="terms-section">
+                        <h4>5. Larangan</h4>
+                        <ul>
+                            <li>Dilarang melakukan plagiarisme atau menjual ide milik orang lain.</li>
+                            <li>Dilarang menggunakan bot, script, atau metode otomatis untuk mengakses platform.</li>
+                            <li>Dilarang melakukan manipulasi rating, review, atau data apapun.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Privacy Content -->
+                <div class="terms-content" id="termsContentPrivacy" style="display:none;">
+                    <h3><i class="fas fa-user-shield"></i> Kebijakan Privasi</h3>
+                    <p class="terms-updated">Terakhir diperbarui: 29 April 2026</p>
+
+                    <div class="terms-section">
+                        <h4>1. Data yang Kami Kumpulkan</h4>
+                        <ul>
+                            <li><strong>Data Pribadi:</strong> Nama, email, dan informasi profil yang Anda berikan saat mendaftar.</li>
+                            <li><strong>Data Transaksi:</strong> Riwayat pembelian dan penjualan ide di platform.</li>
+                            <li><strong>Data Teknis:</strong> Alamat IP, jenis browser, dan perangkat yang digunakan.</li>
+                        </ul>
+                    </div>
+
+                    <div class="terms-section">
+                        <h4>2. Penggunaan Data</h4>
+                        <ul>
+                            <li>Mengelola akun dan menyediakan layanan platform.</li>
+                            <li>Memproses transaksi dan komunikasi terkait layanan.</li>
+                            <li>Meningkatkan pengalaman pengguna dan pengembangan fitur baru.</li>
+                            <li>Mengirimkan informasi penting terkait akun dan pembaruan layanan.</li>
+                        </ul>
+                    </div>
+
+                    <div class="terms-section">
+                        <h4>3. Keamanan Data</h4>
+                        <ul>
+                            <li>Kami menggunakan enkripsi dan protokol keamanan standar industri.</li>
+                            <li>Password disimpan dalam bentuk terenkripsi (hashed) dan tidak dapat dibaca.</li>
+                            <li>Akses ke data pribadi dibatasi hanya untuk personel yang berwenang.</li>
+                        </ul>
+                    </div>
+
+                    <div class="terms-section">
+                        <h4>4. Hak Pengguna</h4>
+                        <ul>
+                            <li>Anda berhak mengakses, memperbarui, atau menghapus data pribadi Anda.</li>
+                            <li>Anda berhak menolak penggunaan data untuk tujuan pemasaran.</li>
+                            <li>Anda berhak meminta salinan data pribadi yang kami simpan.</li>
+                        </ul>
+                    </div>
+
+                    <div class="terms-section">
+                        <h4>5. Kontak</h4>
+                        <ul>
+                            <li>Untuk pertanyaan terkait privasi, hubungi kami melalui email resmi iCiren iDe'nem.</li>
+                            <li>Kami akan merespon permintaan terkait data pribadi dalam waktu 14 hari kerja.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="terms-modal-footer">
+                <button class="btn btn-primary" onclick="closeTermsModal()">
+                    <i class="fas fa-check"></i> Saya Mengerti
+                </button>
+            </div>
         </div>
     </div>
 

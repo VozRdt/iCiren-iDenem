@@ -2095,10 +2095,12 @@ body {
 .email-verify-content {
     background: linear-gradient(165deg, #151515, #0d0d0d);
     border: 1px solid rgba(245, 158, 11, 0.25);
-    border-radius: 28px;
-    padding: 3rem 2.5rem;
-    max-width: 520px;
+    border-radius: 24px;
+    padding: 2rem 2rem 1.5rem;
+    max-width: 460px;
     width: 92%;
+    max-height: 90vh;
+    overflow-y: auto;
     text-align: center;
     position: relative;
     animation: emailVerifyIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
@@ -2147,19 +2149,19 @@ body {
 }
 
 .email-verify-icon {
-    width: 90px;
-    height: 90px;
+    width: 64px;
+    height: 64px;
     border-radius: 50%;
     background: linear-gradient(135deg, rgba(245, 158, 11, 0.15), rgba(251, 191, 36, 0.08));
     border: 2px solid rgba(245, 158, 11, 0.35);
     display: flex;
     align-items: center;
     justify-content: center;
-    margin: 0 auto 1.5rem;
-    font-size: 2.2rem;
+    margin: 0 auto 1rem;
+    font-size: 1.6rem;
     color: #FBBF24;
     animation: envelopeBounce 2s ease-in-out infinite;
-    box-shadow: 0 0 30px rgba(245, 158, 11, 0.15);
+    box-shadow: 0 0 20px rgba(245, 158, 11, 0.15);
 }
 
 @keyframes envelopeBounce {
@@ -2168,41 +2170,41 @@ body {
 }
 
 .email-verify-content h3 {
-    font-size: 1.6rem;
+    font-size: 1.3rem;
     font-weight: 800;
     background: linear-gradient(135deg, #F59E0B, #FBBF24, #FCD34D);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
-    margin-bottom: 0.6rem;
+    margin-bottom: 0.4rem;
 }
 
 .email-verify-content > p {
     color: #a3a3a3;
-    font-size: 0.95rem;
-    line-height: 1.6;
-    margin-bottom: 0.5rem;
+    font-size: 0.88rem;
+    line-height: 1.5;
+    margin-bottom: 0.3rem;
 }
 
 .email-verify-address {
     background: rgba(245, 158, 11, 0.08);
     border: 1px solid rgba(245, 158, 11, 0.25);
-    border-radius: 14px;
-    padding: 0.9rem 1.5rem;
+    border-radius: 12px;
+    padding: 0.6rem 1.2rem;
     color: #FBBF24;
     font-weight: 700;
-    font-size: 1.05rem;
-    margin: 0.8rem auto 1.2rem;
-    max-width: 380px;
+    font-size: 0.95rem;
+    margin: 0.5rem auto 0.8rem;
+    max-width: 360px;
     word-break: break-all;
     letter-spacing: 0.3px;
 }
 
 .email-verify-hint {
     color: #9ca3af !important;
-    font-size: 0.88rem !important;
-    line-height: 1.6 !important;
-    margin-bottom: 1.5rem !important;
+    font-size: 0.82rem !important;
+    line-height: 1.5 !important;
+    margin-bottom: 1rem !important;
     padding: 0 0.5rem;
 }
 
@@ -2213,19 +2215,19 @@ body {
 .email-verify-steps {
     display: flex;
     justify-content: center;
-    gap: 1.2rem;
-    margin-bottom: 2rem;
+    gap: 0.6rem;
+    margin-bottom: 1.2rem;
     flex-wrap: wrap;
 }
 
 .verify-step {
     display: flex;
     align-items: center;
-    gap: 0.6rem;
+    gap: 0.4rem;
     background: rgba(255, 255, 255, 0.03);
     border: 1px solid rgba(255, 255, 255, 0.06);
-    border-radius: 12px;
-    padding: 0.6rem 1rem;
+    border-radius: 10px;
+    padding: 0.4rem 0.75rem;
     transition: all 0.3s ease;
 }
 
@@ -2235,13 +2237,13 @@ body {
 }
 
 .verify-step-num {
-    width: 26px;
-    height: 26px;
+    width: 22px;
+    height: 22px;
     border-radius: 50%;
     background: linear-gradient(135deg, #F59E0B, #FBBF24);
     color: #000;
     font-weight: 800;
-    font-size: 0.8rem;
+    font-size: 0.7rem;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -2250,27 +2252,206 @@ body {
 
 .verify-step span {
     color: #d4d4d8;
-    font-size: 0.85rem;
+    font-size: 0.8rem;
     font-weight: 500;
     white-space: nowrap;
 }
 
 .email-verify-actions {
     display: flex;
-    gap: 1rem;
+    gap: 0.75rem;
     justify-content: center;
     flex-wrap: wrap;
-    margin-bottom: 1.5rem;
+    margin-bottom: 1rem;
 }
 
 .email-verify-actions .btn {
-    min-width: 180px;
+    min-width: 160px;
+    padding: 0.7rem 1.2rem !important;
+    font-size: 0.9rem !important;
 }
 
 .email-verify-footer {
     color: #6b7280 !important;
     font-size: 0.82rem !important;
     margin-top: 0;
+}
+/* ========================================
+   TERMS & PRIVACY MODAL
+   ======================================= */
+.terms-modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.92);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    z-index: 2700;
+    align-items: center;
+    justify-content: center;
+}
+
+.terms-modal.show {
+    display: flex;
+}
+
+.terms-modal-content {
+    background: linear-gradient(165deg, #151515, #0d0d0d);
+    border: 1px solid rgba(245, 158, 11, 0.25);
+    border-radius: 24px;
+    max-width: 600px;
+    width: 94%;
+    max-height: 85vh;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    animation: emailVerifyIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6), 0 0 40px rgba(245, 158, 11, 0.08);
+    overflow: hidden;
+}
+
+.terms-modal-close {
+    position: absolute;
+    top: 0.8rem;
+    right: 1rem;
+    background: none;
+    border: none;
+    color: #6b7280;
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: all 0.3s;
+    padding: 4px;
+    z-index: 10;
+}
+
+.terms-modal-close:hover {
+    color: #F59E0B;
+    transform: rotate(90deg);
+}
+
+.terms-modal-header {
+    padding: 1.5rem 1.5rem 0;
+    flex-shrink: 0;
+}
+
+.terms-tabs {
+    display: flex;
+    gap: 0;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 50px;
+    padding: 3px;
+    border: 1px solid rgba(245, 158, 11, 0.1);
+}
+
+.terms-tab {
+    flex: 1;
+    padding: 0.6rem 1rem;
+    border: none;
+    border-radius: 50px;
+    background: transparent;
+    color: #a3a3a3;
+    font-family: inherit;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+}
+
+.terms-tab:hover {
+    color: #F59E0B;
+}
+
+.terms-tab.active {
+    background: linear-gradient(135deg, #F59E0B, #FBBF24);
+    color: #000;
+    box-shadow: 0 4px 15px rgba(245, 158, 11, 0.4);
+}
+
+.terms-modal-body {
+    padding: 1.5rem;
+    overflow-y: auto;
+    flex: 1;
+}
+
+.terms-content h3 {
+    font-size: 1.15rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, #F59E0B, #FBBF24);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 0.3rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.terms-content h3 i {
+    -webkit-text-fill-color: #F59E0B;
+}
+
+.terms-updated {
+    color: #6b7280;
+    font-size: 0.78rem;
+    margin-bottom: 1.2rem;
+    font-style: italic;
+}
+
+.terms-section {
+    margin-bottom: 1.2rem;
+}
+
+.terms-section h4 {
+    color: #f0f0f0;
+    font-size: 0.92rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    padding-bottom: 0.3rem;
+    border-bottom: 1px solid rgba(245, 158, 11, 0.1);
+}
+
+.terms-section ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.terms-section ul li {
+    color: #a3a3a3;
+    font-size: 0.84rem;
+    line-height: 1.6;
+    padding: 0.35rem 0 0.35rem 1.4rem;
+    position: relative;
+}
+
+.terms-section ul li::before {
+    content: '•';
+    position: absolute;
+    left: 0.3rem;
+    color: #F59E0B;
+    font-weight: bold;
+    font-size: 1rem;
+}
+
+.terms-section ul li strong {
+    color: #e5e5e5;
+}
+
+.terms-modal-footer {
+    padding: 1rem 1.5rem;
+    border-top: 1px solid rgba(245, 158, 11, 0.1);
+    flex-shrink: 0;
+    text-align: center;
+}
+
+.terms-modal-footer .btn {
+    min-width: 200px;
+    padding: 0.7rem 1.5rem !important;
+    font-size: 0.9rem !important;
 }
 
 /* ========================================
@@ -2443,6 +2624,24 @@ body {
 
     .email-verify-actions .btn {
         width: 100%;
+    }
+
+    .terms-modal-content {
+        max-height: 90vh;
+        border-radius: 18px;
+    }
+
+    .terms-modal-header {
+        padding: 1.2rem 1.2rem 0;
+    }
+
+    .terms-tab {
+        font-size: 0.78rem;
+        padding: 0.5rem 0.6rem;
+    }
+
+    .terms-modal-body {
+        padding: 1.2rem;
     }
 
     .nav-logo span {

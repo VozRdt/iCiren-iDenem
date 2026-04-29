@@ -317,6 +317,47 @@ async function resendVerificationEmail() {
   }
 }
 
+// ─── TERMS & PRIVACY MODAL ──────────────────────────────────
+function showTermsModal(tab) {
+  const modal = document.getElementById('termsModal');
+  if (modal) modal.classList.add('show');
+  if (tab) switchTermsTab(tab);
+}
+
+function closeTermsModal() {
+  const modal = document.getElementById('termsModal');
+  if (modal) modal.classList.remove('show');
+}
+
+function switchTermsTab(tab) {
+  const termsContent = document.getElementById('termsContentTerms');
+  const privacyContent = document.getElementById('termsContentPrivacy');
+  const termsTab = document.getElementById('termsTabTerms');
+  const privacyTab = document.getElementById('termsTabPrivacy');
+
+  if (tab === 'terms') {
+    if (termsContent) termsContent.style.display = 'block';
+    if (privacyContent) privacyContent.style.display = 'none';
+    if (termsTab) termsTab.classList.add('active');
+    if (privacyTab) privacyTab.classList.remove('active');
+  } else {
+    if (termsContent) termsContent.style.display = 'none';
+    if (privacyContent) privacyContent.style.display = 'block';
+    if (termsTab) termsTab.classList.remove('active');
+    if (privacyTab) privacyTab.classList.add('active');
+  }
+
+  // Scroll body ke atas saat ganti tab
+  const body = document.getElementById('termsModalBody');
+  if (body) body.scrollTop = 0;
+}
+
+// Klik backdrop untuk tutup terms modal
+document.addEventListener('click', function (e) {
+  const termsModal = document.getElementById('termsModal');
+  if (e.target === termsModal) closeTermsModal();
+});
+
 // ─── CHECK AUTH ON SUPABASE SESSION ──────────────────────────
 async function checkSupabaseSession() {
   if (!supabaseClient) return;
