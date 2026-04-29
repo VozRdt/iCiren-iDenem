@@ -13,6 +13,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Supabase JS CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 
 <body>
@@ -46,7 +48,21 @@
                 </li>
             </ul>
             <div class="nav-cta">
-                <button class="btn btn-primary" id="mulaiJualBtn" onclick="navigateTo('sell')">Mulai Jual</button>
+                <!-- Auth buttons: tampil saat belum login -->
+                <button class="btn btn-outline btn-auth-nav" id="navLoginBtn" onclick="navigateTo('auth')">
+                    <i class="fas fa-sign-in-alt"></i> Masuk
+                </button>
+                <button class="btn btn-primary btn-auth-nav" id="navRegisterBtn" onclick="navigateTo('auth'); setTimeout(()=>switchAuthTab('register'),100)">
+                    <i class="fas fa-user-plus"></i> Daftar
+                </button>
+                <!-- User profile: tampil saat sudah login -->
+                <div class="nav-user-profile" id="navUserProfile" style="display:none;">
+                    <div class="nav-user-avatar" id="navUserAvatar">U</div>
+                    <span class="nav-user-name" id="navUserName">User</span>
+                    <button class="btn btn-outline btn-sm" id="navLogoutBtn" onclick="logoutUser()">
+                        <i class="fas fa-sign-out-alt"></i> Keluar
+                    </button>
+                </div>
             </div>
             <div class="hamburger" id="hamburger" onclick="toggleMenu()">
                 <span></span>
@@ -193,6 +209,149 @@
                 </div>
             </div>
         </section>
+    </div>
+
+    <!-- ================================
+         PAGE: AUTH (LOGIN / REGISTER)
+    ================================ -->
+    <div class="page" id="page-auth">
+        <section class="auth-section">
+            <div class="auth-container">
+                <div class="auth-card">
+                    <div class="auth-header">
+                        <img src="logo.png" alt="Logo" class="auth-logo">
+                        <h2 class="auth-title">Selamat Datang</h2>
+                        <p class="auth-subtitle">Masuk atau daftar untuk mulai jual beli ide kreatif</p>
+                    </div>
+
+                    <!-- Auth Tabs -->
+                    <div class="auth-tabs">
+                        <button class="auth-tab active" id="authTabLogin" onclick="switchAuthTab('login')">
+                            <i class="fas fa-sign-in-alt"></i> Masuk
+                        </button>
+                        <button class="auth-tab" id="authTabRegister" onclick="switchAuthTab('register')">
+                            <i class="fas fa-user-plus"></i> Daftar
+                        </button>
+                    </div>
+
+                    <!-- LOGIN FORM -->
+                    <form id="loginForm" class="auth-form" onsubmit="handleLogin(event)">
+                        <div class="form-group">
+                            <label for="loginEmail"><i class="fas fa-envelope"></i> Email</label>
+                            <input type="email" id="loginEmail" class="form-input" placeholder="Masukkan email kamu" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="loginPassword"><i class="fas fa-lock"></i> Password</label>
+                            <div class="password-wrapper">
+                                <input type="password" id="loginPassword" class="form-input" placeholder="Masukkan password" required>
+                                <button type="button" class="password-toggle" id="toggleLoginPassword" onclick="togglePassword('loginPassword','toggleLoginPassword')">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary auth-submit-btn" id="loginSubmitBtn">
+                            <i class="fas fa-sign-in-alt"></i> Masuk Sekarang
+                        </button>
+                        <div class="auth-divider">
+                            <span>atau</span>
+                        </div>
+                        <button type="button" class="btn btn-outline auth-google-btn" id="loginGoogleBtn" onclick="handleGoogleLogin()">
+                            <i class="fab fa-google"></i> Masuk dengan Google
+                        </button>
+                        <p class="auth-switch">
+                            Belum punya akun? <a href="#" id="switchToRegister" onclick="switchAuthTab('register'); return false;">Daftar sekarang</a>
+                        </p>
+                    </form>
+
+                    <!-- REGISTER FORM -->
+                    <form id="registerForm" class="auth-form" style="display:none;" onsubmit="handleRegister(event)">
+                        <div class="form-group">
+                            <label for="registerName"><i class="fas fa-user"></i> Nama Lengkap</label>
+                            <input type="text" id="registerName" class="form-input" placeholder="Masukkan nama lengkap" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="registerEmail"><i class="fas fa-envelope"></i> Email</label>
+                            <input type="email" id="registerEmail" class="form-input" placeholder="Masukkan email kamu" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="registerPassword"><i class="fas fa-lock"></i> Password</label>
+                            <div class="password-wrapper">
+                                <input type="password" id="registerPassword" class="form-input" placeholder="Buat password (min 6 karakter)" minlength="6" required>
+                                <button type="button" class="password-toggle" id="toggleRegisterPassword" onclick="togglePassword('registerPassword','toggleRegisterPassword')">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="registerConfirmPassword"><i class="fas fa-lock"></i> Konfirmasi Password</label>
+                            <div class="password-wrapper">
+                                <input type="password" id="registerConfirmPassword" class="form-input" placeholder="Ulangi password" minlength="6" required>
+                                <button type="button" class="password-toggle" id="toggleConfirmPassword" onclick="togglePassword('registerConfirmPassword','toggleConfirmPassword')">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="registerAgreeTerms" required>
+                                <span>Saya setuju dengan <a href="#" class="auth-link">Syarat & Ketentuan</a> serta <a href="#" class="auth-link">Kebijakan Privasi</a></span>
+                            </label>
+                        </div>
+                        <button type="submit" class="btn btn-primary auth-submit-btn" id="registerSubmitBtn">
+                            <i class="fas fa-user-plus"></i> Daftar Sekarang
+                        </button>
+                        <div class="auth-divider">
+                            <span>atau</span>
+                        </div>
+                        <button type="button" class="btn btn-outline auth-google-btn" id="registerGoogleBtn" onclick="handleGoogleLogin()">
+                            <i class="fab fa-google"></i> Daftar dengan Google
+                        </button>
+                        <p class="auth-switch">
+                            Sudah punya akun? <a href="#" id="switchToLogin" onclick="switchAuthTab('login'); return false;">Masuk di sini</a>
+                        </p>
+                    </form>
+                </div>
+
+                <!-- Auth Decoration -->
+                <div class="auth-decoration">
+                    <div class="auth-deco-card">
+                        <div class="auth-deco-icon"><i class="fas fa-lightbulb"></i></div>
+                        <h3>Jual Ide Kreatifmu</h3>
+                        <p>Ubah ide brilian menjadi penghasilan. Bergabung dengan 850+ kreator aktif di iCiren iDe'nem.</p>
+                    </div>
+                    <div class="auth-deco-card">
+                        <div class="auth-deco-icon"><i class="fas fa-shopping-cart"></i></div>
+                        <h3>Beli Ide Viral</h3>
+                        <p>Akses ribuan ide konten berkualitas untuk channel kamu. 2.500+ ide tersedia!</p>
+                    </div>
+                    <div class="auth-deco-card">
+                        <div class="auth-deco-icon"><i class="fas fa-shield-alt"></i></div>
+                        <h3>Aman & Terpercaya</h3>
+                        <p>Transaksi dijamin aman dengan perlindungan pembeli dan penjual.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Auth Required Modal -->
+    <div class="auth-required-modal" id="authRequiredModal">
+        <div class="auth-required-content">
+            <div class="auth-required-icon"><i class="fas fa-lock"></i></div>
+            <h3>Akses Terbatas</h3>
+            <p>Kamu perlu masuk atau daftar akun terlebih dahulu untuk mengakses fitur ini.</p>
+            <div class="auth-required-buttons">
+                <button class="btn btn-primary" id="authRequiredLoginBtn" onclick="closeAuthModal(); navigateTo('auth')">
+                    <i class="fas fa-sign-in-alt"></i> Masuk
+                </button>
+                <button class="btn btn-outline" id="authRequiredRegisterBtn" onclick="closeAuthModal(); navigateTo('auth'); setTimeout(()=>switchAuthTab('register'),100)">
+                    <i class="fas fa-user-plus"></i> Daftar Baru
+                </button>
+            </div>
+            <button class="auth-required-close" id="authRequiredCloseBtn" onclick="closeAuthModal()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
     </div>
 
     <!-- ================================

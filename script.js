@@ -2,29 +2,334 @@
    iCiren iDe'nem - SPA Navigation & Logic
    ============================================================ */
 
+// ─── SUPABASE INITIALIZATION ─────────────────────────────────
+const SUPABASE_URL = 'https://jalxcruyeixswdritzdd.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImphbHhjcnV5ZWl4c3dkcml0emRkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc0NjUzMjIsImV4cCI6MjA5MzA0MTMyMn0.DWIZk4gUJZ9Gor8QBIo6hzKHKI9_rKGQ6O9CxhUmJE0';
+
+let supabaseClient = null;
+try {
+  if (typeof supabase !== 'undefined' && supabase.createClient) {
+    supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    console.log('✅ Supabase client berhasil diinisialisasi.');
+  }
+} catch (e) {
+  console.warn('⚠️ Supabase belum terhubung. Menggunakan mode offline/localStorage.', e);
+}
+
+// ─── AUTH STATE ──────────────────────────────────────────────
+let currentUser = JSON.parse(localStorage.getItem('iciren_user') || 'null');
+
+// Halaman yang membutuhkan login
+const PROTECTED_PAGES = ['sell', 'explore', 'myideas'];
+
+function isLoggedIn() {
+  return currentUser !== null;
+}
+
+function updateAuthUI() {
+  const loginBtn = document.getElementById('navLoginBtn');
+  const registerBtn = document.getElementById('navRegisterBtn');
+  const userProfile = document.getElementById('navUserProfile');
+  const userAvatar = document.getElementById('navUserAvatar');
+  const userName = document.getElementById('navUserName');
+
+  if (isLoggedIn()) {
+    if (loginBtn) loginBtn.style.display = 'none';
+    if (registerBtn) registerBtn.style.display = 'none';
+    if (userProfile) {
+      userProfile.style.display = 'flex';
+      const name = currentUser.name || currentUser.email || 'User';
+      if (userName) userName.textContent = name;
+      if (userAvatar) userAvatar.textContent = name.charAt(0).toUpperCase();
+    }
+  } else {
+    if (loginBtn) loginBtn.style.display = 'inline-flex';
+    if (registerBtn) registerBtn.style.display = 'inline-flex';
+    if (userProfile) userProfile.style.display = 'none';
+  }
+}
+
+// ─── AUTH FORM TABS ──────────────────────────────────────────
+function switchAuthTab(tab) {
+  const loginForm = document.getElementById('loginForm');
+  const registerForm = document.getElementById('registerForm');
+  const loginTab = document.getElementById('authTabLogin');
+  const registerTab = document.getElementById('authTabRegister');
+
+  if (tab === 'login') {
+    if (loginForm) loginForm.style.display = 'block';
+    if (registerForm) registerForm.style.display = 'none';
+    if (loginTab) loginTab.classList.add('active');
+    if (registerTab) registerTab.classList.remove('active');
+  } else {
+    if (loginForm) loginForm.style.display = 'none';
+    if (registerForm) registerForm.style.display = 'block';
+    if (loginTab) loginTab.classList.remove('active');
+    if (registerTab) registerTab.classList.add('active');
+  }
+}
+
+// ─── LOGIN HANDLER ───────────────────────────────────────────
+async function handleLogin(e) {
+  e.preventDefault();
+  const email = document.getElementById('loginEmail').value.trim();
+  const password = document.getElementById('loginPassword').value;
+  const submitBtn = document.getElementById('loginSubmitBtn');
+
+  if (!email || !password) {
+    showToast('❌ Mohon isi semua field.');
+    return;
+  }
+
+  submitBtn.disabled = true;
+  submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Memproses...';
+
+  try {
+    // Coba login via Supabase
+    if (supabaseClient) {
+      const { data, error } = await supabaseClient.auth.signInWithPassword({
+        email,
+        password
+      });
+      if (error) throw error;
+      currentUser = {
+        id: data.user.id,
+        email: data.user.email,
+        name: data.user.user_metadata?.name || data.user.email.split('@')[0]
+      };
+    } else {
+      // Fallback mode (tanpa Supabase) — simulasi login via localStorage
+      const users = JSON.parse(localStorage.getItem('iciren_users') || '[]');
+      const found = users.find(u => u.email === email && u.password === password);
+      if (!found) {
+        throw new Error('Email atau password salah.');
+      }
+      currentUser = { id: found.id, email: found.email, name: found.name };
+    }
+
+    localStorage.setItem('iciren_user', JSON.stringify(currentUser));
+    loadUserData();
+    updateAuthUI();
+    showToast('✅ Login berhasil! Selamat datang, ' + currentUser.name);
+    setTimeout(() => navigateTo('home'), 1000);
+  } catch (err) {
+    showToast('❌ ' + (err.message || 'Login gagal. Coba lagi.'));
+  } finally {
+    submitBtn.disabled = false;
+    submitBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Masuk Sekarang';
+  }
+}
+
+// ─── REGISTER HANDLER ────────────────────────────────────────
+async function handleRegister(e) {
+  e.preventDefault();
+  const name = document.getElementById('registerName').value.trim();
+  const email = document.getElementById('registerEmail').value.trim();
+  const password = document.getElementById('registerPassword').value;
+  const confirmPassword = document.getElementById('registerConfirmPassword').value;
+  const agreeTerms = document.getElementById('registerAgreeTerms').checked;
+  const submitBtn = document.getElementById('registerSubmitBtn');
+
+  if (!name || !email || !password || !confirmPassword) {
+    showToast('❌ Mohon isi semua field.');
+    return;
+  }
+
+  if (password !== confirmPassword) {
+    showToast('❌ Password dan konfirmasi tidak cocok.');
+    return;
+  }
+
+  if (password.length < 6) {
+    showToast('❌ Password minimal 6 karakter.');
+    return;
+  }
+
+  if (!agreeTerms) {
+    showToast('❌ Kamu harus menyetujui Syarat & Ketentuan.');
+    return;
+  }
+
+  submitBtn.disabled = true;
+  submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Memproses...';
+
+  try {
+    if (supabaseClient) {
+      const { data, error } = await supabaseClient.auth.signUp({
+        email,
+        password,
+        options: {
+          data: { name }
+        }
+      });
+      if (error) throw error;
+      currentUser = {
+        id: data.user.id,
+        email: data.user.email,
+        name: name
+      };
+    } else {
+      // Fallback mode (tanpa Supabase) — simpan ke localStorage
+      const users = JSON.parse(localStorage.getItem('iciren_users') || '[]');
+      if (users.some(u => u.email === email)) {
+        throw new Error('Email sudah terdaftar.');
+      }
+      const newUser = { id: Date.now(), email, password, name };
+      users.push(newUser);
+      localStorage.setItem('iciren_users', JSON.stringify(users));
+      currentUser = { id: newUser.id, email, name };
+    }
+
+    localStorage.setItem('iciren_user', JSON.stringify(currentUser));
+    loadUserData();
+    updateAuthUI();
+    showToast('🎉 Registrasi berhasil! Selamat datang, ' + name);
+    setTimeout(() => navigateTo('home'), 1000);
+  } catch (err) {
+    showToast('❌ ' + (err.message || 'Registrasi gagal. Coba lagi.'));
+  } finally {
+    submitBtn.disabled = false;
+    submitBtn.innerHTML = '<i class="fas fa-user-plus"></i> Daftar Sekarang';
+  }
+}
+
+// ─── GOOGLE LOGIN ────────────────────────────────────────────
+async function handleGoogleLogin() {
+  if (supabaseClient) {
+    try {
+      const { data, error } = await supabaseClient.auth.signInWithOAuth({
+        provider: 'google'
+      });
+      if (error) throw error;
+      // Supabase akan redirect, data akan ditangani saat kembali
+    } catch (err) {
+      showToast('❌ Google login gagal: ' + (err.message || 'Coba lagi.'));
+    }
+  } else {
+    showToast('ℹ️ Google login memerlukan konfigurasi Supabase. Silakan daftar manual.');
+  }
+}
+
+// ─── LOGOUT ──────────────────────────────────────────────────
+async function logoutUser() {
+  try {
+    if (supabaseClient) {
+      await supabaseClient.auth.signOut();
+    }
+  } catch (e) {
+    console.warn('Logout error:', e);
+  }
+  currentUser = null;
+  localStorage.removeItem('iciren_user');
+  clearUserData();
+  resetAuthForms();
+  updateAuthUI();
+  showToast('👋 Kamu telah keluar. Sampai jumpa lagi!');
+  navigateTo('home');
+}
+
+// ─── RESET AUTH FORMS ────────────────────────────────────────
+function resetAuthForms() {
+  const loginForm = document.getElementById('loginForm');
+  const registerForm = document.getElementById('registerForm');
+  if (loginForm) loginForm.reset();
+  if (registerForm) registerForm.reset();
+  // Kembali ke tab login
+  switchAuthTab('login');
+}
+
+// ─── PASSWORD TOGGLE ─────────────────────────────────────────
+function togglePassword(inputId, btnId) {
+  const input = document.getElementById(inputId);
+  const btn = document.getElementById(btnId);
+  if (!input || !btn) return;
+
+  if (input.type === 'password') {
+    input.type = 'text';
+    btn.innerHTML = '<i class="fas fa-eye-slash"></i>';
+  } else {
+    input.type = 'password';
+    btn.innerHTML = '<i class="fas fa-eye"></i>';
+  }
+}
+
+// ─── AUTH REQUIRED MODAL ─────────────────────────────────────
+function showAuthRequiredModal() {
+  const modal = document.getElementById('authRequiredModal');
+  if (modal) modal.classList.add('show');
+}
+
+function closeAuthModal() {
+  const modal = document.getElementById('authRequiredModal');
+  if (modal) modal.classList.remove('show');
+}
+
+// Klik backdrop untuk tutup
+document.addEventListener('click', function (e) {
+  const modal = document.getElementById('authRequiredModal');
+  if (e.target === modal) closeAuthModal();
+});
+
+// ─── CHECK AUTH ON SUPABASE SESSION ──────────────────────────
+async function checkSupabaseSession() {
+  if (!supabaseClient) return;
+  try {
+    const { data: { session } } = await supabaseClient.auth.getSession();
+    if (session && session.user) {
+      currentUser = {
+        id: session.user.id,
+        email: session.user.email,
+        name: session.user.user_metadata?.name || session.user.email.split('@')[0]
+      };
+      localStorage.setItem('iciren_user', JSON.stringify(currentUser));
+      updateAuthUI();
+    }
+  } catch (e) {
+    console.warn('Session check error:', e);
+  }
+}
+
 // ─── DATA IDE ────────────────────────────────────────────────
 const allIdeas = [
-  { id:1, title:'10 Rahasia TikTok yang Jarang Diketahui', category:'tiktok', price:75000, desc:'Konten edukatif tentang algoritma TikTok, tips untuk pemula hingga pro.', emoji:'🎵', views:4200, rating:4.9 },
-  { id:2, title:'Review Jujur Produk Viral vs Biasa', category:'youtube', price:120000, desc:'Format review komparatif yang terbukti menghasilkan engagement tinggi.', emoji:'📹', views:8700, rating:4.8 },
-  { id:3, title:'Day in My Life: Content Creator Indonesia', category:'instagram', price:55000, desc:'Ide konten storytelling harian yang relatable untuk kreator muda.', emoji:'📸', views:3100, rating:4.7 },
-  { id:4, title:'Podcast: Obrolan Startup Indonesia', category:'podcast', price:95000, desc:'Format podcast diskusi ekosistem startup lokal yang menarik investor & talenta.', emoji:'🎙️', views:2800, rating:4.6 },
-  { id:5, title:'5 Resep Masak Viral dari Media Sosial', category:'youtube', price:65000, desc:'Kompilasi resep trending yang bisa dieksekusi dengan mudah dan cepat.', emoji:'🍳', views:9500, rating:5.0 },
-  { id:6, title:'Tantangan 30 Hari Produktivitas', category:'tiktok', price:85000, desc:'Series tantangan harian yang mendorong engagement konsisten dari followers.', emoji:'⚡', views:6300, rating:4.8 },
-  { id:7, title:'Tutorial Blog SEO untuk Pemula', category:'blog', price:110000, desc:'Panduan lengkap membuat artikel yang nangkring di halaman 1 Google.', emoji:'✍️', views:4100, rating:4.9 },
-  { id:8, title:'Reels Outfit Check Aesthetic Murah', category:'instagram', price:45000, desc:'Format konten fashion OOTD budget friendly yang viral di kalangan Gen Z.', emoji:'👗', views:7200, rating:4.7 },
-  { id:9, title:'Unboxing Gadget Terbaru 2026', category:'youtube', price:135000, desc:'Script dan struktur unboxing yang engaging dari intro hingga verdict akhir.', emoji:'📦', views:11200, rating:4.9 },
-  { id:10, title:'Podcast: Mental Health anak Muda', category:'podcast', price:80000, desc:'Topik-topik mental health yang relevan dengan anak muda Indonesia.', emoji:'🧠', views:3400, rating:4.8 },
-  { id:11, title:'Vlog Trip Hemat ke Bali', category:'youtube', price:90000, desc:'Konsep vlog perjalanan budget yang informatif dan entertaining.', emoji:'🏖️', views:5600, rating:4.6 },
-  { id:12, title:'Tips Finansial Gen Z: Mulai Investasi', category:'tiktok', price:70000, desc:'Edukasi finansial yang disampaikan dengan bahasa ringan dan visual menarik.', emoji:'💰', views:8900, rating:4.9 },
+  { id: 1, title: '10 Rahasia TikTok yang Jarang Diketahui', category: 'tiktok', price: 75000, desc: 'Konten edukatif tentang algoritma TikTok, tips untuk pemula hingga pro.', emoji: '🎵', views: 4200, rating: 4.9 },
+  { id: 2, title: 'Review Jujur Produk Viral vs Biasa', category: 'youtube', price: 120000, desc: 'Format review komparatif yang terbukti menghasilkan engagement tinggi.', emoji: '📹', views: 8700, rating: 4.8 },
+  { id: 3, title: 'Day in My Life: Content Creator Indonesia', category: 'instagram', price: 55000, desc: 'Ide konten storytelling harian yang relatable untuk kreator muda.', emoji: '📸', views: 3100, rating: 4.7 },
+  { id: 4, title: 'Podcast: Obrolan Startup Indonesia', category: 'podcast', price: 95000, desc: 'Format podcast diskusi ekosistem startup lokal yang menarik investor & talenta.', emoji: '🎙️', views: 2800, rating: 4.6 },
+  { id: 5, title: '5 Resep Masak Viral dari Media Sosial', category: 'youtube', price: 65000, desc: 'Kompilasi resep trending yang bisa dieksekusi dengan mudah dan cepat.', emoji: '🍳', views: 9500, rating: 5.0 },
+  { id: 6, title: 'Tantangan 30 Hari Produktivitas', category: 'tiktok', price: 85000, desc: 'Series tantangan harian yang mendorong engagement konsisten dari followers.', emoji: '⚡', views: 6300, rating: 4.8 },
+  { id: 7, title: 'Tutorial Blog SEO untuk Pemula', category: 'blog', price: 110000, desc: 'Panduan lengkap membuat artikel yang nangkring di halaman 1 Google.', emoji: '✍️', views: 4100, rating: 4.9 },
+  { id: 8, title: 'Reels Outfit Check Aesthetic Murah', category: 'instagram', price: 45000, desc: 'Format konten fashion OOTD budget friendly yang viral di kalangan Gen Z.', emoji: '👗', views: 7200, rating: 4.7 },
+  { id: 9, title: 'Unboxing Gadget Terbaru 2026', category: 'youtube', price: 135000, desc: 'Script dan struktur unboxing yang engaging dari intro hingga verdict akhir.', emoji: '📦', views: 11200, rating: 4.9 },
+  { id: 10, title: 'Podcast: Mental Health anak Muda', category: 'podcast', price: 80000, desc: 'Topik-topik mental health yang relevan dengan anak muda Indonesia.', emoji: '🧠', views: 3400, rating: 4.8 },
+  { id: 11, title: 'Vlog Trip Hemat ke Bali', category: 'youtube', price: 90000, desc: 'Konsep vlog perjalanan budget yang informatif dan entertaining.', emoji: '🏖️', views: 5600, rating: 4.6 },
+  { id: 12, title: 'Tips Finansial Gen Z: Mulai Investasi', category: 'tiktok', price: 70000, desc: 'Edukasi finansial yang disampaikan dengan bahasa ringan dan visual menarik.', emoji: '💰', views: 8900, rating: 4.9 },
 ];
 
 let displayedIdeas = 6;
 let currentFilter = 'semua';
-let myIdeas = JSON.parse(localStorage.getItem('myIdeas') || '[]');
-let purchasedIdeas = JSON.parse(localStorage.getItem('purchasedIdeas') || '[]');
+let myIdeas = [];
+let purchasedIdeas = [];
 let myIdeasTab = 'submitted'; // 'submitted' | 'purchased'
 
 let isNavigating = false;
+
+// ─── USER-SPECIFIC STORAGE HELPERS ───────────────────────────
+function getUserKey(baseName) {
+  if (currentUser && currentUser.id) {
+    return baseName + '_' + currentUser.id;
+  }
+  return baseName;
+}
+
+function loadUserData() {
+  myIdeas = JSON.parse(localStorage.getItem(getUserKey('myIdeas')) || '[]');
+  purchasedIdeas = JSON.parse(localStorage.getItem(getUserKey('purchasedIdeas')) || '[]');
+}
+
+function clearUserData() {
+  myIdeas = [];
+  purchasedIdeas = [];
+}
 
 // ─── PROGRESS BAR ────────────────────────────────────────────
 function startProgress() {
@@ -53,6 +358,12 @@ function navigateTo(page) {
   // Cegah navigasi ganda saat animasi berjalan
   if (isNavigating) return;
 
+  // Proteksi halaman: jika belum login dan halaman dilindungi
+  if (PROTECTED_PAGES.includes(page) && !isLoggedIn()) {
+    showAuthRequiredModal();
+    return;
+  }
+
   const currentActive = document.querySelector('.page.active');
   const target = document.getElementById('page-' + page);
 
@@ -75,6 +386,7 @@ function navigateTo(page) {
   // Init data halaman lebih awal agar siap saat muncul
   if (page === 'explore') renderIdeas();
   if (page === 'myideas') renderMyIdeas();
+  if (page === 'auth') resetAuthForms();
 
   // Mulai progress bar
   startProgress();
@@ -110,7 +422,7 @@ function navigateTo(page) {
 // ─── HAMBURGER MENU ──────────────────────────────────────────
 function toggleMenu() {
   const menu = document.getElementById('navMenu');
-  const ham  = document.getElementById('hamburger');
+  const ham = document.getElementById('hamburger');
   menu.classList.toggle('open');
   ham.classList.toggle('open');
 }
@@ -142,7 +454,7 @@ function renderIdeas() {
 
 function createIdeaCard(idea) {
   const stars = '⭐'.repeat(Math.round(idea.rating));
-  const categoryLabel = { youtube:'YouTube', tiktok:'TikTok', instagram:'Instagram', podcast:'Podcast', blog:'Blog' }[idea.category] || idea.category;
+  const categoryLabel = { youtube: 'YouTube', tiktok: 'TikTok', instagram: 'Instagram', podcast: 'Podcast', blog: 'Blog' }[idea.category] || idea.category;
   return `
     <div class="idea-card" onclick="openModal(${idea.id})">
       <div class="idea-image">
@@ -185,7 +497,7 @@ function openModal(ideaId) {
   if (!idea) return;
   const modal = document.getElementById('ideaModal');
   const body = document.getElementById('modalBody');
-  const categoryLabel = { youtube:'YouTube', tiktok:'TikTok', instagram:'Instagram', podcast:'Podcast', blog:'Blog' }[idea.category] || idea.category;
+  const categoryLabel = { youtube: 'YouTube', tiktok: 'TikTok', instagram: 'Instagram', podcast: 'Podcast', blog: 'Blog' }[idea.category] || idea.category;
 
   body.innerHTML = `
     <div style="text-align:center; margin-bottom:1.5rem; font-size:5rem;">${idea.emoji}</div>
@@ -214,8 +526,15 @@ function closeModal() {
 }
 
 function buyIdea(ideaId) {
+  // Cek apakah sudah login
+  if (!isLoggedIn()) {
+    closeModal();
+    showAuthRequiredModal();
+    return;
+  }
+
   // Cek apakah sudah pernah dibeli
-  purchasedIdeas = JSON.parse(localStorage.getItem('purchasedIdeas') || '[]');
+  purchasedIdeas = JSON.parse(localStorage.getItem(getUserKey('purchasedIdeas')) || '[]');
   if (purchasedIdeas.some(i => i.id === ideaId)) {
     closeModal();
     showToast('ℹ️ Kamu sudah membeli ide ini sebelumnya.');
@@ -231,7 +550,7 @@ function buyIdea(ideaId) {
   };
 
   purchasedIdeas.unshift(bought);
-  localStorage.setItem('purchasedIdeas', JSON.stringify(purchasedIdeas));
+  localStorage.setItem(getUserKey('purchasedIdeas'), JSON.stringify(purchasedIdeas));
 
   closeModal();
   showToast('✅ Ide berhasil dibeli! Lihat di Ide Saya → Tab Dibeli.');
@@ -241,11 +560,11 @@ function buyIdea(ideaId) {
 // ─── SELL FORM ───────────────────────────────────────────────
 function submitIdea(e) {
   e.preventDefault();
-  const title    = document.getElementById('ideaTitle').value;
+  const title = document.getElementById('ideaTitle').value;
   const category = document.getElementById('ideaCategory').value;
-  const price    = parseInt(document.getElementById('ideaPrice').value);
-  const desc     = document.getElementById('ideaDesc').value;
-  const tags     = document.getElementById('ideaTags').value;
+  const price = parseInt(document.getElementById('ideaPrice').value);
+  const desc = document.getElementById('ideaDesc').value;
+  const tags = document.getElementById('ideaTags').value;
 
   const newIdea = {
     id: Date.now(),
@@ -255,7 +574,7 @@ function submitIdea(e) {
   };
 
   myIdeas.unshift(newIdea);
-  localStorage.setItem('myIdeas', JSON.stringify(myIdeas));
+  localStorage.setItem(getUserKey('myIdeas'), JSON.stringify(myIdeas));
 
   // Reset form
   document.getElementById('sellForm').reset();
@@ -275,14 +594,14 @@ function switchMyIdeasTab(tab) {
 }
 
 function renderMyIdeas() {
-  myIdeas = JSON.parse(localStorage.getItem('myIdeas') || '[]');
-  purchasedIdeas = JSON.parse(localStorage.getItem('purchasedIdeas') || '[]');
+  myIdeas = JSON.parse(localStorage.getItem(getUserKey('myIdeas')) || '[]');
+  purchasedIdeas = JSON.parse(localStorage.getItem(getUserKey('purchasedIdeas')) || '[]');
 
   // Update dashboard stats
   document.getElementById('totalIdeasCount').textContent = myIdeas.length;
   const approved = myIdeas.filter(i => i.status === 'approved').length;
   document.getElementById('approvedCount').textContent = approved;
-  const earnings = myIdeas.filter(i => i.status === 'approved').reduce((s,i) => s + i.price, 0);
+  const earnings = myIdeas.filter(i => i.status === 'approved').reduce((s, i) => s + i.price, 0);
   document.getElementById('totalEarnings').textContent = 'Rp ' + earnings.toLocaleString('id-ID');
   document.getElementById('totalViews').textContent = purchasedIdeas.length.toLocaleString();
 
@@ -317,7 +636,7 @@ function renderMyIdeas() {
 function renderMyIdeasList() {
   const list = document.getElementById('myIdeasList');
   const empty = document.getElementById('emptyState');
-  const catLabel = { youtube:'YouTube', tiktok:'TikTok', instagram:'Instagram', podcast:'Podcast', blog:'Blog' };
+  const catLabel = { youtube: 'YouTube', tiktok: 'TikTok', instagram: 'Instagram', podcast: 'Podcast', blog: 'Blog' };
 
   if (myIdeasTab === 'submitted') {
     if (myIdeas.length === 0) {
@@ -385,14 +704,14 @@ function renderMyIdeasList() {
 
 function deleteIdea(id) {
   myIdeas = myIdeas.filter(i => i.id !== id);
-  localStorage.setItem('myIdeas', JSON.stringify(myIdeas));
+  localStorage.setItem(getUserKey('myIdeas'), JSON.stringify(myIdeas));
   renderMyIdeas();
   showToast('🗑️ Ide berhasil dihapus.');
 }
 
 function deletePurchased(id) {
   purchasedIdeas = purchasedIdeas.filter(i => i.id !== id);
-  localStorage.setItem('purchasedIdeas', JSON.stringify(purchasedIdeas));
+  localStorage.setItem(getUserKey('purchasedIdeas'), JSON.stringify(purchasedIdeas));
   renderMyIdeas();
   showToast('🗑️ Ide dibeli berhasil dihapus.');
 }
@@ -416,11 +735,18 @@ window.addEventListener('scroll', () => {
 });
 
 // ─── MODAL CLOSE ON BACKDROP ─────────────────────────────────
-document.getElementById('ideaModal').addEventListener('click', function(e) {
+document.getElementById('ideaModal').addEventListener('click', function (e) {
   if (e.target === this) closeModal();
 });
 
 // ─── INIT ────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
+  // Update auth UI berdasarkan state login
+  updateAuthUI();
+  // Load data per-user jika sudah login
+  if (isLoggedIn()) loadUserData();
+  // Cek session Supabase
+  checkSupabaseSession();
+  // Navigasi awal
   navigateTo('home');
 });
