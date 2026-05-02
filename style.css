@@ -4,15 +4,21 @@
     box-sizing: border-box;
 }
 
-/* TAMBAHKAN KODE INI */
-html {
-    scroll-behavior: smooth;
+/* Lenis smooth scroll base styles */
+html.lenis, html.lenis body {
+    height: auto;
 }
 
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+.lenis.lenis-smooth {
+    scroll-behavior: auto; /* Lenis handles scrolling via JS */
+}
+
+.lenis.lenis-smooth [data-lenis-prevent] {
+    overscroll-behavior: contain;
+}
+
+.lenis.lenis-stopped {
+    overflow: hidden;
 }
 
 body {
@@ -137,7 +143,11 @@ body {
    ======================================= */
 .hero {
     padding: 100px 0 40px;
-    background: #080808;
+    /* Menambahkan background batik dengan overlay gelap agar teks tetap terbaca */
+    background: linear-gradient(rgba(8, 8, 8, 0.7), rgba(8, 8, 8, 0.85)), url('bg-batik.jpg');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed; /* Opsi ini membuat efek parallax (background tetap saat di-scroll) */
     color: #e5e5e5;
     min-height: 100vh;
     min-height: 100dvh;
@@ -219,6 +229,23 @@ body {
 /* ========================================
    BUTTONS - GOLD ELEGANT
    ======================================= */
+.inline-logo {
+    height: 1.2em;
+    width: auto;
+    vertical-align: middle;
+    margin-right: 6px;
+    margin-top: -3px;
+    object-fit: contain;
+}
+.inline-logo-only {
+    height: 1.8rem;
+    width: auto;
+    object-fit: contain;
+    transition: transform 0.3s ease;
+}
+.inline-logo-only:hover {
+    transform: scale(1.1);
+}
 .btn {
     padding: 1.1rem 2.3rem;
     border: none;
@@ -832,6 +859,18 @@ body {
     width: 1px;
     height: 40px;
     background: rgba(245, 158, 11, 0.3);
+}
+
+.hero-footnote {
+    position: absolute;
+    bottom: 20px;
+    left: 30px;
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.4);
+    font-weight: 300;
+    letter-spacing: 1px;
+    pointer-events: none;
+    z-index: 10;
 }
 
 /* Step Icon */
@@ -3165,4 +3204,144 @@ body {
     .steps-grid {
         grid-template-columns: repeat(3, 1fr);
     }
+}
+
+/* ========================================
+   GSAP ANIMATION INITIAL STATES
+   ======================================= */
+
+/* Hero elements start hidden - GSAP will animate them in */
+[data-gsap="hero"] {
+    opacity: 0;
+    transform: translateY(40px);
+}
+
+/* Section titles and subtitles - hidden until scroll trigger */
+[data-gsap-section] .section-title,
+[data-gsap-section] .section-subtitle {
+    opacity: 0;
+    transform: translateY(30px);
+}
+
+/* Cards inside animated sections */
+[data-gsap-section] .step-card,
+[data-gsap-section] .benefit-item,
+[data-gsap-section] .testimonial-card {
+    opacity: 0;
+    transform: translateY(50px) scale(0.95);
+}
+
+/* Golden shimmer effect for hero title */
+@keyframes goldenShimmer {
+    0% {
+        background-position: -200% center;
+    }
+    100% {
+        background-position: 200% center;
+    }
+}
+
+.hero-title.gsap-shimmer {
+    background-size: 200% auto;
+    animation: goldenShimmer 4s linear infinite;
+}
+
+/* Floating animation for step-number circles */
+@keyframes floatGently {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-6px);
+    }
+}
+
+.step-number.gsap-float {
+    animation: floatGently 3s ease-in-out infinite;
+}
+
+/* Glowing pulse for stat numbers after GSAP animates them in */
+.stat-number.gsap-glow {
+    text-shadow: 0 0 20px rgba(245, 158, 11, 0.4);
+}
+
+/* Smooth parallax depth feel for hero section */
+.hero.gsap-ready {
+    will-change: transform;
+}
+
+/* Idea cards reveal - for dynamically rendered cards */
+.idea-card.gsap-reveal {
+    opacity: 0;
+    transform: translateY(30px) scale(0.97);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+.idea-card.gsap-visible {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+}
+
+/* About page elements - animate in */
+.about-heading,
+.about-text p,
+.about-stats,
+.about-card-visual,
+.team-card,
+.value-card {
+    opacity: 0;
+    transform: translateY(30px);
+}
+
+/* Footer reveal */
+.footer-content,
+.footer-bottom {
+    opacity: 0;
+    transform: translateY(20px);
+}
+
+/* Sell page elements */
+.form-card,
+.sell-benefit-card {
+    opacity: 0;
+    transform: translateY(30px);
+}
+
+/* Dashboard stat cards */
+.dash-stat-card {
+    opacity: 0;
+    transform: translateY(20px) scale(0.95);
+}
+
+/* Auth page decorations */
+.auth-card,
+.auth-deco-card {
+    opacity: 0;
+    transform: translateY(30px);
+}
+
+/* Page hero titles on sub-pages */
+.page-hero-title,
+.page-hero-subtitle {
+    opacity: 0;
+    transform: translateY(20px);
+}
+
+/* Magnetic hover effect enhanced by GSAP */
+.gsap-magnetic {
+    transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+/* Smooth gradient border animation */
+@keyframes borderGlow {
+    0%, 100% {
+        border-color: rgba(245, 158, 11, 0.15);
+    }
+    50% {
+        border-color: rgba(245, 158, 11, 0.4);
+    }
+}
+
+.gsap-border-glow {
+    animation: borderGlow 3s ease-in-out infinite;
 }
