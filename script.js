@@ -111,7 +111,8 @@ async function handleLogin(e) {
     }
 
     localStorage.setItem('iciren_user', JSON.stringify(currentUser));
-    loadUserData();
+    // Load data dari database (async)
+    await loadUserData();
     updateAuthUI();
     showToast('✅ Login berhasil! Selamat datang, ' + currentUser.name);
     setTimeout(() => navigateTo('home'), 1000);
@@ -379,6 +380,8 @@ async function checkSupabaseSession() {
         name: session.user.user_metadata?.name || session.user.email.split('@')[0]
       };
       localStorage.setItem('iciren_user', JSON.stringify(currentUser));
+      // Load data dari database saat session valid
+      await loadUserData();
       updateAuthUI();
     }
   } catch (e) {
@@ -418,9 +421,73 @@ function getUserKey(baseName) {
   return baseName;
 }
 
-function loadUserData() {
-  myIdeas = JSON.parse(localStorage.getItem(getUserKey('myIdeas')) || '[]');
-  purchasedIdeas = JSON.parse(localStorage.getItem(getUserKey('purchasedIdeas')) || '[]');
+// Load data user dari Supabase, fallback ke localStorage
+async function loadUserData() {
+  if (supabaseClient && currentUser && currentUser.id) {
+    try {
+      // Load ide yang dijual dari Supabase
+      const { data: ideasData, error: ideasErr } = await supabaseClient
+        .from('ideas')
+        .select('*')
+        .eq('user_id', currentUser.id)
+        .order('created_at', { ascending: false });
+
+      if (!ideasErr && ideasData) {
+        myIdeas = ideasData.map(row => ({
+          id: row.id,
+          title: row.title,
+          category: row.category,
+          price: row.price,
+          desc: row.description,
+          tags: row.tags || '',
+          status: row.status || 'pending',
+          date: new Date(row.created_at).toLocaleDateString('id-ID'),
+        }));
+        // Sync ke localStorage sebagai cache
+        localStorage.setItem(getUserKey('myIdeas'), JSON.stringify(myIdeas));
+      } else {
+        console.warn('⚠️ Gagal load ideas dari DB, pakai localStorage:', ideasErr);
+        myIdeas = JSON.parse(localStorage.getItem(getUserKey('myIdeas')) || '[]');
+      }
+
+      // Load ide yang dibeli dari Supabase
+      const { data: purchData, error: purchErr } = await supabaseClient
+        .from('purchases')
+        .select('*')
+        .eq('user_id', currentUser.id)
+        .order('purchased_at', { ascending: false });
+
+      if (!purchErr && purchData) {
+        purchasedIdeas = purchData.map(row => ({
+          id: row.idea_id,
+          dbId: row.id, // UUID dari tabel purchases, untuk delete
+          title: row.idea_title,
+          category: row.idea_category,
+          price: row.idea_price,
+          desc: row.idea_desc,
+          emoji: row.idea_emoji || '💡',
+          rating: row.idea_rating || 0,
+          views: row.idea_views || 0,
+          boughtDate: new Date(row.purchased_at).toLocaleDateString('id-ID'),
+        }));
+        // Sync ke localStorage sebagai cache
+        localStorage.setItem(getUserKey('purchasedIdeas'), JSON.stringify(purchasedIdeas));
+      } else {
+        console.warn('⚠️ Gagal load purchases dari DB, pakai localStorage:', purchErr);
+        purchasedIdeas = JSON.parse(localStorage.getItem(getUserKey('purchasedIdeas')) || '[]');
+      }
+
+      console.log(`✅ Data loaded from Supabase: ${myIdeas.length} ideas, ${purchasedIdeas.length} purchases`);
+    } catch (e) {
+      console.warn('⚠️ DB load error, fallback localStorage:', e);
+      myIdeas = JSON.parse(localStorage.getItem(getUserKey('myIdeas')) || '[]');
+      purchasedIdeas = JSON.parse(localStorage.getItem(getUserKey('purchasedIdeas')) || '[]');
+    }
+  } else {
+    // Fallback: localStorage only
+    myIdeas = JSON.parse(localStorage.getItem(getUserKey('myIdeas')) || '[]');
+    purchasedIdeas = JSON.parse(localStorage.getItem(getUserKey('purchasedIdeas')) || '[]');
+  }
 }
 
 function clearUserData() {
@@ -637,7 +704,7 @@ function closeModal() {
   startLenisScroll();
 }
 
-function buyIdea(ideaId) {
+async function buyIdea(ideaId) {
   // Cek apakah sudah login
   if (!isLoggedIn()) {
     closeModal();
@@ -645,8 +712,7 @@ function buyIdea(ideaId) {
     return;
   }
 
-  // Cek apakah sudah pernah dibeli
-  purchasedIdeas = JSON.parse(localStorage.getItem(getUserKey('purchasedIdeas')) || '[]');
+  // Cek apakah sudah pernah dibeli (dari memori + DB)
   if (purchasedIdeas.some(i => i.id === ideaId)) {
     closeModal();
     showToast('ℹ️ Kamu sudah membeli ide ini sebelumnya.');
@@ -656,13 +722,56 @@ function buyIdea(ideaId) {
   const idea = allIdeas.find(i => i.id === ideaId);
   if (!idea) return;
 
-  const bought = {
-    ...idea,
-    boughtDate: new Date().toLocaleDateString('id-ID'),
-  };
+  // Simpan ke Supabase jika tersedia
+  if (supabaseClient && currentUser && currentUser.id) {
+    try {
+      const { data, error } = await supabaseClient
+        .from('purchases')
+        .insert({
+          user_id: currentUser.id,
+          idea_id: idea.id,
+          idea_title: idea.title,
+          idea_category: idea.category,
+          idea_price: idea.price,
+          idea_desc: idea.desc,
+          idea_emoji: idea.emoji || '💡',
+          idea_rating: idea.rating || 0,
+          idea_views: idea.views || 0,
+        })
+        .select()
+        .single();
 
-  purchasedIdeas.unshift(bought);
-  localStorage.setItem(getUserKey('purchasedIdeas'), JSON.stringify(purchasedIdeas));
+      if (error) throw error;
+
+      const bought = {
+        id: idea.id,
+        dbId: data.id,
+        title: idea.title,
+        category: idea.category,
+        price: idea.price,
+        desc: idea.desc,
+        emoji: idea.emoji,
+        rating: idea.rating,
+        views: idea.views,
+        boughtDate: new Date(data.purchased_at).toLocaleDateString('id-ID'),
+      };
+      purchasedIdeas.unshift(bought);
+      localStorage.setItem(getUserKey('purchasedIdeas'), JSON.stringify(purchasedIdeas));
+
+      console.log('✅ Purchase saved to Supabase:', data.id);
+    } catch (e) {
+      console.warn('⚠️ DB purchase insert error, saving to localStorage:', e);
+      // Fallback: localStorage
+      const bought = { ...idea, boughtDate: new Date().toLocaleDateString('id-ID') };
+      purchasedIdeas.unshift(bought);
+      localStorage.setItem(getUserKey('purchasedIdeas'), JSON.stringify(purchasedIdeas));
+    }
+  } else {
+    // Fallback: localStorage only
+    const bought = { ...idea, boughtDate: new Date().toLocaleDateString('id-ID') };
+    purchasedIdeas.unshift(bought);
+    localStorage.setItem(getUserKey('purchasedIdeas'), JSON.stringify(purchasedIdeas));
+  }
 
   closeModal();
   showToast('✅ Ide berhasil dibeli! Lihat di Ide Saya → Tab Dibeli.');
@@ -670,7 +779,7 @@ function buyIdea(ideaId) {
 }
 
 // ─── SELL FORM ───────────────────────────────────────────────
-function submitIdea(e) {
+async function submitIdea(e) {
   e.preventDefault();
   const title = document.getElementById('ideaTitle').value;
   const category = document.getElementById('ideaCategory').value;
@@ -678,18 +787,71 @@ function submitIdea(e) {
   const desc = document.getElementById('ideaDesc').value;
   const tags = document.getElementById('ideaTags').value;
 
-  const newIdea = {
-    id: Date.now(),
-    title, category, price, desc, tags,
-    status: 'pending',
-    date: new Date().toLocaleDateString('id-ID'),
-  };
+  const submitBtn = e.target.querySelector('button[type="submit"]');
+  if (submitBtn) {
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Menyimpan...';
+  }
 
-  myIdeas.unshift(newIdea);
-  localStorage.setItem(getUserKey('myIdeas'), JSON.stringify(myIdeas));
+  // Simpan ke Supabase jika tersedia
+  if (supabaseClient && currentUser && currentUser.id) {
+    try {
+      const { data, error } = await supabaseClient
+        .from('ideas')
+        .insert({
+          user_id: currentUser.id,
+          title,
+          category,
+          price,
+          description: desc,
+          tags: tags || '',
+          status: 'pending',
+        })
+        .select()
+        .single();
 
-  // Reset form
+      if (error) throw error;
+
+      const newIdea = {
+        id: data.id,
+        title, category, price, desc, tags,
+        status: data.status || 'pending',
+        date: new Date(data.created_at).toLocaleDateString('id-ID'),
+      };
+      myIdeas.unshift(newIdea);
+      localStorage.setItem(getUserKey('myIdeas'), JSON.stringify(myIdeas));
+
+      console.log('✅ Idea saved to Supabase:', data.id);
+    } catch (e) {
+      console.warn('⚠️ DB idea insert error, saving to localStorage:', e);
+      // Fallback: localStorage
+      const newIdea = {
+        id: Date.now(),
+        title, category, price, desc, tags,
+        status: 'pending',
+        date: new Date().toLocaleDateString('id-ID'),
+      };
+      myIdeas.unshift(newIdea);
+      localStorage.setItem(getUserKey('myIdeas'), JSON.stringify(myIdeas));
+    }
+  } else {
+    // Fallback: localStorage only
+    const newIdea = {
+      id: Date.now(),
+      title, category, price, desc, tags,
+      status: 'pending',
+      date: new Date().toLocaleDateString('id-ID'),
+    };
+    myIdeas.unshift(newIdea);
+    localStorage.setItem(getUserKey('myIdeas'), JSON.stringify(myIdeas));
+  }
+
+  // Reset form & button
   document.getElementById('sellForm').reset();
+  if (submitBtn) {
+    submitBtn.disabled = false;
+    submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Submit Ide Sekarang';
+  }
   showToast('🎉 Ide berhasil disubmit! Tim kami akan segera mereview.');
 
   // Redirect to myideas after delay
@@ -814,14 +976,50 @@ function renderMyIdeasList() {
   }
 }
 
-function deleteIdea(id) {
+async function deleteIdea(id) {
+  // Hapus dari Supabase jika tersedia
+  if (supabaseClient && currentUser && currentUser.id) {
+    try {
+      const { error } = await supabaseClient
+        .from('ideas')
+        .delete()
+        .eq('id', id)
+        .eq('user_id', currentUser.id);
+
+      if (error) throw error;
+      console.log('✅ Idea deleted from Supabase:', id);
+    } catch (e) {
+      console.warn('⚠️ DB idea delete error:', e);
+    }
+  }
+
   myIdeas = myIdeas.filter(i => i.id !== id);
   localStorage.setItem(getUserKey('myIdeas'), JSON.stringify(myIdeas));
   renderMyIdeas();
   showToast('🗑️ Ide berhasil dihapus.');
 }
 
-function deletePurchased(id) {
+async function deletePurchased(id) {
+  // Cari dbId (UUID dari Supabase) untuk dihapus
+  const item = purchasedIdeas.find(i => i.id === id);
+  const dbId = item?.dbId;
+
+  // Hapus dari Supabase jika tersedia
+  if (supabaseClient && currentUser && currentUser.id && dbId) {
+    try {
+      const { error } = await supabaseClient
+        .from('purchases')
+        .delete()
+        .eq('id', dbId)
+        .eq('user_id', currentUser.id);
+
+      if (error) throw error;
+      console.log('✅ Purchase deleted from Supabase:', dbId);
+    } catch (e) {
+      console.warn('⚠️ DB purchase delete error:', e);
+    }
+  }
+
   purchasedIdeas = purchasedIdeas.filter(i => i.id !== id);
   localStorage.setItem(getUserKey('purchasedIdeas'), JSON.stringify(purchasedIdeas));
   renderMyIdeas();
@@ -1463,13 +1661,13 @@ function animateAuthPage() {
 }
 
 // ─── INIT ────────────────────────────────────────────────────
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
   // Update auth UI berdasarkan state login
   updateAuthUI();
-  // Load data per-user jika sudah login
-  if (isLoggedIn()) loadUserData();
-  // Cek session Supabase
-  checkSupabaseSession();
+  // Load data per-user jika sudah login (dari DB / localStorage)
+  if (isLoggedIn()) await loadUserData();
+  // Cek session Supabase (juga load data dari DB jika session valid)
+  await checkSupabaseSession();
   // Initialize GSAP animations
   initGSAP();
   // Navigasi awal
