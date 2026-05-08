@@ -81,15 +81,15 @@ body {
 }
 
 .custom-logo {
-    width: 1000px;
-    height: 1000px;
+    width: auto;
+    height: 60px;
     object-fit: contain;
     border-radius: 0px;
 }
 
 .footer-logo {
-    width: 5000px;
-    height: 5000px;
+    width: auto;
+    height: 70px;
 }
 
 .nav-menu {
@@ -2566,44 +2566,115 @@ body {
     /* --- Navbar --- */
     .hamburger {
         display: flex;
+        z-index: 1002;
     }
 
-    .nav-menu {
+    /* Backdrop overlay saat menu terbuka */
+    .nav-menu-backdrop {
         display: none;
-        position: absolute;
-        top: 100%;
-        left: 0;
-        right: 0;
-        background: rgba(8, 8, 8, 0.98);
-        flex-direction: column;
-        padding: 1.5rem 1.5rem;
-        gap: 0.75rem;
-        border-bottom: 1px solid rgba(245, 158, 11, 0.2);
-        backdrop-filter: blur(20px);
-        -webkit-backdrop-filter: blur(20px);
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.5);
         z-index: 999;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+
+    .nav-menu-backdrop.show {
+        display: block;
+        opacity: 1;
+    }
+
+    /* Right-side drawer panel */
+    .nav-menu {
+        display: flex;
+        position: fixed;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: auto;
+        width: 200px;
+        max-width: 50vw;
+        background: rgba(12, 12, 12, 0.99);
+        flex-direction: column;
+        padding: 1rem 1.2rem 2rem;
+        gap: 0;
+        border-left: 1px solid rgba(245, 158, 11, 0.2);
+        backdrop-filter: blur(30px);
+        -webkit-backdrop-filter: blur(30px);
+        z-index: 1000;
+        box-shadow: -8px 0 40px rgba(0, 0, 0, 0.5);
+        transform: translateX(100%);
+        transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        overflow-y: auto;
+        align-items: flex-start;
+        justify-content: flex-start;
+        list-style: none;
     }
 
     .nav-menu.open {
+        transform: translateX(0);
+    }
+
+    /* Close button inside drawer */
+    .drawer-close-btn {
         display: flex;
+        align-self: flex-end;
+        background: none;
+        border: 1px solid rgba(245, 158, 11, 0.25);
+        color: #F59E0B;
+        font-size: 1.1rem;
+        cursor: pointer;
+        padding: 0.3rem 0.5rem;
+        border-radius: 8px;
+        margin-bottom: 0.8rem;
+        transition: all 0.2s ease;
+        line-height: 1;
+    }
+
+    .drawer-close-btn:hover {
+        background: rgba(245, 158, 11, 0.1);
+    }
+
+    .nav-item {
+        width: 100%;
+        margin-bottom: 0.4rem;
     }
 
     .nav-link {
-        font-size: 1rem;
-        padding: 0.6rem 0;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        font-size: 0.95rem;
+        display: block;
+        padding: 0.75rem 0.8rem;
+        border-bottom: none;
+        border-left: 3px solid transparent;
+        border-radius: 0 8px 8px 0;
         width: 100%;
+        text-align: left;
+    }
+
+    /* Remove the underline indicator in mobile drawer */
+    .nav-link::after {
+        display: none !important;
+    }
+
+    /* Use left border for active state instead */
+    .nav-link.active {
+        border-left-color: #F59E0B;
+        background: rgba(245, 158, 11, 0.08);
+    }
+
+    .nav-item:last-child .nav-link {
+        border-bottom: none;
     }
 
     .nav-cta {
         display: none;
         flex-direction: column;
-        gap: 0.6rem;
-        padding: 0.75rem 1.5rem 1rem;
-        background: rgba(8, 8, 8, 0.98);
-        border-bottom: 1px solid rgba(245, 158, 11, 0.2);
-        backdrop-filter: blur(20px);
-        -webkit-backdrop-filter: blur(20px);
+        gap: 0.5rem;
+        padding: 0.8rem 0 0;
+        margin-top: 0.5rem;
+        border-top: 1px solid rgba(245, 158, 11, 0.15);
+        width: 100%;
     }
 
     .nav-cta.open {
@@ -2611,8 +2682,9 @@ body {
     }
 
     .nav-user-profile {
-        justify-content: center;
-        padding: 0.5rem 0;
+        justify-content: flex-start;
+        padding: 0.4rem 0;
+        width: 100%;
     }
 
     .btn-auth-nav {
@@ -2684,6 +2756,11 @@ body {
 
     .custom-logo {
         height: 44px;
+        width: auto;
+    }
+
+    .inline-logo-only {
+        height: 1.4rem;
     }
 
     /* --- Hero --- */
@@ -2940,6 +3017,7 @@ body {
 
     .custom-logo {
         height: 36px;
+        width: auto;
     }
 
     /* --- Hero --- */

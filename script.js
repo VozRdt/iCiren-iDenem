@@ -592,21 +592,90 @@ function navigateTo(page) {
   }, 220);
 }
 
-// ─── HAMBURGER MENU ──────────────────────────────────────────
+// ─── HAMBURGER MENU (Side Drawer) ────────────────────────────
+function getOrCreateBackdrop() {
+  let backdrop = document.querySelector('.nav-menu-backdrop');
+  if (!backdrop) {
+    backdrop = document.createElement('div');
+    backdrop.className = 'nav-menu-backdrop';
+    backdrop.addEventListener('click', closeHamburger);
+    document.body.appendChild(backdrop);
+  }
+  return backdrop;
+}
+
 function toggleMenu() {
   const menu = document.getElementById('navMenu');
   const ham = document.getElementById('hamburger');
   const cta = document.querySelector('.nav-cta');
-  menu.classList.toggle('open');
-  ham.classList.toggle('open');
-  if (cta) cta.classList.toggle('open');
+  const navContainer = document.querySelector('.nav-container');
+  const backdrop = getOrCreateBackdrop();
+  const isOpening = !menu.classList.contains('open');
+
+  if (isOpening) {
+    // Move menu to body so it escapes navbar's backdrop-filter containing block
+    document.body.appendChild(menu);
+    // Add close button at the top of drawer
+    let closeBtn = menu.querySelector('.drawer-close-btn');
+    if (!closeBtn) {
+      closeBtn = document.createElement('button');
+      closeBtn.className = 'drawer-close-btn';
+      closeBtn.innerHTML = '<i class="fas fa-times"></i>';
+      closeBtn.addEventListener('click', closeHamburger);
+      menu.insertBefore(closeBtn, menu.firstChild);
+    }
+    if (cta) {
+      cta.classList.add('open');
+      menu.appendChild(cta);
+    }
+    // Trigger reflow before adding class for smooth transition
+    void menu.offsetWidth;
+    menu.classList.add('open');
+    ham.classList.add('open');
+    backdrop.classList.add('show');
+    document.body.style.overflow = 'hidden';
+  } else {
+    menu.classList.remove('open');
+    ham.classList.remove('open');
+    backdrop.classList.remove('show');
+    document.body.style.overflow = '';
+    // Wait for transition to finish, then move menu back
+    setTimeout(() => {
+      const closeBtn = menu.querySelector('.drawer-close-btn');
+      if (closeBtn) closeBtn.remove();
+      if (cta) {
+        cta.classList.remove('open');
+        navContainer.insertBefore(cta, ham);
+      }
+      navContainer.insertBefore(menu, cta || ham);
+    }, 300);
+  }
 }
 
 function closeHamburger() {
-  document.getElementById('navMenu').classList.remove('open');
-  document.getElementById('hamburger').classList.remove('open');
+  const menu = document.getElementById('navMenu');
+  const ham = document.getElementById('hamburger');
   const cta = document.querySelector('.nav-cta');
-  if (cta) cta.classList.remove('open');
+  const navContainer = document.querySelector('.nav-container');
+  const backdrop = document.querySelector('.nav-menu-backdrop');
+
+  if (!menu.classList.contains('open')) return;
+
+  menu.classList.remove('open');
+  ham.classList.remove('open');
+  document.body.style.overflow = '';
+  if (backdrop) backdrop.classList.remove('show');
+
+  // Wait for transition to finish, then move elements back
+  setTimeout(() => {
+    const closeBtn = menu.querySelector('.drawer-close-btn');
+    if (closeBtn) closeBtn.remove();
+    if (cta) {
+      cta.classList.remove('open');
+      navContainer.insertBefore(cta, ham);
+    }
+    navContainer.insertBefore(menu, cta || ham);
+  }, 300);
 }
 
 // ─── RENDER IDEA CARDS ───────────────────────────────────────
