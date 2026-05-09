@@ -62,8 +62,27 @@
                 </button>
                 <!-- User profile: tampil saat sudah login -->
                 <div class="nav-user-profile" id="navUserProfile" style="display:none;">
-                    <div class="nav-user-avatar" id="navUserAvatar">U</div>
-                    <span class="nav-user-name" id="navUserName">User</span>
+                    <!-- Notification Bell -->
+                    <div class="nav-notif-wrapper" id="navNotifWrapper">
+                        <button class="nav-notif-btn" id="navNotifBtn" onclick="toggleNotifPanel()">
+                            <i class="fas fa-bell"></i>
+                            <span class="notif-badge" id="notifBadge" style="display:none;">0</span>
+                        </button>
+                        <div class="notif-panel" id="notifPanel">
+                            <div class="notif-panel-header">
+                                <h4>Notifikasi</h4>
+                                <button class="notif-mark-all" id="notifMarkAllBtn" onclick="markAllNotifsRead()">Tandai Semua Dibaca</button>
+                            </div>
+                            <div class="notif-panel-list" id="notifPanelList">
+                                <div class="notif-empty">
+                                    <i class="fas fa-bell-slash"></i>
+                                    <p>Belum ada notifikasi</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="nav-user-avatar" id="navUserAvatar" onclick="navigateTo('profile')" style="cursor:pointer;" title="Profil Saya">U</div>
+                    <span class="nav-user-name" id="navUserName" onclick="navigateTo('profile')" style="cursor:pointer;">User</span>
                     <button class="btn btn-outline btn-sm" id="navLogoutBtn" onclick="logoutUser()">
                         <i class="fas fa-sign-out-alt"></i> Keluar
                     </button>
@@ -539,6 +558,29 @@
                     <button class="filter-tab" onclick="setFilter('podcast', this)">Podcast</button>
                     <button class="filter-tab" onclick="setFilter('blog', this)">Blog</button>
                 </div>
+                <!-- Advanced Filters -->
+                <div class="advanced-filters">
+                    <div class="af-group">
+                        <label><i class="fas fa-sort-amount-down"></i> Urutkan</label>
+                        <select id="sortSelect" class="af-select" onchange="filterIdeas()">
+                            <option value="newest">Terbaru</option>
+                            <option value="price-low">Termurah</option>
+                            <option value="price-high">Termahal</option>
+                            <option value="rating">Rating Tertinggi</option>
+                            <option value="views">Paling Dilihat</option>
+                        </select>
+                    </div>
+                    <div class="af-group">
+                        <label><i class="fas fa-money-bill-wave"></i> Harga Maks</label>
+                        <div class="af-range-wrapper">
+                            <input type="range" id="priceRange" class="af-range" min="0" max="200000" value="200000" step="5000" oninput="updatePriceLabel(); filterIdeas()">
+                            <span class="af-range-label" id="priceRangeLabel">Rp 200.000</span>
+                        </div>
+                    </div>
+                    <div class="af-result-count">
+                        <span id="resultCount">0</span> ide ditemukan
+                    </div>
+                </div>
             </div>
         </section>
         <section class="ideas-section" style="padding-top: 2rem;">
@@ -804,6 +846,180 @@
                 </div>
             </div>
         </section>
+    </div>
+
+    <!-- ================================
+         PAGE: PROFIL SAYA
+    ================================ -->
+    <div class="page" id="page-profile">
+        <section class="page-hero">
+            <div class="container">
+                <h1 class="page-hero-title"><i class="fas fa-user-circle"></i> Profil Saya</h1>
+                <p class="page-hero-subtitle">Kelola informasi profil dan lihat statistik akunmu</p>
+            </div>
+        </section>
+        <section class="profile-section">
+            <div class="container">
+                <div class="profile-layout">
+                    <!-- Profile Card -->
+                    <div class="profile-card-wrapper">
+                        <div class="profile-card">
+                            <div class="profile-avatar-large" id="profileAvatarLarge">U</div>
+                            <h2 class="profile-name" id="profileName">User</h2>
+                            <p class="profile-email" id="profileEmail">email@example.com</p>
+                            <div class="profile-role-badge" id="profileRoleBadge">
+                                <i class="fas fa-user"></i> Member
+                            </div>
+                            <div class="profile-stats-mini">
+                                <div class="profile-stat-mini">
+                                    <span class="psm-num" id="profileTotalIdeas">0</span>
+                                    <span class="psm-label">Ide Dijual</span>
+                                </div>
+                                <div class="profile-stat-mini">
+                                    <span class="psm-num" id="profileTotalPurchases">0</span>
+                                    <span class="psm-label">Ide Dibeli</span>
+                                </div>
+                                <div class="profile-stat-mini">
+                                    <span class="psm-num" id="profileTotalEarnings">Rp 0</span>
+                                    <span class="psm-label">Penghasilan</span>
+                                </div>
+                            </div>
+                            <p class="profile-joined" id="profileJoined"><i class="fas fa-calendar-alt"></i> Bergabung: -</p>
+                        </div>
+
+                        <!-- Quick Actions -->
+                        <div class="profile-quick-actions">
+                            <button class="btn btn-primary" onclick="navigateTo('sell')" style="width:100%;">
+                                <i class="fas fa-lightbulb"></i> Jual Ide Baru
+                            </button>
+                            <button class="btn btn-outline" onclick="navigateTo('myideas')" style="width:100%;">
+                                <i class="fas fa-folder-open"></i> Lihat Ide Saya
+                            </button>
+                            <!-- Admin button - only shown for admins -->
+                            <button class="btn btn-outline admin-only-btn" id="profileAdminBtn" onclick="navigateTo('admin')" style="width:100%; display:none;">
+                                <i class="fas fa-shield-alt"></i> Admin Dashboard
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Profile Form -->
+                    <div class="profile-form-wrapper">
+                        <div class="form-card">
+                            <h2 class="form-title"><i class="fas fa-edit"></i> Edit Profil</h2>
+                            <form id="profileForm" onsubmit="saveProfile(event)">
+                                <div class="form-group">
+                                    <label for="profileFormName"><i class="fas fa-user"></i> Nama Lengkap</label>
+                                    <input type="text" id="profileFormName" class="form-input" placeholder="Nama lengkap kamu">
+                                </div>
+                                <div class="form-group">
+                                    <label for="profileFormBio"><i class="fas fa-info-circle"></i> Bio</label>
+                                    <textarea id="profileFormBio" class="form-input form-textarea" rows="3" placeholder="Ceritakan tentang dirimu..."></textarea>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="profileFormPhone"><i class="fas fa-phone"></i> Telepon</label>
+                                        <input type="tel" id="profileFormPhone" class="form-input" placeholder="+62 xxx">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="profileFormLocation"><i class="fas fa-map-marker-alt"></i> Lokasi</label>
+                                        <input type="text" id="profileFormLocation" class="form-input" placeholder="Kota, Indonesia">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="profileFormWebsite"><i class="fas fa-globe"></i> Website / Sosial Media</label>
+                                    <input type="url" id="profileFormWebsite" class="form-input" placeholder="https://...">
+                                </div>
+                                <button type="submit" class="btn btn-primary" id="profileSaveBtn" style="width: 100%; margin-top: 1rem;">
+                                    <i class="fas fa-save"></i> Simpan Perubahan
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- ================================
+         PAGE: ADMIN DASHBOARD
+    ================================ -->
+    <div class="page" id="page-admin">
+        <section class="page-hero">
+            <div class="container">
+                <h1 class="page-hero-title"><i class="fas fa-shield-alt"></i> Admin Dashboard</h1>
+                <p class="page-hero-subtitle">Kelola dan review ide yang disubmit oleh pengguna</p>
+            </div>
+        </section>
+        <section class="admin-section">
+            <div class="container">
+                <!-- Admin Stats -->
+                <div class="dashboard-stats">
+                    <div class="dash-stat-card">
+                        <div class="dash-stat-icon" style="background: linear-gradient(135deg, #F59E0B, #FBBF24);"><i class="fas fa-clock"></i></div>
+                        <div class="dash-stat-info">
+                            <span class="dash-stat-num" id="adminPendingCount">0</span>
+                            <span class="dash-stat-label">Menunggu Review</span>
+                        </div>
+                    </div>
+                    <div class="dash-stat-card">
+                        <div class="dash-stat-icon" style="background: linear-gradient(135deg, #10b981, #34d399);"><i class="fas fa-check-circle"></i></div>
+                        <div class="dash-stat-info">
+                            <span class="dash-stat-num" id="adminApprovedCount">0</span>
+                            <span class="dash-stat-label">Disetujui</span>
+                        </div>
+                    </div>
+                    <div class="dash-stat-card">
+                        <div class="dash-stat-icon" style="background: linear-gradient(135deg, #ef4444, #f87171);"><i class="fas fa-times-circle"></i></div>
+                        <div class="dash-stat-info">
+                            <span class="dash-stat-num" id="adminRejectedCount">0</span>
+                            <span class="dash-stat-label">Ditolak</span>
+                        </div>
+                    </div>
+                    <div class="dash-stat-card">
+                        <div class="dash-stat-icon" style="background: linear-gradient(135deg, #6366f1, #818cf8);"><i class="fas fa-users"></i></div>
+                        <div class="dash-stat-info">
+                            <span class="dash-stat-num" id="adminTotalUsers">0</span>
+                            <span class="dash-stat-label">Total User</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Admin Tabs -->
+                <div class="admin-tabs">
+                    <button class="filter-tab admin-tab active" id="adminTabPending" onclick="switchAdminTab('pending')">
+                        <i class="fas fa-clock"></i> Pending
+                    </button>
+                    <button class="filter-tab admin-tab" id="adminTabApproved" onclick="switchAdminTab('approved')">
+                        <i class="fas fa-check"></i> Approved
+                    </button>
+                    <button class="filter-tab admin-tab" id="adminTabRejected" onclick="switchAdminTab('rejected')">
+                        <i class="fas fa-times"></i> Rejected
+                    </button>
+                    <button class="filter-tab admin-tab" id="adminTabAll" onclick="switchAdminTab('all')">
+                        <i class="fas fa-list"></i> Semua
+                    </button>
+                </div>
+
+                <!-- Admin Ideas List -->
+                <div class="admin-ideas-list" id="adminIdeasList">
+                    <div class="admin-loading">
+                        <div class="skeleton-card"></div>
+                        <div class="skeleton-card"></div>
+                        <div class="skeleton-card"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Admin Idea Review Modal -->
+    <div class="admin-review-modal" id="adminReviewModal">
+        <div class="admin-review-content">
+            <button class="admin-review-close" onclick="closeAdminReviewModal()">
+                <i class="fas fa-times"></i>
+            </button>
+            <div class="admin-review-body" id="adminReviewBody"></div>
+        </div>
     </div>
 
     <!-- Footer (shared) -->

@@ -23,7 +23,7 @@ try {
 let currentUser = JSON.parse(localStorage.getItem('iciren_user') || 'null');
 
 // Halaman yang membutuhkan login
-const PROTECTED_PAGES = ['sell', 'explore', 'myideas'];
+const PROTECTED_PAGES = ['sell', 'explore', 'myideas', 'profile', 'admin'];
 
 function isLoggedIn() {
   return currentUser !== null;
@@ -555,6 +555,8 @@ function navigateTo(page) {
   if (page === 'explore') renderIdeas();
   if (page === 'myideas') renderMyIdeas();
   if (page === 'auth') resetAuthForms();
+  if (page === 'profile') renderProfile();
+  if (page === 'admin') loadAdminDashboard();
 
   // Mulai progress bar
   startProgress();
@@ -679,16 +681,64 @@ function closeHamburger() {
 }
 
 // ─── RENDER IDEA CARDS ───────────────────────────────────────
+let marketplaceIdeas = []; // Ideas from Supabase (approved)
+
+async function loadMarketplaceIdeas() {
+  if (supabaseClient) {
+    try {
+      const { data, error } = await supabaseClient
+        .from('ideas')
+        .select('*')
+        .eq('status', 'approved')
+        .order('created_at', { ascending: false });
+      if (!error && data && data.length > 0) {
+        marketplaceIdeas = data.map(d => ({
+          id: d.id, title: d.title, category: d.category, price: d.price,
+          desc: d.description || d.desc || '', emoji: d.emoji || '💡',
+          views: d.views || 0, rating: parseFloat(d.rating) || 0,
+          tags: d.tags || '', created_at: d.created_at, user_id: d.user_id,
+          fromDB: true
+        }));
+      }
+    } catch (e) { console.warn('Marketplace load error:', e); }
+  }
+}
+
+function getAllMarketplaceIdeas() {
+  // Combine hardcoded + DB ideas, avoid duplicates
+  const dbIds = new Set(marketplaceIdeas.map(i => i.id));
+  const combined = [...marketplaceIdeas, ...allIdeas.filter(i => !dbIds.has(i.id))];
+  return combined;
+}
+
 function renderIdeas() {
   const grid = document.getElementById('ideasGrid');
   if (!grid) return;
 
   const searchVal = (document.getElementById('searchInput')?.value || '').toLowerCase();
-  let filtered = allIdeas.filter(idea => {
+  const sortVal = document.getElementById('sortSelect')?.value || 'newest';
+  const maxPrice = parseInt(document.getElementById('priceRange')?.value || '200000');
+
+  const all = getAllMarketplaceIdeas();
+  let filtered = all.filter(idea => {
     const matchCat = currentFilter === 'semua' || idea.category === currentFilter;
-    const matchSearch = idea.title.toLowerCase().includes(searchVal) || idea.desc.toLowerCase().includes(searchVal);
-    return matchCat && matchSearch;
+    const matchSearch = idea.title.toLowerCase().includes(searchVal) || (idea.desc || '').toLowerCase().includes(searchVal);
+    const matchPrice = idea.price <= maxPrice;
+    return matchCat && matchSearch && matchPrice;
   });
+
+  // Sorting
+  switch (sortVal) {
+    case 'price-low': filtered.sort((a, b) => a.price - b.price); break;
+    case 'price-high': filtered.sort((a, b) => b.price - a.price); break;
+    case 'rating': filtered.sort((a, b) => (b.rating || 0) - (a.rating || 0)); break;
+    case 'views': filtered.sort((a, b) => (b.views || 0) - (a.views || 0)); break;
+    case 'newest': default: filtered.sort((a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0)); break;
+  }
+
+  // Update result count
+  const rc = document.getElementById('resultCount');
+  if (rc) rc.textContent = filtered.length;
 
   const toShow = filtered.slice(0, displayedIdeas);
   grid.innerHTML = toShow.map(idea => createIdeaCard(idea)).join('');
@@ -698,23 +748,30 @@ function renderIdeas() {
   if (btn) btn.style.display = filtered.length > displayedIdeas ? 'inline-flex' : 'none';
 }
 
+function updatePriceLabel() {
+  const val = document.getElementById('priceRange')?.value || 200000;
+  const label = document.getElementById('priceRangeLabel');
+  if (label) label.textContent = 'Rp ' + parseInt(val).toLocaleString('id-ID');
+}
+
 function createIdeaCard(idea) {
-  const stars = '⭐'.repeat(Math.round(idea.rating));
+  const stars = '⭐'.repeat(Math.min(Math.round(idea.rating || 0), 5));
   const categoryLabel = { youtube: 'YouTube', tiktok: 'TikTok', instagram: 'Instagram', podcast: 'Podcast', blog: 'Blog' }[idea.category] || idea.category;
+  const idAttr = typeof idea.id === 'string' ? `'${idea.id}'` : idea.id;
   return `
-    <div class="idea-card" onclick="openModal(${idea.id})">
+    <div class="idea-card" onclick="openModal(${idAttr})">
       <div class="idea-image">
-        <span style="font-size:5rem;">${idea.emoji}</span>
+        <span style="font-size:5rem;">${idea.emoji || '💡'}</span>
       </div>
       <div class="idea-content">
         <span class="category-badge">${categoryLabel}</span>
         <h3 class="idea-title">${idea.title}</h3>
-        <p class="idea-description">${idea.desc}</p>
+        <p class="idea-description">${idea.desc || ''}</p>
         <div style="display:flex; justify-content:space-between; align-items:center; margin-top:1rem;">
           <span class="idea-price">Rp ${idea.price.toLocaleString('id-ID')}</span>
-          <span style="color:#a3a3a3; font-size:0.85rem;">${idea.views.toLocaleString()} views</span>
+          <span style="color:#a3a3a3; font-size:0.85rem;">${(idea.views || 0).toLocaleString()} views</span>
         </div>
-        <div style="margin-top:0.8rem; color:#FBBF24; font-size:0.85rem;">${stars} ${idea.rating}</div>
+        <div style="margin-top:0.8rem; color:#FBBF24; font-size:0.85rem;">${stars} ${idea.rating || 0}</div>
       </div>
     </div>`;
 }
@@ -722,7 +779,7 @@ function createIdeaCard(idea) {
 function setFilter(filter, btn) {
   currentFilter = filter;
   displayedIdeas = 6;
-  document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('#filterTabs .filter-tab').forEach(t => t.classList.remove('active'));
   btn.classList.add('active');
   renderIdeas();
 }
@@ -738,34 +795,60 @@ function loadMoreIdeas() {
 }
 
 // ─── MODAL ───────────────────────────────────────────────────
+let currentModalIdeaId = null;
+
 function openModal(ideaId) {
-  const idea = allIdeas.find(i => i.id === ideaId);
+  const all = getAllMarketplaceIdeas();
+  const idea = all.find(i => i.id === ideaId) || allIdeas.find(i => i.id === ideaId);
   if (!idea) return;
+  currentModalIdeaId = ideaId;
   const modal = document.getElementById('ideaModal');
   const body = document.getElementById('modalBody');
   const categoryLabel = { youtube: 'YouTube', tiktok: 'TikTok', instagram: 'Instagram', podcast: 'Podcast', blog: 'Blog' }[idea.category] || idea.category;
+  const idAttr = typeof idea.id === 'string' ? `'${idea.id}'` : idea.id;
 
   body.innerHTML = `
-    <div style="text-align:center; margin-bottom:1.5rem; font-size:5rem;">${idea.emoji}</div>
+    <div style="text-align:center; margin-bottom:1.5rem; font-size:5rem;">${idea.emoji || '💡'}</div>
     <span class="category-badge">${categoryLabel}</span>
     <h2 style="color:#f8fafc; font-size:1.6rem; margin:1rem 0;">${idea.title}</h2>
-    <p style="color:#a3a3a3; line-height:1.8; margin-bottom:2rem;">${idea.desc}</p>
+    <p style="color:#a3a3a3; line-height:1.8; margin-bottom:2rem;">${idea.desc || ''}</p>
     <div style="display:flex; justify-content:space-between; align-items:center; padding:1.5rem; background:rgba(245,158,11,0.05); border:1px solid rgba(245,158,11,0.2); border-radius:16px; margin-bottom:2rem;">
       <div>
         <div style="color:#a3a3a3; font-size:0.85rem;">Harga</div>
         <div style="font-size:2rem; font-weight:800; background:linear-gradient(135deg,#F59E0B,#FBBF24); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;">Rp ${idea.price.toLocaleString('id-ID')}</div>
       </div>
       <div style="text-align:right;">
-        <div style="color:#FBBF24; font-size:1.1rem; margin-bottom:0.2rem;">${'⭐'.repeat(Math.round(idea.rating))} ${idea.rating}</div>
-        <div style="color:#a3a3a3; font-size:0.85rem;">${idea.views.toLocaleString()} kali dilihat</div>
+        <div style="color:#FBBF24; font-size:1.1rem; margin-bottom:0.2rem;">${'⭐'.repeat(Math.min(Math.round(idea.rating || 0), 5))} ${idea.rating || 0}</div>
+        <div style="color:#a3a3a3; font-size:0.85rem;">${(idea.views || 0).toLocaleString()} kali dilihat</div>
       </div>
     </div>
-    <button class="btn btn-primary" style="width:100%;" onclick="buyIdea(${idea.id})">
+    <button class="btn btn-primary" style="width:100%; margin-bottom:0.5rem;" onclick="buyIdea(${idAttr})">
       <i class="fas fa-shopping-cart"></i> Beli Ide Ini
-    </button>`;
+    </button>
+    <!-- Review Section -->
+    <div class="review-section">
+      <h4><i class="fas fa-star"></i> Ulasan & Rating</h4>
+      <div class="review-form" id="reviewForm" style="display:${isLoggedIn() ? 'block' : 'none'}">
+        <div class="star-selector" id="starSelector">
+          <i class="fas fa-star" data-star="1" onclick="setStarRating(1)"></i>
+          <i class="fas fa-star" data-star="2" onclick="setStarRating(2)"></i>
+          <i class="fas fa-star" data-star="3" onclick="setStarRating(3)"></i>
+          <i class="fas fa-star" data-star="4" onclick="setStarRating(4)"></i>
+          <i class="fas fa-star" data-star="5" onclick="setStarRating(5)"></i>
+        </div>
+        <textarea class="review-input" id="reviewComment" rows="2" placeholder="Tulis ulasan..."></textarea>
+        <button class="btn btn-outline btn-sm" onclick="submitReview(${idAttr})" style="width:100%;">
+          <i class="fas fa-paper-plane"></i> Kirim Ulasan
+        </button>
+      </div>
+      <div class="review-list" id="reviewList">
+        <div class="review-empty">Memuat ulasan...</div>
+      </div>
+    </div>`;
 
   modal.classList.add('show');
   stopLenisScroll();
+  loadReviews(ideaId);
 }
 
 function closeModal() {
@@ -788,7 +871,8 @@ async function buyIdea(ideaId) {
     return;
   }
 
-  const idea = allIdeas.find(i => i.id === ideaId);
+  const all = getAllMarketplaceIdeas();
+  const idea = all.find(i => i.id === ideaId) || allIdeas.find(i => i.id === ideaId);
   if (!idea) return;
 
   // Simpan ke Supabase jika tersedia
@@ -1518,6 +1602,16 @@ function animateCurrentPage(page) {
       case 'auth':
         animateAuthPage();
         break;
+
+      case 'profile':
+        animateProfilePage();
+        animateFooter();
+        break;
+
+      case 'admin':
+        animateAdminPage();
+        animateFooter();
+        break;
     }
 
     // Re-init magnetic buttons for new page
@@ -1734,7 +1828,12 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Update auth UI berdasarkan state login
   updateAuthUI();
   // Load data per-user jika sudah login (dari DB / localStorage)
-  if (isLoggedIn()) await loadUserData();
+  if (isLoggedIn()) {
+    await loadUserData();
+    await loadNotifications();
+  }
+  // Load marketplace ideas from Supabase
+  await loadMarketplaceIdeas();
   // Cek session Supabase (juga load data dari DB jika session valid)
   await checkSupabaseSession();
   // Initialize GSAP animations
@@ -1743,4 +1842,579 @@ document.addEventListener('DOMContentLoaded', async () => {
   navigateTo('home');
   // Trigger home page animations (navigateTo skips if page-home is already active)
   animateCurrentPage('home');
+
+  // Setup realtime subscriptions for notifications
+  setupRealtimeSubscriptions();
+
+  // Close notif panel on outside click
+  document.addEventListener('click', (e) => {
+    const wrapper = document.getElementById('navNotifWrapper');
+    if (wrapper && !wrapper.contains(e.target)) {
+      const panel = document.getElementById('notifPanel');
+      if (panel) panel.classList.remove('show');
+    }
+  });
 });
+
+// ============================================================
+//   NOTIFICATION SYSTEM
+// ============================================================
+let userNotifications = [];
+
+async function loadNotifications() {
+  if (supabaseClient && currentUser && currentUser.id) {
+    try {
+      const { data, error } = await supabaseClient
+        .from('notifications')
+        .select('*')
+        .eq('user_id', currentUser.id)
+        .order('created_at', { ascending: false })
+        .limit(20);
+      if (!error && data) {
+        userNotifications = data;
+      }
+    } catch (e) {
+      console.warn('⚠️ Notif load error:', e);
+    }
+  }
+  // Fallback: localStorage
+  if (!userNotifications.length) {
+    userNotifications = JSON.parse(localStorage.getItem(getUserKey('notifications')) || '[]');
+  }
+  renderNotifBadge();
+}
+
+function renderNotifBadge() {
+  const badge = document.getElementById('notifBadge');
+  if (!badge) return;
+  const unread = userNotifications.filter(n => !n.is_read).length;
+  badge.textContent = unread > 9 ? '9+' : unread;
+  badge.style.display = unread > 0 ? 'flex' : 'none';
+}
+
+function toggleNotifPanel() {
+  const panel = document.getElementById('notifPanel');
+  if (!panel) return;
+  panel.classList.toggle('show');
+  if (panel.classList.contains('show')) renderNotifList();
+}
+
+function renderNotifList() {
+  const list = document.getElementById('notifPanelList');
+  if (!list) return;
+  if (userNotifications.length === 0) {
+    list.innerHTML = '<div class="notif-empty"><i class="fas fa-bell-slash"></i><p>Belum ada notifikasi</p></div>';
+    return;
+  }
+  const iconMap = {
+    idea_approved: { icon: 'fa-check-circle', cls: 'type-approved' },
+    idea_rejected: { icon: 'fa-times-circle', cls: 'type-rejected' },
+    purchase: { icon: 'fa-shopping-cart', cls: 'type-purchase' },
+    idea_sold: { icon: 'fa-coins', cls: 'type-idea_sold' },
+    welcome: { icon: 'fa-gift', cls: 'type-welcome' },
+    system: { icon: 'fa-info-circle', cls: 'type-system' },
+  };
+  list.innerHTML = userNotifications.map(n => {
+    const ic = iconMap[n.type] || iconMap.system;
+    const ago = timeAgo(n.created_at);
+    return `<div class="notif-item ${n.is_read ? '' : 'unread'}" onclick="markNotifRead('${n.id}')">
+      <div class="notif-icon ${ic.cls}"><i class="fas ${ic.icon}"></i></div>
+      <div class="notif-info">
+        <h5>${n.title}</h5>
+        <p>${n.message}</p>
+        <div class="notif-time">${ago}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function timeAgo(dateStr) {
+  const d = new Date(dateStr);
+  const now = new Date();
+  const diff = Math.floor((now - d) / 1000);
+  if (diff < 60) return 'Baru saja';
+  if (diff < 3600) return Math.floor(diff / 60) + ' menit lalu';
+  if (diff < 86400) return Math.floor(diff / 3600) + ' jam lalu';
+  return Math.floor(diff / 86400) + ' hari lalu';
+}
+
+async function markNotifRead(id) {
+  const n = userNotifications.find(x => x.id === id);
+  if (n) n.is_read = true;
+  if (supabaseClient && currentUser) {
+    try {
+      await supabaseClient.from('notifications').update({ is_read: true }).eq('id', id);
+    } catch (e) { /* silent */ }
+  }
+  localStorage.setItem(getUserKey('notifications'), JSON.stringify(userNotifications));
+  renderNotifBadge();
+  renderNotifList();
+}
+
+async function markAllNotifsRead() {
+  userNotifications.forEach(n => n.is_read = true);
+  if (supabaseClient && currentUser) {
+    try {
+      await supabaseClient.from('notifications').update({ is_read: true }).eq('user_id', currentUser.id).eq('is_read', false);
+    } catch (e) { /* silent */ }
+  }
+  localStorage.setItem(getUserKey('notifications'), JSON.stringify(userNotifications));
+  renderNotifBadge();
+  renderNotifList();
+  showToast('✅ Semua notifikasi ditandai dibaca.');
+}
+
+// ============================================================
+//   USER PROFILE
+// ============================================================
+let userProfile = null;
+
+async function loadProfile() {
+  if (supabaseClient && currentUser && currentUser.id) {
+    try {
+      const { data, error } = await supabaseClient
+        .from('profiles')
+        .select('*')
+        .eq('id', currentUser.id)
+        .single();
+      if (!error && data) {
+        userProfile = data;
+        localStorage.setItem(getUserKey('profile'), JSON.stringify(data));
+        return;
+      }
+    } catch (e) { console.warn('Profile load error:', e); }
+  }
+  userProfile = JSON.parse(localStorage.getItem(getUserKey('profile')) || 'null');
+}
+
+function renderProfile() {
+  loadProfile().then(() => {
+    const name = userProfile?.full_name || currentUser?.name || 'User';
+    const email = currentUser?.email || '';
+    const role = userProfile?.role || 'user';
+    const avatar = document.getElementById('profileAvatarLarge');
+    if (avatar) avatar.textContent = name.charAt(0).toUpperCase();
+    const nameEl = document.getElementById('profileName');
+    if (nameEl) nameEl.textContent = name;
+    const emailEl = document.getElementById('profileEmail');
+    if (emailEl) emailEl.textContent = email;
+    const roleBadge = document.getElementById('profileRoleBadge');
+    if (roleBadge) {
+      roleBadge.innerHTML = role === 'admin'
+        ? '<i class="fas fa-shield-alt"></i> Admin'
+        : '<i class="fas fa-user"></i> Member';
+    }
+    const adminBtn = document.getElementById('profileAdminBtn');
+    if (adminBtn) adminBtn.style.display = role === 'admin' ? 'inline-flex' : 'none';
+
+    // Stats
+    const ideas = JSON.parse(localStorage.getItem(getUserKey('myIdeas')) || '[]');
+    const purchases = JSON.parse(localStorage.getItem(getUserKey('purchasedIdeas')) || '[]');
+    document.getElementById('profileTotalIdeas').textContent = ideas.length;
+    document.getElementById('profileTotalPurchases').textContent = purchases.length;
+    const earnings = ideas.filter(i => i.status === 'approved').reduce((s, i) => s + i.price, 0);
+    document.getElementById('profileTotalEarnings').textContent = 'Rp ' + earnings.toLocaleString('id-ID');
+
+    const joined = userProfile?.joined_at ? new Date(userProfile.joined_at).toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' }) : '-';
+    document.getElementById('profileJoined').innerHTML = '<i class="fas fa-calendar-alt"></i> Bergabung: ' + joined;
+
+    // Fill form
+    document.getElementById('profileFormName').value = userProfile?.full_name || name;
+    document.getElementById('profileFormBio').value = userProfile?.bio || '';
+    document.getElementById('profileFormPhone').value = userProfile?.phone || '';
+    document.getElementById('profileFormLocation').value = userProfile?.location || '';
+    document.getElementById('profileFormWebsite').value = userProfile?.website || '';
+  });
+}
+
+async function saveProfile(e) {
+  e.preventDefault();
+  const btn = document.getElementById('profileSaveBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Menyimpan...';
+
+  const updates = {
+    full_name: document.getElementById('profileFormName').value.trim(),
+    bio: document.getElementById('profileFormBio').value.trim(),
+    phone: document.getElementById('profileFormPhone').value.trim(),
+    location: document.getElementById('profileFormLocation').value.trim(),
+    website: document.getElementById('profileFormWebsite').value.trim(),
+    updated_at: new Date().toISOString(),
+  };
+
+  if (supabaseClient && currentUser) {
+    try {
+      const { error } = await supabaseClient.from('profiles').update(updates).eq('id', currentUser.id);
+      if (error) throw error;
+    } catch (e) { console.warn('Profile save error:', e); }
+  }
+
+  userProfile = { ...userProfile, ...updates };
+  localStorage.setItem(getUserKey('profile'), JSON.stringify(userProfile));
+  // Update nav name
+  currentUser.name = updates.full_name;
+  localStorage.setItem('iciren_user', JSON.stringify(currentUser));
+  updateAuthUI();
+
+  btn.disabled = false;
+  btn.innerHTML = '<i class="fas fa-save"></i> Simpan Perubahan';
+  showToast('✅ Profil berhasil disimpan!');
+  renderProfile();
+}
+
+// ============================================================
+//   ADMIN DASHBOARD
+// ============================================================
+let adminIdeas = [];
+let adminCurrentTab = 'pending';
+
+async function loadAdminDashboard() {
+  // Check admin role
+  if (!userProfile) await loadProfile();
+  if (!userProfile || userProfile.role !== 'admin') {
+    const list = document.getElementById('adminIdeasList');
+    if (list) list.innerHTML = `<div class="empty-state"><div class="empty-icon"><i class="fas fa-lock"></i></div><h3>Akses Ditolak</h3><p>Halaman ini hanya untuk admin.</p></div>`;
+    return;
+  }
+
+  if (!supabaseClient) {
+    // Offline mode: use localStorage fallback
+    adminIdeas = JSON.parse(localStorage.getItem('admin_all_ideas') || '[]');
+    renderAdminIdeas();
+    return;
+  }
+
+  try {
+    const { data, error } = await supabaseClient
+      .from('ideas')
+      .select('*')
+      .order('created_at', { ascending: false });
+    if (error) throw error;
+    adminIdeas = data || [];
+    localStorage.setItem('admin_all_ideas', JSON.stringify(adminIdeas));
+  } catch (e) {
+    console.warn('Admin load error:', e);
+    adminIdeas = JSON.parse(localStorage.getItem('admin_all_ideas') || '[]');
+  }
+  renderAdminIdeas();
+}
+
+function switchAdminTab(tab) {
+  adminCurrentTab = tab;
+  document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
+  const btn = document.getElementById('adminTab' + tab.charAt(0).toUpperCase() + tab.slice(1));
+  if (btn) btn.classList.add('active');
+  renderAdminIdeas();
+}
+
+function renderAdminIdeas() {
+  const list = document.getElementById('adminIdeasList');
+  if (!list) return;
+
+  let filtered = adminIdeas;
+  if (adminCurrentTab !== 'all') {
+    filtered = adminIdeas.filter(i => i.status === adminCurrentTab);
+  }
+
+  // Stats
+  const pending = adminIdeas.filter(i => i.status === 'pending').length;
+  const approved = adminIdeas.filter(i => i.status === 'approved').length;
+  const rejected = adminIdeas.filter(i => i.status === 'rejected').length;
+  const pc = document.getElementById('adminPendingCount');
+  const ac = document.getElementById('adminApprovedCount');
+  const rc = document.getElementById('adminRejectedCount');
+  const tc = document.getElementById('adminTotalUsers');
+  if (pc) pc.textContent = pending;
+  if (ac) ac.textContent = approved;
+  if (rc) rc.textContent = rejected;
+  if (tc) tc.textContent = adminIdeas.length;
+
+  const catLabel = { youtube: 'YouTube', tiktok: 'TikTok', instagram: 'Instagram', podcast: 'Podcast', blog: 'Blog' };
+
+  if (filtered.length === 0) {
+    list.innerHTML = `<div class="empty-state"><div class="empty-icon"><i class="fas fa-inbox"></i></div><h3>Tidak Ada Ide</h3><p>Belum ada ide dengan status "${adminCurrentTab}".</p></div>`;
+    return;
+  }
+
+  list.innerHTML = filtered.map(idea => {
+    const date = new Date(idea.created_at).toLocaleDateString('id-ID');
+    const statusMap = {
+      pending: '<span class="my-idea-status status-pending">⏳ Pending</span>',
+      approved: '<span class="my-idea-status status-approved">✓ Approved</span>',
+      rejected: '<span class="my-idea-status status-rejected">✗ Rejected</span>',
+    };
+    const actions = idea.status === 'pending' ? `
+      <button class="admin-btn admin-btn-approve" onclick="adminApproveIdea('${idea.id}')"><i class="fas fa-check"></i> Approve</button>
+      <button class="admin-btn admin-btn-reject" onclick="adminRejectIdea('${idea.id}')"><i class="fas fa-times"></i> Reject</button>
+    ` : '';
+    return `<div class="admin-idea-card">
+      <div class="admin-idea-info">
+        <h4>${idea.title}</h4>
+        <div class="admin-idea-meta">
+          <span><i class="fas fa-tag"></i> ${catLabel[idea.category] || idea.category}</span>
+          <span><i class="fas fa-money-bill"></i> Rp ${idea.price.toLocaleString('id-ID')}</span>
+          <span><i class="fas fa-calendar"></i> ${date}</span>
+          ${statusMap[idea.status] || ''}
+        </div>
+        <p class="admin-idea-desc">${idea.description || idea.desc || ''}</p>
+      </div>
+      <div class="admin-idea-actions">
+        <button class="admin-btn admin-btn-view" onclick="openAdminReview('${idea.id}')"><i class="fas fa-eye"></i> Detail</button>
+        ${actions}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function openAdminReview(id) {
+  const idea = adminIdeas.find(i => i.id === id);
+  if (!idea) return;
+  const modal = document.getElementById('adminReviewModal');
+  const body = document.getElementById('adminReviewBody');
+  const catLabel = { youtube: 'YouTube', tiktok: 'TikTok', instagram: 'Instagram', podcast: 'Podcast', blog: 'Blog' };
+  const date = new Date(idea.created_at).toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' });
+
+  body.innerHTML = `
+    <h3>${idea.title}</h3>
+    <div class="admin-review-detail">
+      <div class="admin-review-row"><span class="admin-review-label">Kategori</span><span class="admin-review-value"><span class="category-badge">${catLabel[idea.category] || idea.category}</span></span></div>
+      <div class="admin-review-row"><span class="admin-review-label">Harga</span><span class="admin-review-value" style="font-weight:700;color:#FBBF24;">Rp ${idea.price.toLocaleString('id-ID')}</span></div>
+      <div class="admin-review-row"><span class="admin-review-label">Tanggal</span><span class="admin-review-value">${date}</span></div>
+      <div class="admin-review-row"><span class="admin-review-label">Tags</span><span class="admin-review-value">${idea.tags || '-'}</span></div>
+      <div class="admin-review-row"><span class="admin-review-label">Deskripsi</span><span class="admin-review-value">${idea.description || idea.desc || '-'}</span></div>
+      <div class="admin-review-row"><span class="admin-review-label">Status</span><span class="admin-review-value">${idea.status}</span></div>
+    </div>
+    ${idea.status === 'pending' ? `
+      <textarea class="admin-note-input" id="adminNoteInput" placeholder="Catatan admin (opsional)..."></textarea>
+      <div class="admin-review-actions">
+        <button class="admin-btn admin-btn-approve" onclick="adminApproveIdea('${idea.id}');closeAdminReviewModal()"><i class="fas fa-check"></i> Approve</button>
+        <button class="admin-btn admin-btn-reject" onclick="adminRejectIdea('${idea.id}');closeAdminReviewModal()"><i class="fas fa-times"></i> Reject</button>
+      </div>
+    ` : ''}`;
+
+  modal.classList.add('show');
+  stopLenisScroll();
+}
+
+function closeAdminReviewModal() {
+  document.getElementById('adminReviewModal').classList.remove('show');
+  startLenisScroll();
+}
+
+// Click backdrop to close
+document.addEventListener('click', (e) => {
+  const m = document.getElementById('adminReviewModal');
+  if (e.target === m) closeAdminReviewModal();
+});
+
+async function adminApproveIdea(id) {
+  await updateIdeaStatus(id, 'approved');
+}
+
+async function adminRejectIdea(id) {
+  await updateIdeaStatus(id, 'rejected');
+}
+
+async function updateIdeaStatus(id, status) {
+  const note = document.getElementById('adminNoteInput')?.value || '';
+
+  if (supabaseClient) {
+    try {
+      const { error } = await supabaseClient.from('ideas').update({ status, admin_note: note }).eq('id', id);
+      if (error) throw error;
+
+      // Find idea to get user_id for notification
+      const idea = adminIdeas.find(i => i.id === id);
+      if (idea) {
+        const notifType = status === 'approved' ? 'idea_approved' : 'idea_rejected';
+        const notifTitle = status === 'approved' ? '🎉 Ide Disetujui!' : '❌ Ide Ditolak';
+        const notifMsg = status === 'approved'
+          ? `Ide "${idea.title}" telah disetujui dan sekarang tampil di marketplace!`
+          : `Ide "${idea.title}" ditolak. ${note ? 'Catatan: ' + note : 'Silakan revisi dan submit ulang.'}`;
+
+        await supabaseClient.from('notifications').insert({
+          user_id: idea.user_id,
+          type: notifType,
+          title: notifTitle,
+          message: notifMsg,
+        });
+      }
+    } catch (e) {
+      console.warn('Update status error:', e);
+    }
+  }
+
+  // Update local
+  const idx = adminIdeas.findIndex(i => i.id === id);
+  if (idx !== -1) adminIdeas[idx].status = status;
+  localStorage.setItem('admin_all_ideas', JSON.stringify(adminIdeas));
+
+  renderAdminIdeas();
+  showToast(status === 'approved' ? '✅ Ide berhasil disetujui!' : '❌ Ide ditolak.');
+}
+
+// ============================================================
+//   GSAP ANIMATIONS — NEW PAGES
+// ============================================================
+
+function animateProfilePage() {
+  if (typeof gsap === 'undefined') return;
+  gsap.to('#page-profile .page-hero-title', { opacity: 1, y: 0, duration: 0.7, ease: 'power3.out' });
+  gsap.to('#page-profile .page-hero-subtitle', { opacity: 1, y: 0, duration: 0.7, delay: 0.1, ease: 'power3.out' });
+  gsap.to('.profile-card', { opacity: 1, y: 0, duration: 0.8, delay: 0.2, ease: 'back.out(1.3)' });
+  gsap.to('.profile-form-wrapper .form-card', { opacity: 1, y: 0, duration: 0.8, delay: 0.3, ease: 'power3.out' });
+  gsap.to('.profile-quick-actions .btn', { opacity: 1, y: 0, duration: 0.5, stagger: 0.1, delay: 0.4, ease: 'power2.out' });
+}
+
+function animateAdminPage() {
+  if (typeof gsap === 'undefined') return;
+  gsap.to('#page-admin .page-hero-title', { opacity: 1, y: 0, duration: 0.7, ease: 'power3.out' });
+  gsap.to('#page-admin .page-hero-subtitle', { opacity: 1, y: 0, duration: 0.7, delay: 0.1, ease: 'power3.out' });
+  gsap.to('#page-admin .dash-stat-card', { opacity: 1, y: 0, scale: 1, duration: 0.6, stagger: 0.1, delay: 0.2, ease: 'back.out(1.3)' });
+  setTimeout(() => {
+    gsap.from('.admin-idea-card', { opacity: 0, x: -20, duration: 0.5, stagger: 0.08, ease: 'power3.out' });
+  }, 400);
+}
+
+// ============================================================
+//   REVIEW & RATING SYSTEM
+// ============================================================
+let selectedStarRating = 0;
+
+function setStarRating(n) {
+  selectedStarRating = n;
+  const stars = document.querySelectorAll('#starSelector i');
+  stars.forEach((s, i) => {
+    s.classList.toggle('active', i < n);
+  });
+}
+
+async function loadReviews(ideaId) {
+  const list = document.getElementById('reviewList');
+  if (!list) return;
+  let reviews = [];
+
+  if (supabaseClient) {
+    try {
+      const { data, error } = await supabaseClient
+        .from('reviews')
+        .select('*, profiles(full_name)')
+        .eq('idea_id', ideaId)
+        .order('created_at', { ascending: false })
+        .limit(10);
+      if (!error && data) reviews = data;
+    } catch (e) { console.warn('Review load error:', e); }
+  }
+
+  // Fallback localStorage
+  if (!reviews.length) {
+    const stored = JSON.parse(localStorage.getItem('reviews_' + ideaId) || '[]');
+    reviews = stored;
+  }
+
+  if (reviews.length === 0) {
+    list.innerHTML = '<div class="review-empty"><i class="fas fa-comment-dots" style="margin-right:0.4rem;"></i> Belum ada ulasan. Jadilah yang pertama!</div>';
+    return;
+  }
+
+  list.innerHTML = reviews.map(r => {
+    const name = r.profiles?.full_name || r.author || 'Anonim';
+    const initial = name.charAt(0).toUpperCase();
+    const starsHtml = '<i class="fas fa-star"></i>'.repeat(r.rating) + '<i class="far fa-star"></i>'.repeat(5 - r.rating);
+    const ago = timeAgo(r.created_at);
+    return `<div class="review-card">
+      <div class="review-card-header">
+        <div class="review-author">
+          <div class="review-avatar">${initial}</div>
+          <span class="review-author-name">${name}</span>
+        </div>
+        <div class="review-stars">${starsHtml}</div>
+      </div>
+      ${r.comment ? `<p class="review-comment">${r.comment}</p>` : ''}
+      <div class="review-time">${ago}</div>
+    </div>`;
+  }).join('');
+}
+
+async function submitReview(ideaId) {
+  if (!isLoggedIn()) {
+    showToast('⚠️ Login terlebih dahulu untuk memberi ulasan.');
+    return;
+  }
+  if (selectedStarRating === 0) {
+    showToast('⚠️ Pilih rating bintang terlebih dahulu.');
+    return;
+  }
+
+  const comment = document.getElementById('reviewComment')?.value?.trim() || '';
+  const review = {
+    idea_id: ideaId,
+    user_id: currentUser.id,
+    rating: selectedStarRating,
+    comment: comment,
+    created_at: new Date().toISOString(),
+    author: currentUser.name || currentUser.email?.split('@')[0] || 'User',
+  };
+
+  if (supabaseClient && currentUser.id) {
+    try {
+      const { error } = await supabaseClient.from('reviews').upsert({
+        idea_id: ideaId,
+        user_id: currentUser.id,
+        rating: selectedStarRating,
+        comment: comment,
+      }, { onConflict: 'idea_id,user_id' });
+      if (error) throw error;
+    } catch (e) {
+      console.warn('Review submit error:', e);
+    }
+  }
+
+  // Save to localStorage as fallback
+  const key = 'reviews_' + ideaId;
+  const stored = JSON.parse(localStorage.getItem(key) || '[]');
+  const existing = stored.findIndex(r => r.user_id === currentUser.id);
+  if (existing >= 0) stored[existing] = review;
+  else stored.unshift(review);
+  localStorage.setItem(key, JSON.stringify(stored));
+
+  // Reset form
+  selectedStarRating = 0;
+  setStarRating(0);
+  const commentEl = document.getElementById('reviewComment');
+  if (commentEl) commentEl.value = '';
+
+  showToast('⭐ Ulasan berhasil dikirim!');
+  loadReviews(ideaId);
+}
+
+// ============================================================
+//   REALTIME SUBSCRIPTIONS
+// ============================================================
+function setupRealtimeSubscriptions() {
+  if (!supabaseClient || !currentUser || !currentUser.id) return;
+
+  try {
+    // Subscribe to new notifications for current user
+    supabaseClient
+      .channel('user-notifications')
+      .on('postgres_changes', {
+        event: 'INSERT',
+        schema: 'public',
+        table: 'notifications',
+        filter: `user_id=eq.${currentUser.id}`,
+      }, (payload) => {
+        // New notification received in realtime
+        const notif = payload.new;
+        userNotifications.unshift(notif);
+        renderNotifBadge();
+        // Show toast for new notification
+        showToast(`🔔 ${notif.title}`);
+      })
+      .subscribe();
+
+    console.log('✅ Realtime subscriptions active');
+  } catch (e) {
+    console.warn('Realtime setup error:', e);
+  }
+}
