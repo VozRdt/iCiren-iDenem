@@ -212,8 +212,23 @@ export function animateExplorePage() {
 
   setTimeout(() => {
     const cards = document.querySelectorAll('#page-explore .idea-card')
+    const grid = document.getElementById('ideasGrid')
+    if (grid) grid.classList.remove('ready')
     if (cards.length) {
-      gsap.from(cards, { opacity: 0, y: 40, scale: 0.95, duration: 0.6, stagger: 0.08, ease: 'power3.out' })
+      gsap.from(cards, {
+        opacity: 0,
+        y: 40,
+        scale: 0.95,
+        duration: 0.6,
+        stagger: 0.08,
+        ease: 'power3.out',
+        clearProps: 'all',
+        onComplete: () => {
+          if (grid) grid.classList.add('ready')
+        }
+      })
+    } else {
+      if (grid) grid.classList.add('ready')
     }
   }, 400)
 }

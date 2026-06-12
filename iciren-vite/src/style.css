@@ -425,7 +425,7 @@ body {
    IDEAS GRID - PREMIUM CARDS
    ======================================= */
 .ideas-section {
-    padding: 120px 0;
+    padding: 2rem 0 4rem;
     background: #080808;
     position: relative;
 }
@@ -461,9 +461,12 @@ body {
     border: 1px solid rgba(245, 158, 11, 0.15);
     border-radius: 24px;
     overflow: hidden;
-    transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
     cursor: pointer;
     position: relative;
+}
+
+.ideas-grid.ready .idea-card {
+    transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
 .idea-card::before {
@@ -2839,7 +2842,7 @@ body {
 
     /* --- Ideas Grid --- */
     .ideas-section {
-        padding: 70px 0;
+        padding: 2rem 0 3rem;
     }
 
     .ideas-grid {
