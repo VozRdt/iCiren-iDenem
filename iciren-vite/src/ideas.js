@@ -1,11 +1,12 @@
 /* ============================================================
    Marketplace Ideas Module
    ============================================================ */
+import gsap from 'gsap'
 import { supabaseClient } from './supabase.js'
 import { showToast } from './utils.js'
 import { currentUser, isLoggedIn, showAuthRequiredModal } from './auth.js'
 import { navigateTo } from './navigation.js'
-import { stopLenisScroll, startLenisScroll } from './animations.js'
+import { stopLenisScroll, startLenisScroll, getLenis } from './animations.js'
 import { loadReviews, setStarRating as _setStarRating, submitReview as _submitReview, selectedStarRating } from './reviews.js'
 import { switchMyIdeasTab } from './myideas.js'
 
@@ -197,8 +198,55 @@ export function filterIdeas() {
 }
 
 export function loadMoreIdeas() {
-  displayedIdeas += 3
-  renderIdeas()
+  const btn = document.querySelector('.load-more button')
+  if (btn) {
+    const originalText = btn.innerHTML
+    // Set loading state on button
+    btn.disabled = true
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Memuat...'
+    
+    // Get current card count before rendering new ones
+    const prevCount = document.querySelectorAll('#ideasGrid .idea-card').length
+    
+    // Simulate a brief loading latency (e.g. 450ms) for high-end feel
+    setTimeout(() => {
+      displayedIdeas += 3
+      renderIdeas()
+      
+      // Animate new cards in
+      const cards = document.querySelectorAll('#ideasGrid .idea-card')
+      const newCards = Array.from(cards).slice(prevCount)
+      if (newCards.length) {
+        gsap.fromTo(newCards,
+          { opacity: 0, y: 30, scale: 0.95 },
+          { opacity: 1, y: 0, scale: 1, duration: 0.5, stagger: 0.08, ease: 'power3.out', clearProps: 'all' }
+        )
+      }
+      
+      // Restore button state
+      btn.disabled = false
+      btn.innerHTML = originalText
+      
+      // Scroll smoothly to the first new card so the user sees it
+      const lenisInstance = getLenis()
+      if (newCards.length && lenisInstance) {
+        requestAnimationFrame(() => {
+          const rect = newCards[0].getBoundingClientRect()
+          const targetScroll = window.scrollY + rect.top - 120 // Scroll to card top minus navbar offset
+          lenisInstance.scrollTo(targetScroll, { duration: 1.2, easing: (t) => 1 - Math.pow(1 - t, 4) })
+        })
+      } else if (newCards.length) {
+        requestAnimationFrame(() => {
+          const rect = newCards[0].getBoundingClientRect()
+          const targetScroll = window.scrollY + rect.top - 120
+          window.scrollTo({ top: targetScroll, behavior: 'smooth' })
+        })
+      }
+    }, 450)
+  } else {
+    displayedIdeas += 3
+    renderIdeas()
+  }
 }
 
 // ─── MODAL ───────────────────────────────────────────────────
