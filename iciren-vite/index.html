@@ -349,16 +349,30 @@
                     <i class="fas fa-search"></i>
                     <input type="text" id="searchInput" placeholder="Cari ide konten..." oninput="window._filterIdeas()">
                 </div>
-                <div class="filter-tabs" id="filterTabs">
-                    <button class="filter-tab active" onclick="window._setFilter('semua', this)">Semua</button>
-                    <button class="filter-tab" onclick="window._setFilter('youtube', this)">YouTube</button>
-                    <button class="filter-tab" onclick="window._setFilter('tiktok', this)">TikTok</button>
-                    <button class="filter-tab" onclick="window._setFilter('instagram', this)">Instagram</button>
-                    <button class="filter-tab" onclick="window._setFilter('podcast', this)">Podcast</button>
-                    <button class="filter-tab" onclick="window._setFilter('blog', this)">Blog</button>
-                </div>
                 <div class="advanced-filters">
-                    <div class="af-group">
+                      <div class="af-group">
+                          <label><i class="fas fa-layer-group"></i> Kategori</label>
+                          <select id="filterCategory" class="af-select" onchange="window._filterIdeas()">
+                              <option value="semua">Semua Kategori</option>
+                              <option value="makanan">Makanan</option>
+                              <option value="review">Review</option>
+                              <option value="pendidikan">Pendidikan</option>
+                              <option value="kesehatan">Kesehatan</option>
+                              <option value="lainnya">Lainnya</option>
+                          </select>
+                      </div>
+                      <div class="af-group">
+                          <label><i class="fas fa-mobile-alt"></i> Platform</label>
+                          <select id="filterPlatform" class="af-select" onchange="window._filterIdeas()">
+                              <option value="semua">Semua Platform</option>
+                              <option value="youtube">YouTube</option>
+                              <option value="tiktok">TikTok</option>
+                              <option value="instagram">Instagram</option>
+                              <option value="podcast">Podcast</option>
+                              <option value="blog">Blog</option>
+                          </select>
+                      </div>
+                      <div class="af-group">
                         <label><i class="fas fa-sort-amount-down"></i> Urutkan</label>
                         <select id="sortSelect" class="af-select" onchange="window._filterIdeas()">
                             <option value="newest">Terbaru</option>

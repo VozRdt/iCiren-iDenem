@@ -120,14 +120,16 @@ export function renderIdeas() {
   const searchVal = (document.getElementById('searchInput')?.value || '').toLowerCase()
   const sortVal = document.getElementById('sortSelect')?.value || 'newest'
   const maxPrice = parseInt(document.getElementById('priceRange')?.value || '200000')
+  const catFilter = document.getElementById('filterCategory')?.value || 'semua'
+  const platFilter = document.getElementById('filterPlatform')?.value || 'semua'
 
   const all = getAllMarketplaceIdeas()
   let filtered = all.filter(idea => {
-    const p = idea.platform || idea.category || ''
-    const matchCat = currentFilter === 'semua' || p === currentFilter
+    const matchCat = catFilter === 'semua' || idea.category === catFilter
+    const matchPlat = platFilter === 'semua' || idea.platform === platFilter
     const matchSearch = idea.title.toLowerCase().includes(searchVal) || (idea.desc || '').toLowerCase().includes(searchVal)
     const matchPrice = idea.price <= maxPrice
-    return matchCat && matchSearch && matchPrice
+    return matchCat && matchPlat && matchSearch && matchPrice
   })
 
   switch (sortVal) {
