@@ -864,7 +864,7 @@ async function buyIdea(ideaId) {
     return;
   }
 
-  // Cek apakah sudah pernah dibeli (dari memori + DB)
+  // Cek apakah sudah pernah dibeli (dari memori lokal — server juga akan re-check)
   if (purchasedIdeas.some(i => i.id === ideaId)) {
     closeModal();
     showToast('ℹ️ Kamu sudah membeli ide ini sebelumnya.');
@@ -875,30 +875,58 @@ async function buyIdea(ideaId) {
   const idea = all.find(i => i.id === ideaId) || allIdeas.find(i => i.id === ideaId);
   if (!idea) return;
 
-  // Simpan ke Supabase jika tersedia
+  // ─── SECURE PURCHASE FLOW ─────────────────────────────────
+  // Step 1: create_payment_intent() → validasi server-side
+  // Step 2: (Future) Payment Gateway redirect
+  // Step 3: process_purchase() → finalisasi setelah payment
+  // ──────────────────────────────────────────────────────────
+
   if (supabaseClient && currentUser && currentUser.id) {
     try {
-      const { data, error } = await supabaseClient
-        .from('purchases')
-        .insert({
-          user_id: currentUser.id,
-          idea_id: idea.id,
-          idea_title: idea.title,
-          idea_category: idea.category,
-          idea_price: idea.price,
-          idea_desc: idea.desc,
-          idea_emoji: idea.emoji || '💡',
-          idea_rating: idea.rating || 0,
-          idea_views: idea.views || 0,
-        })
-        .select()
-        .single();
+      // STEP 1: Buat Payment Intent (server-side validation)
+      showToast('⏳ Memproses pembelian...');
 
-      if (error) throw error;
+      const { data: intentResult, error: intentErr } = await supabaseClient
+        .rpc('create_payment_intent', { p_idea_id: ideaId });
 
+      if (intentErr) throw intentErr;
+      if (!intentResult.success) {
+        closeModal();
+        showToast('❌ ' + intentResult.error);
+        return;
+      }
+
+      console.log('✅ Payment intent created:', intentResult.transaction_id);
+
+      // STEP 2: [PLACEHOLDER] Di sini nanti akan redirect ke Payment Gateway
+      // Untuk saat ini, langsung proses karena gateway belum terintegrasi
+      // ─────────────────────────────────────────────────────────
+      // TODO: Integrasikan Midtrans/Xendit di sini
+      //   - Kirim intentResult.order_id & intentResult.amount ke gateway
+      //   - Tunggu callback/webhook dari gateway
+      //   - Panggil process_purchase setelah payment confirmed
+      // ─────────────────────────────────────────────────────────
+
+      // STEP 3: Proses purchase setelah "payment" (sementara simulasi)
+      const { data: purchaseResult, error: purchaseErr } = await supabaseClient
+        .rpc('process_purchase', {
+          p_transaction_id: intentResult.transaction_id,
+          p_payment_method: 'pending_gateway',  // Akan diganti saat gateway aktif
+          p_gateway: '',
+          p_gateway_txn_id: ''
+        });
+
+      if (purchaseErr) throw purchaseErr;
+      if (!purchaseResult.success) {
+        closeModal();
+        showToast('❌ ' + purchaseResult.error);
+        return;
+      }
+
+      // Success — update local state
       const bought = {
         id: idea.id,
-        dbId: data.id,
+        dbId: purchaseResult.purchase_id,
         title: idea.title,
         category: idea.category,
         price: idea.price,
@@ -906,21 +934,21 @@ async function buyIdea(ideaId) {
         emoji: idea.emoji,
         rating: idea.rating,
         views: idea.views,
-        boughtDate: new Date(data.purchased_at).toLocaleDateString('id-ID'),
+        boughtDate: new Date().toLocaleDateString('id-ID'),
       };
       purchasedIdeas.unshift(bought);
       localStorage.setItem(getUserKey('purchasedIdeas'), JSON.stringify(purchasedIdeas));
 
-      console.log('✅ Purchase saved to Supabase:', data.id);
+      console.log('✅ Secure purchase completed:', purchaseResult);
+
     } catch (e) {
-      console.warn('⚠️ DB purchase insert error, saving to localStorage:', e);
-      // Fallback: localStorage
-      const bought = { ...idea, boughtDate: new Date().toLocaleDateString('id-ID') };
-      purchasedIdeas.unshift(bought);
-      localStorage.setItem(getUserKey('purchasedIdeas'), JSON.stringify(purchasedIdeas));
+      console.error('❌ Purchase error:', e);
+      closeModal();
+      showToast('❌ Gagal membeli ide: ' + (e.message || 'Terjadi kesalahan.'));
+      return;
     }
   } else {
-    // Fallback: localStorage only
+    // Fallback: localStorage only (offline mode — tanpa payment)
     const bought = { ...idea, boughtDate: new Date().toLocaleDateString('id-ID') };
     purchasedIdeas.unshift(bought);
     localStorage.setItem(getUserKey('purchasedIdeas'), JSON.stringify(purchasedIdeas));

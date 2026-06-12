@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>iCiren iDe'nem - Marketplace Ide Konten Kreator</title>
+    <link rel="icon" type="image/png" href="/logo.png">
+    <link rel="apple-touch-icon" href="/logo.png">
+    <meta name="description"
+        content="Platform marketplace terbaik untuk jual beli ide konten kreatif. Ribuan ide viral siap mengubah channelmu!">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+
+<body>
+
+    <div id="nav-progress"></div>
+
+    <!-- Navbar -->
+    <nav class="navbar" id="navbar">
+        <div class="nav-container">
+            <div class="nav-logo" onclick="window._navigateTo('home')" style="cursor:pointer;">
+                <img src="/logo.png" alt="Logo iCiren iDe'nem" class="custom-logo">
+            </div>
+            <ul class="nav-menu" id="navMenu">
+                <li class="nav-item">
+                    <a href="#" class="nav-link active" id="nav-home"
+                        onclick="window._navigateTo('home'); return false;">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link" id="nav-explore"
+                        onclick="window._navigateTo('explore'); return false;">Jelajahi Ide</a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link" id="nav-sell" onclick="window._navigateTo('sell'); return false;" style="display: flex; align-items: center;"><img src="/logo.png" class="inline-logo-only" alt="Jual Ide"></a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link" id="nav-about" onclick="window._navigateTo('about'); return false;">Tentang</a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link" id="nav-myideas" onclick="window._navigateTo('myideas'); return false;">Ide
+                        Saya</a>
+                </li>
+            </ul>
+            <div class="nav-cta">
+                <!-- Auth buttons: tampil saat belum login -->
+                <button class="btn btn-outline btn-auth-nav" id="navLoginBtn" onclick="window._navigateTo('auth')">
+                    <i class="fas fa-sign-in-alt"></i> Masuk
+                </button>
+                <button class="btn btn-primary btn-auth-nav" id="navRegisterBtn" onclick="window._navigateTo('auth'); setTimeout(()=>window._switchAuthTab('register'),100)">
+                    <i class="fas fa-user-plus"></i> Daftar
+                </button>
+                <!-- User profile: tampil saat sudah login -->
+                <div class="nav-user-profile" id="navUserProfile" style="display:none;">
+                    <!-- Notification Bell -->
+                    <div class="nav-notif-wrapper" id="navNotifWrapper">
+                        <button class="nav-notif-btn" id="navNotifBtn" onclick="window._toggleNotifPanel()">
+                            <i class="fas fa-bell"></i>
+                            <span class="notif-badge" id="notifBadge" style="display:none;">0</span>
+                        </button>
+                        <div class="notif-panel" id="notifPanel">
+                            <div class="notif-panel-header">
+                                <h4>Notifikasi</h4>
+                                <button class="notif-mark-all" id="notifMarkAllBtn" onclick="window._markAllNotifsRead()">Tandai Semua Dibaca</button>
+                            </div>
+                            <div class="notif-panel-list" id="notifPanelList">
+                                <div class="notif-empty">
+                                    <i class="fas fa-bell-slash"></i>
+                                    <p>Belum ada notifikasi</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="nav-user-avatar" id="navUserAvatar" onclick="window._navigateTo('profile')" style="cursor:pointer;" title="Profil Saya">U</div>
+                    <span class="nav-user-name" id="navUserName" onclick="window._navigateTo('profile')" style="cursor:pointer;">User</span>
+                    <button class="btn btn-outline btn-sm" id="navLogoutBtn" onclick="window._logoutUser()">
+                        <i class="fas fa-sign-out-alt"></i> Keluar
+                    </button>
+                </div>
+            </div>
+            <div class="hamburger" id="hamburger" onclick="window._toggleMenu()">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- ================================
+         PAGE: HOME
+    ================================ -->
+    <div class="page active" id="page-home">
+        <!-- Hero Section -->
+        <section class="hero">
+            <div class="hero-container">
+                <div class="hero-content">
+                    <div class="hero-badge" data-gsap="hero"><i class="fas fa-fire"></i> Platform #1 Ide Konten Indonesia</div>
+                    <h1 class="hero-title" data-gsap="hero">Temukan Ide Kontenmu yang Viral</h1>
+                    <p class="hero-subtitle" data-gsap="hero">Platform marketplace untuk jual beli ide konten kreatif. Ribuan ide siap
+                        mengubah channelmu!</p>
+                    <div class="hero-buttons" data-gsap="hero">
+                        <button class="btn btn-primary btn-large" onclick="window._navigateTo('explore')" style="display: inline-flex; align-items: center; justify-content: center; height: 60px; padding: 0 2.5rem;">
+                            <i class="fas fa-compass" style="margin-right: 8px;"></i> Jelajahi Ide
+                        </button>
+                        <button class="btn btn-outline btn-large" onclick="window._navigateTo('sell')" style="display: inline-flex; align-items: center; justify-content: center; height: 60px; padding: 0 1.5rem;">
+                            <img src="/logo.png" alt="Jual Ide" style="height: 3.5rem; width: auto; object-fit: contain;">
+                        </button>
+                    </div>
+                    <div class="hero-stats" data-gsap="hero">
+                        <div class="stat-item">
+                            <span class="stat-number">2.500+</span>
+                            <span class="stat-label">Ide Tersedia</span>
+                        </div>
+                        <div class="stat-divider"></div>
+                        <div class="stat-item">
+                            <span class="stat-number">850+</span>
+                            <span class="stat-label">Kreator Aktif</span>
+                        </div>
+                        <div class="stat-divider"></div>
+                        <div class="stat-item">
+                            <span class="stat-number">98%</span>
+                            <span class="stat-label">Kepuasan</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="hero-footnote">Batik Gedhog Tuban</div>
+        </section>
+
+        <!-- Cara Kerja Section -->
+        <section class="how-it-works" data-gsap-section>
+            <div class="container">
+                <h2 class="section-title">Cara Kerja iCiren iDe'nem</h2>
+                <p class="section-subtitle">Simpel, cepat, dan menguntungkan untuk semua pihak</p>
+                <div class="steps-grid">
+                    <div class="step-card">
+                        <div class="step-number">1</div>
+                        <div class="step-icon"><i class="fas fa-lightbulb"></i></div>
+                        <h3>Jual Ide</h3>
+                        <p>Bagikan ide konten kreatifmu dengan detail lengkap dan harga yang kamu tentukan sendiri.</p>
+                    </div>
+                    <div class="step-card">
+                        <div class="step-number">2</div>
+                        <div class="step-icon"><i class="fas fa-search-plus"></i></div>
+                        <h3>Kami Kurasi</h3>
+                        <p>Tim iCiren iDe'nem review dan pastikan ide berkualitas tinggi sebelum dipublikasikan ke
+                            marketplace.</p>
+                    </div>
+                    <div class="step-card">
+                        <div class="step-number">3</div>
+                        <div class="step-icon"><i class="fas fa-shopping-cart"></i></div>
+                        <h3>Kreator Beli</h3>
+                        <p>Konten kreator membeli ide dan langsung bisa produksi konten viral!</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Benefits Section -->
+        <section class="benefits" data-gsap-section>
+            <div class="container">
+                <h2 class="section-title">Mengapa Memilih iCiren iDe'nem?</h2>
+                <p class="section-subtitle">Keunggulan yang membuat kami berbeda dari platform lainnya</p>
+                <div class="benefits-grid">
+                    <div class="benefit-item"><i class="fas fa-check-circle"></i><h3>100% Original</h3><p>Semua ide dijamin orisinal dan belum pernah dipakai oleh siapapun sebelumnya.</p></div>
+                    <div class="benefit-item"><i class="fas fa-shield-alt"></i><h3>Terjamin Aman</h3><p>Sistem pembayaran aman dengan garansi kepuasan dan perlindungan pembeli.</p></div>
+                    <div class="benefit-item"><i class="fas fa-chart-line"></i><h3>Potensi Viral</h3><p>Ide dirancang untuk engagement tinggi dan potensi viral yang luar biasa.</p></div>
+                    <div class="benefit-item"><i class="fas fa-headset"></i><h3>Support 24/7</h3><p>Tim kami siap membantu kamu kapan saja selama 24 jam penuh 7 hari seminggu.</p></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Testimonials Section -->
+        <section class="testimonials" data-gsap-section>
+            <div class="container">
+                <h2 class="section-title">Apa Kata Kreator?</h2>
+                <div class="testimonials-grid">
+                    <div class="testimonial-card">
+                        <div class="stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div>
+                        <p>"Ide dari iCiren iDe'nem bikin video saya viral! 1M views dalam 3 hari! Benar-benar worth it!"</p>
+                        <div class="author"><div class="author-avatar">RK</div><div><h4>Hetty</h4><span>500K Subscribers</span></div></div>
+                    </div>
+                    <div class="testimonial-card">
+                        <div class="stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div>
+                        <p>"Platform terbaik buat dapet ide segar. Sudah jual 15 ide di iCiren iDe'nem dan hasilnya memuaskan!"</p>
+                        <div class="author"><div class="author-avatar">BA</div><div><h4>Budi A</h4><span>Penjual Ide Pro</span></div></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- ================================
+         PAGE: AUTH (LOGIN / REGISTER)
+    ================================ -->
+    <div class="page" id="page-auth">
+        <section class="auth-section">
+            <div class="auth-container">
+                <div class="auth-card">
+                    <div class="auth-header">
+                        <img src="/logo.png" alt="Logo" class="auth-logo">
+                        <h2 class="auth-title">Selamat Datang</h2>
+                        <p class="auth-subtitle">Masuk atau daftar untuk mulai jual beli ide kreatif</p>
+                    </div>
+                    <div class="auth-tabs">
+                        <button class="auth-tab active" id="authTabLogin" onclick="window._switchAuthTab('login')"><i class="fas fa-sign-in-alt"></i> Masuk</button>
+                        <button class="auth-tab" id="authTabRegister" onclick="window._switchAuthTab('register')"><i class="fas fa-user-plus"></i> Daftar</button>
+                    </div>
+                    <!-- LOGIN FORM -->
+                    <form id="loginForm" class="auth-form" onsubmit="window._handleLogin(event)">
+                        <div class="form-group">
+                            <label for="loginEmail"><i class="fas fa-envelope"></i> Email</label>
+                            <input type="email" id="loginEmail" class="form-input" placeholder="Masukkan email kamu" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="loginPassword"><i class="fas fa-lock"></i> Password</label>
+                            <div class="password-wrapper">
+                                <input type="password" id="loginPassword" class="form-input" placeholder="Masukkan password" required>
+                                <button type="button" class="password-toggle" id="toggleLoginPassword" onclick="window._togglePassword('loginPassword','toggleLoginPassword')"><i class="fas fa-eye"></i></button>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary auth-submit-btn" id="loginSubmitBtn"><i class="fas fa-sign-in-alt"></i> Masuk Sekarang</button>
+                        <p class="auth-switch">Belum punya akun? <a href="#" id="switchToRegister" onclick="window._switchAuthTab('register'); return false;">Daftar sekarang</a></p>
+                    </form>
+                    <!-- REGISTER FORM -->
+                    <form id="registerForm" class="auth-form" style="display:none;" onsubmit="window._handleRegister(event)">
+                        <div class="form-group">
+                            <label for="registerName"><i class="fas fa-user"></i> Nama Lengkap</label>
+                            <input type="text" id="registerName" class="form-input" placeholder="Masukkan nama lengkap" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="registerEmail"><i class="fas fa-envelope"></i> Email</label>
+                            <input type="email" id="registerEmail" class="form-input" placeholder="Masukkan email kamu" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="registerPassword"><i class="fas fa-lock"></i> Password</label>
+                            <div class="password-wrapper">
+                                <input type="password" id="registerPassword" class="form-input" placeholder="Buat password (min 6 karakter)" minlength="6" required>
+                                <button type="button" class="password-toggle" id="toggleRegisterPassword" onclick="window._togglePassword('registerPassword','toggleRegisterPassword')"><i class="fas fa-eye"></i></button>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="registerConfirmPassword"><i class="fas fa-lock"></i> Konfirmasi Password</label>
+                            <div class="password-wrapper">
+                                <input type="password" id="registerConfirmPassword" class="form-input" placeholder="Ulangi password" minlength="6" required>
+                                <button type="button" class="password-toggle" id="toggleConfirmPassword" onclick="window._togglePassword('registerConfirmPassword','toggleConfirmPassword')"><i class="fas fa-eye"></i></button>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="registerAgreeTerms" required>
+                                <span>Saya setuju dengan <a href="#" class="auth-link" onclick="window._showTermsModal('terms'); return false;">Syarat &amp; Ketentuan</a> serta <a href="#" class="auth-link" onclick="window._showTermsModal('privacy'); return false;">Kebijakan Privasi</a></span>
+                            </label>
+                        </div>
+                        <button type="submit" class="btn btn-primary auth-submit-btn" id="registerSubmitBtn"><i class="fas fa-user-plus"></i> Daftar Sekarang</button>
+                        <p class="auth-switch">Sudah punya akun? <a href="#" id="switchToLogin" onclick="window._switchAuthTab('login'); return false;">Masuk di sini</a></p>
+                    </form>
+                </div>
+                <div class="auth-decoration">
+                    <div class="auth-deco-card"><div class="auth-deco-icon"><i class="fas fa-lightbulb"></i></div><h3>Jual Ide Kreatifmu</h3><p>Ubah ide brilian menjadi penghasilan. Bergabung dengan 850+ kreator aktif di iCiren iDe'nem.</p></div>
+                    <div class="auth-deco-card"><div class="auth-deco-icon"><i class="fas fa-shopping-cart"></i></div><h3>Beli Ide Viral</h3><p>Akses ribuan ide konten berkualitas untuk channel kamu. 2.500+ ide tersedia!</p></div>
+                    <div class="auth-deco-card"><div class="auth-deco-icon"><i class="fas fa-shield-alt"></i></div><h3>Aman & Terpercaya</h3><p>Transaksi dijamin aman dengan perlindungan pembeli dan penjual.</p></div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Auth Required Modal -->
+    <div class="auth-required-modal" id="authRequiredModal">
+        <div class="auth-required-content">
+            <div class="auth-required-icon"><i class="fas fa-lock"></i></div>
+            <h3>Akses Terbatas</h3>
+            <p>Kamu perlu masuk atau daftar akun terlebih dahulu untuk mengakses fitur ini.</p>
+            <div class="auth-required-buttons">
+                <button class="btn btn-primary" id="authRequiredLoginBtn" onclick="window._closeAuthModal(); window._navigateTo('auth')"><i class="fas fa-sign-in-alt"></i> Masuk</button>
+                <button class="btn btn-outline" id="authRequiredRegisterBtn" onclick="window._closeAuthModal(); window._navigateTo('auth'); setTimeout(()=>window._switchAuthTab('register'),100)"><i class="fas fa-user-plus"></i> Daftar Baru</button>
+            </div>
+            <button class="auth-required-close" id="authRequiredCloseBtn" onclick="window._closeAuthModal()"><i class="fas fa-times"></i></button>
+        </div>
+    </div>
+
+    <!-- Email Verification Modal -->
+    <div class="email-verify-modal" id="emailVerifyModal">
+        <div class="email-verify-content">
+            <button class="email-verify-close" id="emailVerifyCloseBtn" onclick="window._closeEmailVerifyModal()"><i class="fas fa-times"></i></button>
+            <div class="email-verify-icon"><i class="fas fa-envelope-open-text"></i></div>
+            <h3>Verifikasi Email Kamu</h3>
+            <p>Kami telah mengirimkan link verifikasi ke:</p>
+            <div class="email-verify-address" id="verifyEmailAddress">email@example.com</div>
+            <p class="email-verify-hint">Silakan buka inbox email kamu dan klik link verifikasi untuk mengaktifkan akun. Cek juga folder <strong>Spam</strong> jika tidak ditemukan di Inbox.</p>
+            <div class="email-verify-steps">
+                <div class="verify-step"><div class="verify-step-num">1</div><span>Buka inbox email kamu</span></div>
+                <div class="verify-step"><div class="verify-step-num">2</div><span>Cari email dari iCiren iDe'nem</span></div>
+                <div class="verify-step"><div class="verify-step-num">3</div><span>Klik link verifikasi</span></div>
+            </div>
+            <div class="email-verify-actions">
+                <button class="btn btn-primary" id="resendVerifyBtn" onclick="window._resendVerificationEmail()"><i class="fas fa-paper-plane"></i> Kirim Ulang Email</button>
+                <button class="btn btn-outline" onclick="window._closeEmailVerifyModal(); window._navigateTo('auth')"><i class="fas fa-sign-in-alt"></i> Ke Halaman Login</button>
+            </div>
+            <p class="email-verify-footer">Belum menerima email? Tunggu beberapa menit atau coba kirim ulang.</p>
+        </div>
+    </div>
+
+    <!-- Terms & Privacy Modal -->
+    <div class="terms-modal" id="termsModal">
+        <div class="terms-modal-content">
+            <button class="terms-modal-close" onclick="window._closeTermsModal()"><i class="fas fa-times"></i></button>
+            <div class="terms-modal-header">
+                <div class="terms-tabs">
+                    <button class="terms-tab active" id="termsTabTerms" onclick="window._switchTermsTab('terms')"><i class="fas fa-file-contract"></i> Syarat & Ketentuan</button>
+                    <button class="terms-tab" id="termsTabPrivacy" onclick="window._switchTermsTab('privacy')"><i class="fas fa-shield-alt"></i> Kebijakan Privasi</button>
+                </div>
+            </div>
+            <div class="terms-modal-body" id="termsModalBody" data-lenis-prevent>
+                <div class="terms-content" id="termsContentTerms">
+                    <h3><i class="fas fa-gavel"></i> Syarat & Ketentuan Penggunaan</h3>
+                    <p class="terms-updated">Terakhir diperbarui: 29 April 2026</p>
+                    <div class="terms-section"><h4>1. Ketentuan Umum</h4><ul><li>Dengan mendaftar dan menggunakan platform iCiren iDe'nem, Anda menyetujui seluruh syarat dan ketentuan yang berlaku.</li><li>iCiren iDe'nem adalah marketplace ide konten kreatif yang menghubungkan penjual dan pembeli ide.</li><li>Pengguna wajib berusia minimal 17 tahun atau mendapat izin dari orang tua/wali.</li></ul></div>
+                    <div class="terms-section"><h4>2. Akun Pengguna</h4><ul><li>Setiap pengguna bertanggung jawab atas keamanan akunnya masing-masing.</li><li>Informasi yang diberikan saat pendaftaran harus akurat dan terkini.</li><li>Satu email hanya boleh digunakan untuk satu akun.</li><li>iCiren iDe'nem berhak menangguhkan atau menonaktifkan akun yang melanggar ketentuan.</li></ul></div>
+                    <div class="terms-section"><h4>3. Konten & Ide</h4><ul><li>Semua ide yang dijual harus orisinal dan belum dipublikasikan di platform lain.</li><li>Dilarang menjual ide yang mengandung unsur SARA, kekerasan, pornografi, atau melanggar hukum.</li><li>iCiren iDe'nem berhak menolak atau menghapus ide yang tidak memenuhi standar kualitas.</li><li>Setelah ide dibeli, hak penggunaan berpindah ke pembeli sesuai lisensi yang berlaku.</li></ul></div>
+                    <div class="terms-section"><h4>4. Transaksi & Pembayaran</h4><ul><li>Penjual mendapatkan 80% dari harga jual setiap ide yang terjual.</li><li>Pembayaran akan diproses sesuai jadwal yang ditentukan oleh platform.</li><li>Semua transaksi bersifat final dan tidak dapat dibatalkan kecuali dalam kondisi tertentu.</li><li>iCiren iDe'nem menggunakan sistem pembayaran yang aman dan terenkripsi.</li></ul></div>
+                    <div class="terms-section"><h4>5. Larangan</h4><ul><li>Dilarang melakukan plagiarisme atau menjual ide milik orang lain.</li><li>Dilarang menggunakan bot, script, atau metode otomatis untuk mengakses platform.</li><li>Dilarang melakukan manipulasi rating, review, atau data apapun.</li></ul></div>
+                </div>
+                <div class="terms-content" id="termsContentPrivacy" style="display:none;">
+                    <h3><i class="fas fa-user-shield"></i> Kebijakan Privasi</h3>
+                    <p class="terms-updated">Terakhir diperbarui: 29 April 2026</p>
+                    <div class="terms-section"><h4>1. Data yang Kami Kumpulkan</h4><ul><li><strong>Data Pribadi:</strong> Nama, email, dan informasi profil yang Anda berikan saat mendaftar.</li><li><strong>Data Transaksi:</strong> Riwayat pembelian dan penjualan ide di platform.</li><li><strong>Data Teknis:</strong> Alamat IP, jenis browser, dan perangkat yang digunakan.</li></ul></div>
+                    <div class="terms-section"><h4>2. Penggunaan Data</h4><ul><li>Mengelola akun dan menyediakan layanan platform.</li><li>Memproses transaksi dan komunikasi terkait layanan.</li><li>Meningkatkan pengalaman pengguna dan pengembangan fitur baru.</li><li>Mengirimkan informasi penting terkait akun dan pembaruan layanan.</li></ul></div>
+                    <div class="terms-section"><h4>3. Keamanan Data</h4><ul><li>Kami menggunakan enkripsi dan protokol keamanan standar industri.</li><li>Password disimpan dalam bentuk terenkripsi (hashed) dan tidak dapat dibaca.</li><li>Akses ke data pribadi dibatasi hanya untuk personel yang berwenang.</li></ul></div>
+                    <div class="terms-section"><h4>4. Hak Pengguna</h4><ul><li>Anda berhak mengakses, memperbarui, atau menghapus data pribadi Anda.</li><li>Anda berhak menolak penggunaan data untuk tujuan pemasaran.</li><li>Anda berhak meminta salinan data pribadi yang kami simpan.</li></ul></div>
+                    <div class="terms-section"><h4>5. Kontak</h4><ul><li>Untuk pertanyaan terkait privasi, hubungi kami melalui email resmi iCiren iDe'nem.</li><li>Kami akan merespon permintaan terkait data pribadi dalam waktu 14 hari kerja.</li></ul></div>
+                </div>
+            </div>
+            <div class="terms-modal-footer">
+                <button class="btn btn-primary" onclick="window._closeTermsModal()"><i class="fas fa-check"></i> Saya Mengerti</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================================
+         PAGE: JELAJAHI IDE
+    ================================ -->
+    <div class="page" id="page-explore">
+        <section class="page-hero">
+            <div class="container">
+                <h1 class="page-hero-title"><i class="fas fa-compass"></i> Jelajahi Ide</h1>
+                <p class="page-hero-subtitle">Temukan ribuan ide konten kreatif dari para kreator terbaik Indonesia</p>
+                <div class="search-bar">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="searchInput" placeholder="Cari ide konten..." oninput="window._filterIdeas()">
+                </div>
+                <div class="filter-tabs" id="filterTabs">
+                    <button class="filter-tab active" onclick="window._setFilter('semua', this)">Semua</button>
+                    <button class="filter-tab" onclick="window._setFilter('youtube', this)">YouTube</button>
+                    <button class="filter-tab" onclick="window._setFilter('tiktok', this)">TikTok</button>
+                    <button class="filter-tab" onclick="window._setFilter('instagram', this)">Instagram</button>
+                    <button class="filter-tab" onclick="window._setFilter('podcast', this)">Podcast</button>
+                    <button class="filter-tab" onclick="window._setFilter('blog', this)">Blog</button>
+                </div>
+                <div class="advanced-filters">
+                    <div class="af-group">
+                        <label><i class="fas fa-sort-amount-down"></i> Urutkan</label>
+                        <select id="sortSelect" class="af-select" onchange="window._filterIdeas()">
+                            <option value="newest">Terbaru</option>
+                            <option value="price-low">Termurah</option>
+                            <option value="price-high">Termahal</option>
+                            <option value="rating">Rating Tertinggi</option>
+                            <option value="views">Paling Dilihat</option>
+                        </select>
+                    </div>
+                    <div class="af-group">
+                        <label><i class="fas fa-money-bill-wave"></i> Harga Maks</label>
+                        <div class="af-range-wrapper">
+                            <input type="range" id="priceRange" class="af-range" min="0" max="200000" value="200000" step="5000" oninput="window._updatePriceLabel(); window._filterIdeas()">
+                            <span class="af-range-label" id="priceRangeLabel">Rp 200.000</span>
+                        </div>
+                    </div>
+                    <div class="af-result-count">
+                        <span id="resultCount">0</span> ide ditemukan
+                    </div>
+                </div>
+            </div>
+        </section>
+        <section class="ideas-section" style="padding-top: 2rem;">
+            <div class="container">
+                <div class="ideas-grid" id="ideasGrid"></div>
+                <div class="load-more">
+                    <button class="btn btn-secondary" onclick="window._loadMoreIdeas()">Muat Lebih Banyak</button>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- ================================
+         PAGE: JUAL IDE
+    ================================ -->
+    <div class="page" id="page-sell">
+        <section class="page-hero">
+            <div class="container">
+                <h1 class="page-hero-title"><i class="fas fa-lightbulb"></i> Jual Ide</h1>
+                <p class="page-hero-subtitle">Ubah ide kreatifmu menjadi penghasilan nyata. Bergabung dengan ribuan penjual sukses kami!</p>
+            </div>
+        </section>
+        <section class="sell-section">
+            <div class="container">
+                <div class="sell-layout">
+                    <div class="sell-form-wrapper">
+                        <div class="form-card">
+                            <h2 class="form-title"><i class="fas fa-plus-circle"></i> Submit Ide Baru</h2>
+                            <form id="sellForm" onsubmit="window._submitIdea(event)">
+                                <div class="form-group">
+                                    <label for="ideaTitle">Judul Ide <span class="required">*</span></label>
+                                    <input type="text" id="ideaTitle" class="form-input" placeholder="Contoh: 10 Rahasia Viral TikTok yang Jarang Diketahui" required>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="ideaPlatform">Platform <span class="required">*</span></label>
+                                        <select id="ideaPlatform" class="form-input" required>
+                                            <option value="">Pilih Platform</option>
+                                            <option value="youtube">YouTube</option>
+                                            <option value="tiktok">TikTok</option>
+                                            <option value="instagram">Instagram</option>
+                                            <option value="podcast">Podcast</option>
+                                            <option value="blog">Blog</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="ideaCategory">Kategori <span class="required">*</span></label>
+                                        <select id="ideaCategory" class="form-input" required>
+                                            <option value="">Pilih Kategori</option>
+                                            <option value="makanan">Makanan</option>
+                                            <option value="review">Review</option>
+                                            <option value="pendidikan">Pendidikan</option>
+                                            <option value="kesehatan">Kesehatan</option>
+                                            <option value="lainnya">Lainnya</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="ideaPrice">Harga (Rp) <span class="required">*</span></label>
+                                        <input type="number" id="ideaPrice" class="form-input" placeholder="50000" min="10000" required>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="ideaDesc">Deskripsi Ide <span class="required">*</span></label>
+                                    <textarea id="ideaDesc" class="form-input form-textarea" rows="5" placeholder="Jelaskan ide kontenmu secara detail: konsep, target audiens, potensi viral, dll..." required></textarea>
+                                </div>
+                                <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem;"><i class="fas fa-paper-plane"></i> Submit Ide Sekarang</button>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="sell-benefits">
+                        <div class="sell-benefit-card"><div class="sb-icon"><i class="fas fa-money-bill-wave"></i></div><h3>Penghasilan Menarik</h3><p>Dapatkan 80% dari setiap penjualan ideamu langsung ke rekeningmu.</p></div>
+                        <div class="sell-benefit-card"><div class="sb-icon"><i class="fas fa-users"></i></div><h3>Jangkauan Luas</h3><p>Idemu akan dilihat oleh ribuan kreator aktif setiap harinya.</p></div>
+                        <div class="sell-benefit-card"><div class="sb-icon"><i class="fas fa-star"></i></div><h3>Bangun Reputasi</h3><p>Kumpulkan rating dan review positif untuk meningkatkan kepercayaan.</p></div>
+                        <div class="sell-benefit-card"><div class="sb-icon"><i class="fas fa-chart-bar"></i></div><h3>Statistik Lengkap</h3><p>Pantau performa penjualan idemu secara real-time dengan dashboard.</p></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- ================================
+         PAGE: TENTANG
+    ================================ -->
+    <div class="page" id="page-about">
+        <section class="page-hero">
+            <div class="container">
+                <h1 class="page-hero-title"><i class="fas fa-info-circle"></i> Tentang iCiren iDe'nem</h1>
+                <p class="page-hero-subtitle">Mengenal lebih dekat platform ide konten terbesar di Indonesia</p>
+            </div>
+        </section>
+        <section class="about-section">
+            <div class="container">
+                <div class="about-story">
+                    <div class="about-text">
+                        <h2 class="about-heading">Cerita di Balik iCiren iDe'nem</h2>
+                        <p>Pernahkah Anda memiliki ide brilian yang terlintas di kepala, namun bingung bagaimana mewujudkannya menjadi sebuah karya? Atau sebaliknya, Anda adalah seorang konten kreator yang sedang kehabisan inspirasi (creator's block) dan butuh materi segar?</p>
+                        <p>Dari kedua keresahan inilah iCiren iDe'nem lahir.</p>
+                        <p>Mengambil akar dari bahasa Jawa khas dialek Tuban, Jawa Timur, nama iCiren iDe'nem memiliki arti yang sangat mendalam: "Tanamlah Idemu". Kata "iCiren" berarti tanamlah atau ajakan untuk menabur, sedangkan "iDe'nem" adalah gabungan kata ide dan akhiran "nem" sebutan khas masyarakat Tuban untuk menyatakan kepemilikan orang kedua (milikmu).</p>
+                        <br>
+                        <h2 class="about-heading">Bagaimana Kami Bekerja?</h2>
+                        <p>Kami percaya bahwa setiap ide kreatif—baik itu untuk konten edukasi yang mencerdaskan maupun konten hiburan yang menyenangkan adalah sebuah "benih" yang berharga. Di sinilah iCiren iDe'nem mengambil peran. Kami hadir sebagai "tanah yang subur" untuk merawat benih-benih tersebut.</p>
+                        <div class="about-stats">
+                            <div class="about-stat"><span class="about-stat-num">2025</span><span class="about-stat-label">Didirikan</span></div>
+                            <div class="about-stat"><span class="about-stat-num">850+</span><span class="about-stat-label">Kreator Aktif</span></div>
+                            <div class="about-stat"><span class="about-stat-num">2.500+</span><span class="about-stat-label">Ide Terjual</span></div>
+                        </div>
+                    </div>
+                    <div class="about-visual">
+                        <div class="about-card-visual"><div class="av-icon"><i class="fas fa-rocket"></i></div><h3>Misi Kami</h3><p>Menjadi jembatan antara kreativitas dan kreator, memungkinkan setiap ide brilian menemukan rumahnya yang tepat.</p></div>
+                    </div>
+                </div>
+                <div class="team-section">
+                    <h2 class="section-title">Tim Kami</h2>
+                    <div class="team-grid">
+                        <div class="team-card"><div class="team-avatar">HI</div><h3>Hauzan Irhab</h3><span>Founder</span><p>Penggagas awal iCiren iDe'nem yang memiliki visi kuat tentang potensi tak terbatas dari sebuah ide kreatif.</p></div>
+                        <div class="team-card"><div class="team-avatar">RP</div><h3>Raditya Pratama</h3><span>CEO</span><p>Mengarahkan pengembangan platform dan memastikan iCiren iDe'nem terus berinovasi untuk para kreator.</p></div>
+                    </div>
+                </div>
+                <div class="values-section">
+                    <h2 class="section-title">Nilai-Nilai Kami</h2>
+                    <div class="values-grid">
+                        <div class="value-card"><i class="fas fa-heart"></i><h3>Passion</h3><p>Kami mencintai kreativitas dan berkomitmen untuk mendukung para kreator.</p></div>
+                        <div class="value-card"><i class="fas fa-handshake"></i><h3>Integritas</h3><p>Transparansi dan kejujuran adalah fondasi dari setiap transaksi kami.</p></div>
+                        <div class="value-card"><i class="fas fa-bolt"></i><h3>Inovasi</h3><p>Selalu berinovasi untuk memberikan pengalaman terbaik bagi pengguna.</p></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- ================================
+         PAGE: IDE SAYA
+    ================================ -->
+    <div class="page" id="page-myideas">
+        <section class="page-hero">
+            <div class="container">
+                <h1 class="page-hero-title"><i class="fas fa-folder-open"></i> Ide Saya</h1>
+                <p class="page-hero-subtitle">Kelola dan pantau semua ide yang telah kamu submit ke iCiren iDe'nem</p>
+            </div>
+        </section>
+        <section class="myideas-section">
+            <div class="container">
+                <div class="dashboard-stats">
+                    <div class="dash-stat-card"><div class="dash-stat-icon"><i class="fas fa-lightbulb"></i></div><div class="dash-stat-info"><span class="dash-stat-num" id="totalIdeasCount">0</span><span class="dash-stat-label">Total Ide</span></div></div>
+                    <div class="dash-stat-card"><div class="dash-stat-icon"><i class="fas fa-check-circle"></i></div><div class="dash-stat-info"><span class="dash-stat-num" id="approvedCount">0</span><span class="dash-stat-label">Disetujui</span></div></div>
+                    <div class="dash-stat-card"><div class="dash-stat-icon"><i class="fas fa-money-bill-wave"></i></div><div class="dash-stat-info"><span class="dash-stat-num" id="totalEarnings">Rp 0</span><span class="dash-stat-label">Total Penghasilan</span></div></div>
+                    <div class="dash-stat-card"><div class="dash-stat-icon"><i class="fas fa-eye"></i></div><div class="dash-stat-info"><span class="dash-stat-num" id="totalViews">0</span><span class="dash-stat-label">Total Views</span></div></div>
+                </div>
+                <div class="myideas-header">
+                    <h2 class="myideas-title">Daftar Ide Saya</h2>
+                    <button class="btn btn-primary" onclick="window._navigateTo('sell')"><i class="fas fa-plus"></i> Tambah Ide Baru</button>
+                </div>
+                <div id="myIdeasList" class="myideas-list">
+                    <div class="empty-state" id="emptyState">
+                        <div class="empty-icon"><i class="fas fa-folder-open"></i></div>
+                        <h3>Belum Ada Ide</h3>
+                        <p>Kamu belum pernah submit ide apapun. Mulai sekarang dan hasilkan uang dari kreativitasmu!</p>
+                        <button class="btn btn-primary" onclick="window._navigateTo('sell')"><i class="fas fa-lightbulb"></i> Submit Ide Pertamamu</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- ================================
+         PAGE: PROFIL SAYA
+    ================================ -->
+    <div class="page" id="page-profile">
+        <section class="page-hero">
+            <div class="container">
+                <h1 class="page-hero-title"><i class="fas fa-user-circle"></i> Profil Saya</h1>
+                <p class="page-hero-subtitle">Kelola informasi profil dan lihat statistik akunmu</p>
+            </div>
+        </section>
+        <section class="profile-section">
+            <div class="container">
+                <div class="profile-layout">
+                    <div class="profile-card-wrapper">
+                        <div class="profile-card">
+                            <div class="profile-avatar-large" id="profileAvatarLarge">U</div>
+                            <h2 class="profile-name" id="profileName">User</h2>
+                            <p class="profile-email" id="profileEmail">email@example.com</p>
+                            <div class="profile-role-badge" id="profileRoleBadge"><i class="fas fa-user"></i> Member</div>
+                            <div class="profile-stats-mini">
+                                <div class="profile-stat-mini"><span class="psm-num" id="profileTotalIdeas">0</span><span class="psm-label">Ide Dijual</span></div>
+                                <div class="profile-stat-mini"><span class="psm-num" id="profileTotalPurchases">0</span><span class="psm-label">Ide Dibeli</span></div>
+                                <div class="profile-stat-mini"><span class="psm-num" id="profileTotalEarnings">Rp 0</span><span class="psm-label">Penghasilan</span></div>
+                            </div>
+                            <p class="profile-joined" id="profileJoined"><i class="fas fa-calendar-alt"></i> Bergabung: -</p>
+                            <button class="btn btn-primary" onclick="window._openWithdrawModal()" style="width: 100%; margin-top: 1rem;"><i class="fas fa-money-check-alt"></i> Tarik Tunai</button>
+                        </div>
+                        <div class="profile-quick-actions">
+                            <button class="btn btn-primary" onclick="window._navigateTo('sell')" style="width:100%;"><i class="fas fa-lightbulb"></i> Jual Ide Baru</button>
+                            <button class="btn btn-outline" onclick="window._navigateTo('myideas')" style="width:100%;"><i class="fas fa-folder-open"></i> Lihat Ide Saya</button>
+                            <button class="btn btn-outline admin-only-btn" id="profileAdminBtn" onclick="window._navigateTo('admin')" style="width:100%; display:none;"><i class="fas fa-shield-alt"></i> Admin Dashboard</button>
+                        </div>
+                    </div>
+                    <div class="profile-form-wrapper">
+                        <div class="form-card">
+                            <h2 class="form-title"><i class="fas fa-edit"></i> Edit Profil</h2>
+                            <form id="profileForm" onsubmit="window._saveProfile(event)">
+                                <div class="form-group"><label for="profileFormName"><i class="fas fa-user"></i> Nama Lengkap</label><input type="text" id="profileFormName" class="form-input" placeholder="Nama lengkap kamu"></div>
+                                <div class="form-group"><label for="profileFormBio"><i class="fas fa-info-circle"></i> Bio</label><textarea id="profileFormBio" class="form-input form-textarea" rows="3" placeholder="Ceritakan tentang dirimu..."></textarea></div>
+                                <div class="form-row">
+                                    <div class="form-group"><label for="profileFormPhone"><i class="fas fa-phone"></i> Telepon</label><input type="tel" id="profileFormPhone" class="form-input" placeholder="+62 xxx"></div>
+                                    <div class="form-group"><label for="profileFormLocation"><i class="fas fa-map-marker-alt"></i> Lokasi</label><input type="text" id="profileFormLocation" class="form-input" placeholder="Kota, Indonesia"></div>
+                                </div>
+                                <div class="form-group"><label for="profileFormWebsite"><i class="fas fa-globe"></i> Website / Sosial Media</label><input type="url" id="profileFormWebsite" class="form-input" placeholder="https://..."></div>
+                                <hr style="margin: 1rem 0; border: 1px solid #333;">
+                                <h3><i class="fas fa-university"></i> Rekening Bank</h3>
+                                <div class="form-group"><label for="profileFormBankName">Nama Bank <span class="required">*</span></label><input type="text" id="profileFormBankName" class="form-input" placeholder="BCA, Mandiri, dll"></div>
+                                <div class="form-group"><label for="profileFormAccountNumber">Nomor Rekening <span class="required">*</span></label><input type="text" id="profileFormAccountNumber" class="form-input" placeholder="0123456789"></div>
+                                <div class="form-group"><label for="profileFormAccountName">Nama Pemilik Rekening <span class="required">*</span></label><input type="text" id="profileFormAccountName" class="form-input" placeholder="Sesuai buku tabungan"></div>
+                                <button type="submit" class="btn btn-primary" id="profileSaveBtn" style="width: 100%; margin-top: 1rem;"><i class="fas fa-save"></i> Simpan Perubahan</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- ================================
+         PAGE: ADMIN DASHBOARD
+    ================================ -->
+    <div class="page" id="page-admin">
+        <section class="page-hero">
+            <div class="container">
+                <h1 class="page-hero-title"><i class="fas fa-shield-alt"></i> Admin Dashboard</h1>
+                <p class="page-hero-subtitle">Kelola dan review ide yang disubmit oleh pengguna</p>
+            </div>
+        </section>
+        <section class="admin-section">
+            <div class="container">
+                <div class="dashboard-stats">
+                    <div class="dash-stat-card"><div class="dash-stat-icon" style="background: linear-gradient(135deg, #F59E0B, #FBBF24);"><i class="fas fa-clock"></i></div><div class="dash-stat-info"><span class="dash-stat-num" id="adminPendingCount">0</span><span class="dash-stat-label">Menunggu Review</span></div></div>
+                    <div class="dash-stat-card"><div class="dash-stat-icon" style="background: linear-gradient(135deg, #10b981, #34d399);"><i class="fas fa-check-circle"></i></div><div class="dash-stat-info"><span class="dash-stat-num" id="adminApprovedCount">0</span><span class="dash-stat-label">Disetujui</span></div></div>
+                    <div class="dash-stat-card"><div class="dash-stat-icon" style="background: linear-gradient(135deg, #ef4444, #f87171);"><i class="fas fa-times-circle"></i></div><div class="dash-stat-info"><span class="dash-stat-num" id="adminRejectedCount">0</span><span class="dash-stat-label">Ditolak</span></div></div>
+                    <div class="dash-stat-card"><div class="dash-stat-icon" style="background: linear-gradient(135deg, #6366f1, #818cf8);"><i class="fas fa-users"></i></div><div class="dash-stat-info"><span class="dash-stat-num" id="adminTotalUsers">0</span><span class="dash-stat-label">Total User</span></div></div>
+                </div>
+                <div class="admin-tabs">
+                    <button class="filter-tab admin-tab active" id="adminTabPending" onclick="window._switchAdminTab('pending')"><i class="fas fa-clock"></i> Pending</button>
+                    <button class="filter-tab admin-tab" id="adminTabApproved" onclick="window._switchAdminTab('approved')"><i class="fas fa-check"></i> Approved</button>
+                    <button class="filter-tab admin-tab" id="adminTabRejected" onclick="window._switchAdminTab('rejected')"><i class="fas fa-times"></i> Rejected</button>
+                    <button class="filter-tab admin-tab" id="adminTabAll" onclick="window._switchAdminTab('all')"><i class="fas fa-list"></i> Semua</button>
+                </div>
+                <div class="admin-ideas-list" id="adminIdeasList">
+                    <div class="admin-loading"><div class="skeleton-card"></div><div class="skeleton-card"></div><div class="skeleton-card"></div></div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Admin Idea Review Modal -->
+    <div class="admin-review-modal" id="adminReviewModal">
+        <div class="admin-review-content">
+            <button class="admin-review-close" onclick="window._closeAdminReviewModal()"><i class="fas fa-times"></i></button>
+            <div class="admin-review-body" id="adminReviewBody"></div>
+        </div>
+    </div>
+
+    <!-- Footer (shared) -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <div class="nav-logo" style="cursor:pointer;" onclick="window._navigateTo('home')">
+                        <img src="/logo.png" alt="Logo iCiren iDe'nem" class="custom-logo footer-logo">
+                    </div>
+                    <p>Marketplace ide konten kreator #1 di Indonesia</p>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-tiktok"></i></a>
+                        <a href="#"><i class="fab fa-youtube"></i></a>
+                    </div>
+                </div>
+                <div class="footer-links">
+                    <h4>Produk</h4>
+                    <a href="#" onclick="window._navigateTo('explore'); return false;">Jelajahi Ide</a>
+                    <a href="#" onclick="window._navigateTo('sell'); return false;">Jual Ide</a>
+                    <a href="#" onclick="window._navigateTo('explore'); return false;">Kategori</a>
+                </div>
+                <div class="footer-links">
+                    <h4>Perusahaan</h4>
+                    <a href="#" onclick="window._navigateTo('about'); return false;">Tentang</a>
+                    <a href="#">Karir</a>
+                    <a href="#">Blog</a>
+                </div>
+                <div class="footer-links">
+                    <h4>Support</h4>
+                    <a href="#">Bantuan</a>
+                    <a href="#">Kontak</a>
+                    <a href="#">Kebijakan</a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 iCiren iDe'nem. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Modal Detail Ide -->
+    <div class="modal" id="ideaModal">
+        <div class="modal-content">
+            <span class="close" onclick="window._closeModal()">&times;</span>
+            <div class="modal-body" id="modalBody" data-lenis-prevent></div>
+        </div>
+    </div>
+
+    <!-- Withdraw Modal -->
+    <div class="modal" id="withdrawModal">
+        <div class="modal-content" style="max-width: 400px; text-align: center;">
+            <span class="close" onclick="window._closeWithdrawModal()">&times;</span>
+            <div class="modal-body">
+                <i class="fas fa-money-bill-wave" style="font-size: 3rem; color: #10B981; margin-bottom: 1rem;"></i>
+                <h2>Tarik Tunai</h2>
+                <p style="color: #a3a3a3; margin-bottom: 1rem;">Total penghasilan yang bisa ditarik:</p>
+                <h3 id="withdrawAvailableBalance" style="font-size: 2rem; color: #F59E0B; margin-bottom: 1.5rem;">Rp 0</h3>
+                
+                <form id="withdrawForm" onsubmit="window._submitWithdraw(event)">
+                    <div class="form-group" style="text-align: left;">
+                        <label for="withdrawAmount">Nominal Penarikan (Rp)</label>
+                        <input type="number" id="withdrawAmount" class="form-input" placeholder="Minimal Rp 50.000" min="50000" required>
+                    </div>
+                    <p style="font-size: 0.85rem; color: #a3a3a3; text-align: left; margin-bottom: 1rem;" id="withdrawBankInfo">
+                        Mentransfer ke: <strong>-</strong>
+                    </p>
+                    <button type="submit" class="btn btn-primary" style="width: 100%;" id="withdrawSubmitBtn">Tarik Sekarang</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toast"></div>
+
+    <!-- Midtrans Snap.js (Sandbox) -->
+    <script type="text/javascript"
+            src="https://app.sandbox.midtrans.com/snap/snap.js"
+            data-client-key="YOUR_MIDTRANS_CLIENT_KEY"></script>
+
+    <script type="module" src="/src/main.js"></script>
+</body>
+
+</html>

@@ -8,10 +8,10 @@ CREATE TABLE IF NOT EXISTS ideas (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE NOT NULL,
   title TEXT NOT NULL,
-  platform TEXT NOT NULL CHECK (platform IN ('youtube','tiktok','instagram','podcast','blog')),
-  category TEXT DEFAULT 'lainnya',
+  category TEXT NOT NULL CHECK (category IN ('youtube','tiktok','instagram','podcast','blog')),
   price INTEGER NOT NULL CHECK (price >= 10000),
   description TEXT NOT NULL,
+  tags TEXT DEFAULT '',
   status TEXT DEFAULT 'pending' CHECK (status IN ('pending','approved','rejected')),
   emoji TEXT DEFAULT '💡',
   views INTEGER DEFAULT 0,
@@ -26,7 +26,6 @@ CREATE TABLE IF NOT EXISTS purchases (
   user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE NOT NULL,
   idea_id INTEGER NOT NULL,
   idea_title TEXT NOT NULL,
-  idea_platform TEXT DEFAULT '',
   idea_category TEXT DEFAULT '',
   idea_price INTEGER DEFAULT 0,
   idea_desc TEXT DEFAULT '',
@@ -45,9 +44,6 @@ CREATE TABLE IF NOT EXISTS profiles (
   phone TEXT DEFAULT '',
   location TEXT DEFAULT '',
   website TEXT DEFAULT '',
-  bank_name TEXT DEFAULT '',
-  account_number TEXT DEFAULT '',
-  account_name TEXT DEFAULT '',
   role TEXT DEFAULT 'user' CHECK (role IN ('user','admin')),
   total_sales INTEGER DEFAULT 0,
   total_earnings INTEGER DEFAULT 0,
@@ -65,19 +61,6 @@ CREATE TABLE IF NOT EXISTS notifications (
   is_read BOOLEAN DEFAULT false,
   link_to TEXT DEFAULT '',
   created_at TIMESTAMPTZ DEFAULT now()
-);
-
--- 5. Tabel: withdrawals (Penarikan tunai)
-CREATE TABLE IF NOT EXISTS withdrawals (
-  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-  user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE NOT NULL,
-  amount INTEGER NOT NULL CHECK (amount > 0),
-  bank_name TEXT NOT NULL,
-  account_number TEXT NOT NULL,
-  account_name TEXT NOT NULL,
-  status TEXT DEFAULT 'pending' CHECK (status IN ('pending','processing','completed','rejected')),
-  created_at TIMESTAMPTZ DEFAULT now(),
-  updated_at TIMESTAMPTZ DEFAULT now()
 );
 
 -- =============================================================
@@ -199,49 +182,14 @@ CREATE POLICY "Users can delete own notifications"
   ON notifications FOR DELETE
   USING (auth.uid() = user_id);
 
--- Admin can insert notifications
+-- System/Admin bisa insert notifikasi
 DROP POLICY IF EXISTS "Admin can insert notifications" ON notifications;
 CREATE POLICY "Admin can insert notifications"
   ON notifications FOR INSERT
   WITH CHECK (true);
 
--- ─── WITHDRAWALS ─────────────────────────────────────────────
-ALTER TABLE withdrawals ENABLE ROW LEVEL SECURITY;
-
-DROP POLICY IF EXISTS "Users can view own withdrawals" ON withdrawals;
-CREATE POLICY "Users can view own withdrawals"
-  ON withdrawals FOR SELECT
-  USING (auth.uid() = user_id);
-
-DROP POLICY IF EXISTS "Users can insert own withdrawals" ON withdrawals;
-CREATE POLICY "Users can insert own withdrawals"
-  ON withdrawals FOR INSERT
-  WITH CHECK (auth.uid() = user_id);
-
-DROP POLICY IF EXISTS "Admin can view all withdrawals" ON withdrawals;
-CREATE POLICY "Admin can view all withdrawals"
-  ON withdrawals FOR SELECT
-  USING (
-    EXISTS (
-      SELECT 1 FROM profiles
-      WHERE profiles.id = auth.uid()
-      AND profiles.role = 'admin'
-    )
-  );
-
-DROP POLICY IF EXISTS "Admin can update all withdrawals" ON withdrawals;
-CREATE POLICY "Admin can update all withdrawals"
-  ON withdrawals FOR UPDATE
-  USING (
-    EXISTS (
-      SELECT 1 FROM profiles
-      WHERE profiles.id = auth.uid()
-      AND profiles.role = 'admin'
-    )
-  );
-
 -- =============================================================
--- 6. Tabel: reviews (Rating & ulasan ide)
+-- 5. Tabel: reviews (Rating & ulasan ide)
 -- =============================================================
 CREATE TABLE IF NOT EXISTS reviews (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
@@ -308,7 +256,7 @@ CREATE TRIGGER on_auth_user_created
   FOR EACH ROW EXECUTE FUNCTION public.handle_new_user();
 
 -- =============================================================
--- 7. Tabel: transactions (Audit trail pembayaran)
+-- 6. Tabel: transactions (Audit trail pembayaran)
 -- =============================================================
 CREATE TABLE IF NOT EXISTS transactions (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
@@ -427,7 +375,6 @@ BEGIN
     'order_id', v_order_id,
     'amount', v_idea.price,
     'idea_title', v_idea.title,
-    'idea_platform', v_idea.platform,
     'idea_category', v_idea.category,
     'idea_emoji', v_idea.emoji,
     'idea_desc', v_idea.description,
@@ -506,9 +453,9 @@ BEGIN
   WHERE id = p_transaction_id;
 
   -- 7. INSERT ke purchases (via SECURITY DEFINER, bypass RLS)
-  INSERT INTO purchases (user_id, idea_id, idea_title, idea_platform, idea_category, idea_price, idea_desc, idea_emoji, idea_rating, idea_views)
+  INSERT INTO purchases (user_id, idea_id, idea_title, idea_category, idea_price, idea_desc, idea_emoji, idea_rating, idea_views)
   VALUES (
-    v_user_id, v_idea.id, v_idea.title, v_idea.platform, v_idea.category, v_idea.price,
+    v_user_id, v_idea.id, v_idea.title, v_idea.category, v_idea.price,
     v_idea.description, COALESCE(v_idea.emoji, '💡'),
     COALESCE(v_idea.rating, 0), COALESCE(v_idea.views, 0)
   )
