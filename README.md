@@ -1,2 +1,0 @@
-# iCiren iDe'nem
-# iCiren iDe'nem
