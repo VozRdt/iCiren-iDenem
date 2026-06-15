@@ -2,7 +2,32 @@
   "hash": "8ffb49e1",
   "configHash": "1ee29d67",
   "lockfileHash": "e9f27ace",
-  "browserHash": "164ed069",
-  "optimized": {},
+  "browserHash": "3d72aeb1",
+  "optimized": {
+    "@supabase/supabase-js": {
+      "src": "../../node_modules/@supabase/supabase-js/dist/index.mjs",
+      "file": "@supabase_supabase-js.js",
+      "fileHash": "7227f351",
+      "needsInterop": false
+    },
+    "gsap": {
+      "src": "../../node_modules/gsap/index.js",
+      "file": "gsap.js",
+      "fileHash": "e03dca0a",
+      "needsInterop": false
+    },
+    "gsap/ScrollTrigger": {
+      "src": "../../node_modules/gsap/ScrollTrigger.js",
+      "file": "gsap_ScrollTrigger.js",
+      "fileHash": "c590a79d",
+      "needsInterop": false
+    },
+    "lenis": {
+      "src": "../../node_modules/lenis/dist/lenis.mjs",
+      "file": "lenis.js",
+      "fileHash": "304861cf",
+      "needsInterop": false
+    }
+  },
   "chunks": {}
 }

@@ -11,7 +11,7 @@ import { navigateTo, toggleMenu, initNavbarScroll } from './navigation.js'
 import { loadUserData, loadMarketplaceIdeas, renderIdeas, setFilter, filterIdeas, loadMoreIdeas, openModal, closeModal, buyIdea, updatePriceLabel, initIdeaModalListeners } from './ideas.js'
 import { submitIdea } from './sell.js'
 import { renderMyIdeas, switchMyIdeasTab, deleteIdea, deletePurchased } from './myideas.js'
-import { renderProfile, saveProfile, openWithdrawModal, closeWithdrawModal, submitWithdraw } from './profile.js'
+import { renderProfile, saveProfile, openWithdrawModal, closeWithdrawModal, submitWithdraw, uploadAvatar } from './profile.js'
 import { loadAdminDashboard, switchAdminTab, openAdminReview, closeAdminReviewModal, adminApproveIdea, adminRejectIdea, initAdminListeners } from './admin.js'
 import { loadNotifications, toggleNotifPanel, markNotifRead, markAllNotifsRead, setupRealtimeSubscriptions, initNotifListeners } from './notifications.js'
 import { setStarRating, submitReview } from './reviews.js'
@@ -44,6 +44,7 @@ window._switchMyIdeasTab = switchMyIdeasTab
 window._deleteIdea = deleteIdea
 window._deletePurchased = deletePurchased
 window._saveProfile = saveProfile
+window._uploadAvatar = uploadAvatar
 window._openWithdrawModal = openWithdrawModal
 window._closeWithdrawModal = closeWithdrawModal
 window._submitWithdraw = submitWithdraw

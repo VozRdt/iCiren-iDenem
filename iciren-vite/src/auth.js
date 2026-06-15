@@ -36,7 +36,26 @@ export function updateAuthUI() {
       userProfile.style.display = 'flex'
       const name = currentUser.name || currentUser.email || 'User'
       if (userName) userName.textContent = name
-      if (userAvatar) userAvatar.textContent = name.charAt(0).toUpperCase()
+      
+      if (userAvatar) {
+        const avatarText = document.getElementById('navUserAvatarText')
+        if (currentUser.avatar_url) {
+          if (avatarText) avatarText.style.display = 'none'
+          let img = userAvatar.querySelector('img')
+          if (!img) {
+            img = document.createElement('img')
+            userAvatar.insertBefore(img, userAvatar.firstChild)
+          }
+          img.src = currentUser.avatar_url
+        } else {
+          if (avatarText) {
+            avatarText.style.display = 'inline-block'
+            avatarText.textContent = name.charAt(0).toUpperCase()
+          }
+          const img = userAvatar.querySelector('img')
+          if (img) img.remove()
+        }
+      }
     }
   } else {
     if (loginBtn) loginBtn.style.display = 'inline-flex'

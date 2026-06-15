@@ -496,3 +496,35 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
+-- =============================================================
+-- 7. Supabase Storage: avatars
+-- =============================================================
+-- Insert bucket jika belum ada
+INSERT INTO storage.buckets (id, name, public)
+VALUES ('avatars', 'avatars', true)
+ON CONFLICT (id) DO NOTHING;
+
+-- Policy: Semua orang bisa melihat avatar (SELECT)
+DROP POLICY IF EXISTS "Avatar images are publicly accessible." ON storage.objects;
+CREATE POLICY "Avatar images are publicly accessible." 
+  ON storage.objects FOR SELECT 
+  USING ( bucket_id = 'avatars' );
+
+-- Policy: User yang login bisa mengunggah avatar (INSERT)
+DROP POLICY IF EXISTS "Anyone can upload an avatar." ON storage.objects;
+CREATE POLICY "Anyone can upload an avatar." 
+  ON storage.objects FOR INSERT 
+  WITH CHECK ( bucket_id = 'avatars' AND auth.role() = 'authenticated' );
+
+-- Policy: User hanya bisa mengupdate avatar mereka sendiri (UPDATE)
+DROP POLICY IF EXISTS "Anyone can update their own avatar." ON storage.objects;
+CREATE POLICY "Anyone can update their own avatar." 
+  ON storage.objects FOR UPDATE 
+  USING ( bucket_id = 'avatars' AND auth.uid() = owner )
+  WITH CHECK ( bucket_id = 'avatars' AND auth.role() = 'authenticated' );
+
+-- Policy: User hanya bisa menghapus avatar mereka sendiri (DELETE)
+DROP POLICY IF EXISTS "Anyone can delete their own avatar." ON storage.objects;
+CREATE POLICY "Anyone can delete their own avatar." 
+  ON storage.objects FOR DELETE 
+  USING ( bucket_id = 'avatars' AND auth.uid() = owner );

@@ -17,6 +17,11 @@ export async function loadProfile() {
       if (!error && data) {
         userProfile = data
         localStorage.setItem(getUserKey('profile'), JSON.stringify(data))
+        if (data.avatar_url) {
+            currentUser.avatar_url = data.avatar_url
+            localStorage.setItem('iciren_user', JSON.stringify(currentUser))
+            updateAuthUI()
+        }
         return
       }
     } catch (e) { console.warn('Profile load error:', e) }
@@ -30,7 +35,26 @@ export function renderProfile() {
     const email = currentUser?.email || ''
     const role = userProfile?.role || 'user'
     const avatar = document.getElementById('profileAvatarLarge')
-    if (avatar) avatar.textContent = name.charAt(0).toUpperCase()
+    const avatarText = document.getElementById('profileAvatarLargeText')
+    
+    if (avatar) {
+      if (userProfile?.avatar_url) {
+        avatarText.style.display = 'none'
+        // Cek apakah img sudah ada
+        let img = avatar.querySelector('img')
+        if (!img) {
+            img = document.createElement('img')
+            avatar.insertBefore(img, avatar.firstChild)
+        }
+        img.src = userProfile.avatar_url
+      } else {
+        avatarText.style.display = 'inline-block'
+        avatarText.textContent = name.charAt(0).toUpperCase()
+        const img = avatar.querySelector('img')
+        if (img) img.remove()
+      }
+    }
+    
     const nameEl = document.getElementById('profileName')
     if (nameEl) nameEl.textContent = name
     const emailEl = document.getElementById('profileEmail')
@@ -114,6 +138,67 @@ export async function saveProfile(e) {
   btn.innerHTML = '<i class="fas fa-save"></i> Simpan Perubahan'
   showToast('✅ Profil berhasil disimpan!')
   renderProfile()
+}
+
+// ─── AVATAR UPLOAD ───────────────────────────────────────────
+export async function uploadAvatar(event) {
+  const file = event.target.files[0]
+  if (!file) return
+
+  if (file.size > 2 * 1024 * 1024) { // Limit 2MB
+      showToast('❌ Ukuran file maksimal 2MB')
+      return
+  }
+
+  showToast('⏳ Mengunggah foto profil...')
+
+  if (supabaseClient && currentUser) {
+      try {
+          const fileExt = file.name.split('.').pop()
+          const fileName = `${currentUser.id}-${Math.random()}.${fileExt}`
+          const filePath = `${currentUser.id}/${fileName}`
+
+          // 1. Upload ke Storage bucket 'avatars'
+          const { error: uploadError } = await supabaseClient.storage
+              .from('avatars')
+              .upload(filePath, file)
+
+          if (uploadError) throw uploadError
+
+          // 2. Dapatkan Public URL
+          const { data: publicUrlData } = supabaseClient.storage
+              .from('avatars')
+              .getPublicUrl(filePath)
+              
+          const avatarUrl = publicUrlData.publicUrl
+
+          // 3. Update tabel profiles
+          const { error: updateError } = await supabaseClient
+              .from('profiles')
+              .update({ avatar_url: avatarUrl, updated_at: new Date().toISOString() })
+              .eq('id', currentUser.id)
+
+          if (updateError) throw updateError
+
+          // 4. Update local state
+          userProfile.avatar_url = avatarUrl
+          localStorage.setItem(getUserKey('profile'), JSON.stringify(userProfile))
+          
+          currentUser.avatar_url = avatarUrl
+          localStorage.setItem('iciren_user', JSON.stringify(currentUser))
+
+          // 5. Render ulang UI
+          renderProfile()
+          updateAuthUI()
+          showToast('✅ Foto profil berhasil diperbarui!')
+
+      } catch (err) {
+          console.error('Upload error:', err)
+          showToast('❌ Gagal mengunggah foto profil.')
+      }
+  } else {
+      showToast('ℹ️ Fitur ganti foto profil hanya tersedia saat online (Supabase).')
+  }
 }
 
 // ─── WITHDRAWAL ──────────────────────────────────────────────

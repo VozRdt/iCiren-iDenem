@@ -71,7 +71,9 @@
                             </div>
                         </div>
                     </div>
-                    <div class="nav-user-avatar" id="navUserAvatar" onclick="window._navigateTo('profile')" style="cursor:pointer;" title="Profil Saya">U</div>
+                    <div class="nav-user-avatar" id="navUserAvatar" onclick="window._navigateTo('profile')" style="cursor:pointer;" title="Profil Saya">
+                        <span id="navUserAvatarText">U</span>
+                    </div>
                     <span class="nav-user-name" id="navUserName" onclick="window._navigateTo('profile')" style="cursor:pointer;">User</span>
                     <button class="btn btn-outline btn-sm" id="navLogoutBtn" onclick="window._logoutUser()">
                         <i class="fas fa-sign-out-alt"></i> Keluar
@@ -572,7 +574,11 @@
                 <div class="profile-layout">
                     <div class="profile-card-wrapper">
                         <div class="profile-card">
-                            <div class="profile-avatar-large" id="profileAvatarLarge">U</div>
+                            <div class="profile-avatar-large" id="profileAvatarLarge" onclick="document.getElementById('avatarUploadInput').click()">
+                                <span id="profileAvatarLargeText">U</span>
+                                <div class="avatar-overlay"><i class="fas fa-camera"></i></div>
+                            </div>
+                            <input type="file" id="avatarUploadInput" accept="image/png, image/jpeg, image/jpg" style="display:none;" onchange="window._uploadAvatar(event)">
                             <h2 class="profile-name" id="profileName">User</h2>
                             <p class="profile-email" id="profileEmail">email@example.com</p>
                             <div class="profile-role-badge" id="profileRoleBadge"><i class="fas fa-user"></i> Member</div>
@@ -732,7 +738,7 @@
     <!-- Midtrans Snap.js (Sandbox) -->
     <script type="text/javascript"
             src="https://app.sandbox.midtrans.com/snap/snap.js"
-            data-client-key="YOUR_MIDTRANS_CLIENT_KEY"></script>
+            data-client-key="Mid-client-t-deQqM9e07LeEkP"></script>
 
     <script type="module" src="/src/main.js"></script>
 </body>
