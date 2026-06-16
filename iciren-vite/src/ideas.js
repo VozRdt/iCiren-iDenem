@@ -335,6 +335,16 @@ export async function buyIdea(ideaId) {
   if (!idea) return
 
   if (supabaseClient && currentUser && currentUser.id) {
+    const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(String(ideaId));
+    
+    if (!isUUID) {
+      // Jika ide adalah data dummy (bukan dari database), proses pembelian secara lokal (mock)
+      addPurchasedIdeaLocal(idea);
+      closeModal();
+      showToast('✅ Ide berhasil dibeli! (Dummy Mode)');
+      return;
+    }
+
     try {
       showToast('⏳ Membuat transaksi pembayaran...')
       
