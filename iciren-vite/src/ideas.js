@@ -265,21 +265,21 @@ export function openModal(ideaId) {
   const idAttr = typeof idea.id === 'string' ? `'${idea.id}'` : idea.id
 
   body.innerHTML = `
-    <div style="text-align:center; margin-bottom:1.5rem; font-size:5rem;">${idea.emoji || '💡'}</div>
+    <div style="text-align:center; margin-bottom:1rem; font-size:4rem;">${idea.emoji || '💡'}</div>
     <div style="display: flex; gap: 0.5rem; justify-content: center;">
         <span class="category-badge">${platformLabel}</span>
         <span class="category-badge" style="background: rgba(16,185,129,0.1); color: #10B981;">${c.charAt(0).toUpperCase() + c.slice(1)}</span>
     </div>
-    <h2 style="color:#f8fafc; font-size:1.6rem; margin:1rem 0;">${idea.title}</h2>
-    <p style="color:#a3a3a3; line-height:1.8; margin-bottom:2rem;">${idea.desc || ''}</p>
-    <div style="display:flex; justify-content:space-between; align-items:center; padding:1.5rem; background:rgba(245,158,11,0.05); border:1px solid rgba(245,158,11,0.2); border-radius:16px; margin-bottom:2rem;">
+    <h2 style="color:#f8fafc; font-size:1.4rem; margin:1rem 0 0.5rem; text-align:center;">${idea.title}</h2>
+    <p style="color:#a3a3a3; line-height:1.6; margin-bottom:1.5rem; font-size:0.95rem; text-align:center;">${idea.desc || ''}</p>
+    <div style="display:flex; justify-content:space-between; align-items:center; padding:1.2rem; background:rgba(245,158,11,0.05); border:1px solid rgba(245,158,11,0.2); border-radius:12px; margin-bottom:1.5rem;">
       <div>
-        <div style="color:#a3a3a3; font-size:0.85rem;">Harga</div>
-        <div style="font-size:2rem; font-weight:800; background:linear-gradient(135deg,#F59E0B,#FBBF24); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;">Rp ${idea.price.toLocaleString('id-ID')}</div>
+        <div style="color:#a3a3a3; font-size:0.8rem; margin-bottom:0.2rem;">Harga</div>
+        <div style="font-size:1.6rem; font-weight:800; background:linear-gradient(135deg,#F59E0B,#FBBF24); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;">Rp ${idea.price.toLocaleString('id-ID')}</div>
       </div>
       <div style="text-align:right;">
-        <div style="color:#FBBF24; font-size:1.1rem; margin-bottom:0.2rem;">${'⭐'.repeat(Math.min(Math.round(idea.rating || 0), 5))} ${idea.rating || 0}</div>
-        <div style="color:#a3a3a3; font-size:0.85rem;">${(idea.views || 0).toLocaleString()} kali dilihat</div>
+        <div style="color:#FBBF24; font-size:1rem; margin-bottom:0.2rem;">${'⭐'.repeat(Math.min(Math.round(idea.rating || 0), 5))} ${idea.rating || 0}</div>
+        <div style="color:#a3a3a3; font-size:0.8rem;">${(idea.views || 0).toLocaleString()} kali dilihat</div>
       </div>
     </div>
     <button class="btn btn-primary" style="width:100%; margin-bottom:0.5rem;" onclick="window._buyIdea(${idAttr})">

@@ -1596,7 +1596,7 @@ body {
     border: 1px solid rgba(245, 158, 11, 0.2);
     border-radius: 24px;
     padding: 2rem;
-    max-width: 500px;
+    max-width: 440px;
     width: 90%;
     max-height: 85vh;
     overflow-y: auto;
