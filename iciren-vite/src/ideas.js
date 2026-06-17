@@ -265,39 +265,39 @@ export function openModal(ideaId) {
   const idAttr = typeof idea.id === 'string' ? `'${idea.id}'` : idea.id
 
   body.innerHTML = `
-    <div style="text-align:center; margin-bottom:1rem; font-size:3.5rem;">${idea.emoji || '💡'}</div>
-    <div style="display: flex; gap: 0.5rem; justify-content: center;">
+    <div style="text-align:center; margin-bottom:0.5rem; font-size:2.5rem;">${idea.emoji || '💡'}</div>
+    <div style="display: flex; gap: 0.4rem; justify-content: center;">
         <span class="category-badge">${platformLabel}</span>
         <span class="category-badge" style="background: rgba(16,185,129,0.1); color: #10B981;">${c.charAt(0).toUpperCase() + c.slice(1)}</span>
     </div>
-    <h2 style="color:#f8fafc; font-size:1.25rem; margin:1rem 0 0.5rem; text-align:center;">${idea.title}</h2>
-    <p style="color:#a3a3a3; line-height:1.5; margin-bottom:1.5rem; font-size:0.9rem; text-align:center;">${idea.desc || ''}</p>
-    <div style="display:flex; justify-content:space-between; align-items:center; padding:1rem; background:rgba(245,158,11,0.05); border:1px solid rgba(245,158,11,0.2); border-radius:12px; margin-bottom:1.5rem;">
+    <h2 style="color:#f8fafc; font-size:1.1rem; margin:0.6rem 0 0.3rem; text-align:center;">${idea.title}</h2>
+    <p style="color:#a3a3a3; line-height:1.4; margin-bottom:0.8rem; font-size:0.85rem; text-align:center;">${idea.desc || ''}</p>
+    <div style="display:flex; justify-content:space-between; align-items:center; padding:0.7rem 0.8rem; background:rgba(245,158,11,0.05); border:1px solid rgba(245,158,11,0.2); border-radius:10px; margin-bottom:0.8rem;">
       <div>
-        <div style="color:#a3a3a3; font-size:0.8rem; margin-bottom:0.2rem;">Harga</div>
-        <div style="font-size:1.4rem; font-weight:800; background:linear-gradient(135deg,#F59E0B,#FBBF24); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;">Rp ${idea.price.toLocaleString('id-ID')}</div>
+        <div style="color:#a3a3a3; font-size:0.7rem; margin-bottom:0.1rem;">Harga</div>
+        <div style="font-size:1.2rem; font-weight:800; background:linear-gradient(135deg,#F59E0B,#FBBF24); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;">Rp ${idea.price.toLocaleString('id-ID')}</div>
       </div>
       <div style="text-align:right;">
-        <div style="color:#FBBF24; font-size:0.9rem; margin-bottom:0.2rem;">${'⭐'.repeat(Math.min(Math.round(idea.rating || 0), 5))} ${idea.rating || 0}</div>
-        <div style="color:#a3a3a3; font-size:0.8rem;">${(idea.views || 0).toLocaleString()} kali dilihat</div>
+        <div style="color:#FBBF24; font-size:0.8rem; margin-bottom:0.1rem;">${'⭐'.repeat(Math.min(Math.round(idea.rating || 0), 5))} ${idea.rating || 0}</div>
+        <div style="color:#a3a3a3; font-size:0.7rem;">${(idea.views || 0).toLocaleString()} kali dilihat</div>
       </div>
     </div>
-    <button class="btn btn-primary" style="width:100%; margin-bottom:0.5rem;" onclick="window._buyIdea(${idAttr})">
+    <button class="btn btn-primary" style="width:100%; margin-bottom:0.3rem; padding:0.6rem 1rem; font-size:0.9rem;" onclick="window._buyIdea(${idAttr})">
       <i class="fas fa-shopping-cart"></i> Beli Ide Ini
     </button>
     <!-- Review Section -->
     <div class="review-section">
-      <h4><i class="fas fa-star"></i> Ulasan & Rating</h4>
+      <h4 style="font-size:0.9rem; margin-bottom:0.6rem;"><i class="fas fa-star"></i> Ulasan & Rating</h4>
       <div class="review-form" id="reviewForm" style="display:${isLoggedIn() ? 'block' : 'none'}">
-        <div class="star-selector" id="starSelector">
+        <div class="star-selector" id="starSelector" style="margin-bottom:0.4rem;">
           <i class="fas fa-star" data-star="1" onclick="window._setStarRating(1)"></i>
           <i class="fas fa-star" data-star="2" onclick="window._setStarRating(2)"></i>
           <i class="fas fa-star" data-star="3" onclick="window._setStarRating(3)"></i>
           <i class="fas fa-star" data-star="4" onclick="window._setStarRating(4)"></i>
           <i class="fas fa-star" data-star="5" onclick="window._setStarRating(5)"></i>
         </div>
-        <textarea class="review-input" id="reviewComment" rows="2" placeholder="Tulis ulasan..."></textarea>
-        <button class="btn btn-outline btn-sm" onclick="window._submitReview(${idAttr})" style="width:100%;">
+        <textarea class="review-input" id="reviewComment" rows="2" placeholder="Tulis ulasan..." style="margin-bottom:0.4rem;"></textarea>
+        <button class="btn btn-outline btn-sm" onclick="window._submitReview(${idAttr})" style="width:100%; padding:0.4rem 0.8rem; font-size:0.8rem;">
           <i class="fas fa-paper-plane"></i> Kirim Ulasan
         </button>
       </div>
