@@ -1583,9 +1583,9 @@ body {
     background: rgba(0, 0, 0, 0.85);
     backdrop-filter: blur(8px);
     z-index: 2000;
-    align-items: flex-start;
+    align-items: center;
     justify-content: center;
-    padding: 3rem 1rem;
+    padding: 1rem;
     overflow-y: auto;
 }
 
@@ -1601,7 +1601,8 @@ body {
     max-width: 380px;
     width: 100%;
     margin: auto;
-    max-height: none;
+    max-height: 85vh;
+    overflow-y: auto;
     position: relative;
     animation: modalIn 0.3s ease;
 }
