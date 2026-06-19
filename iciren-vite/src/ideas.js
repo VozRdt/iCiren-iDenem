@@ -242,7 +242,10 @@ let currentModalIdeaId = null
 
 export function openModal(ideaId) {
   const all = getAllMarketplaceIdeas()
-  const idea = all.find(i => i.id === ideaId) || allIdeas.find(i => i.id === ideaId)
+  let idea = all.find(i => i.id === ideaId) || allIdeas.find(i => i.id === ideaId)
+  if (!idea) {
+    idea = purchasedIdeas.find(i => i.id === ideaId)
+  }
   if (!idea) return
   currentModalIdeaId = ideaId
   const modal = document.getElementById('ideaModal')
