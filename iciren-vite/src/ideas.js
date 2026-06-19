@@ -8,7 +8,7 @@ import { currentUser, isLoggedIn, showAuthRequiredModal } from './auth.js'
 import { navigateTo } from './navigation.js'
 import { stopLenisScroll, startLenisScroll, getLenis } from './animations.js'
 import { switchMyIdeasTab } from './myideas.js'
-import { userProfile } from './profile.js'
+import { userProfile, loadProfile } from './profile.js'
 
 // ─── DATA IDE ────────────────────────────────────────────────
 export const allIdeas = []
@@ -28,6 +28,9 @@ export function getUserKey(baseName) {
 export async function loadUserData() {
   if (supabaseClient && currentUser && currentUser.id) {
     try {
+      // Pastikan profile selalu up-to-date
+      await loadProfile()
+
       const { data: ideasData, error: ideasErr } = await supabaseClient
         .from('ideas').select('*').eq('user_id', currentUser.id).order('created_at', { ascending: false })
 
