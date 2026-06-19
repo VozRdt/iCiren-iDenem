@@ -12,7 +12,11 @@ import { loadUserData, loadMarketplaceIdeas, renderIdeas, setFilter, filterIdeas
 import { submitIdea } from './sell.js'
 import { renderMyIdeas, switchMyIdeasTab, deleteIdea, deletePurchased } from './myideas.js'
 import { renderProfile, saveProfile, openWithdrawModal, closeWithdrawModal, submitWithdraw, uploadAvatar } from './profile.js'
-import { loadAdminDashboard, switchAdminTab, openAdminReview, closeAdminReviewModal, adminApproveIdea, adminRejectIdea, initAdminListeners } from './admin.js'
+import { 
+  loadAdminDashboard, switchAdminTab, openAdminReview, closeAdminReviewModal, 
+  adminApproveIdea, adminRejectIdea, initAdminListeners,
+  switchAdminMode, switchAdminWdTab, adminApproveWithdrawal, adminRejectWithdrawal
+} from './admin.js'
 import { loadNotifications, toggleNotifPanel, markNotifRead, markAllNotifsRead, setupRealtimeSubscriptions, initNotifListeners } from './notifications.js'
 import { initGSAP, animateCurrentPage } from './animations.js'
 
@@ -54,6 +58,10 @@ window._openAdminReview = openAdminReview
 window._closeAdminReviewModal = closeAdminReviewModal
 window._adminApproveIdea = adminApproveIdea
 window._adminRejectIdea = adminRejectIdea
+window._switchAdminMode = switchAdminMode
+window._switchAdminWdTab = switchAdminWdTab
+window._adminApproveWithdrawal = adminApproveWithdrawal
+window._adminRejectWithdrawal = adminRejectWithdrawal
 window._toggleNotifPanel = toggleNotifPanel
 window._markNotifRead = markNotifRead
 window._markAllNotifsRead = markAllNotifsRead

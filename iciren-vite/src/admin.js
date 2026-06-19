@@ -10,6 +10,10 @@ import { stopLenisScroll, startLenisScroll } from './animations.js'
 let adminIdeas = []
 let adminCurrentTab = 'pending'
 
+let adminWithdrawals = []
+let adminCurrentMode = 'ideas' // 'ideas' or 'withdrawals'
+let adminCurrentWdTab = 'pending'
+
 export async function loadAdminDashboard() {
   if (!userProfile) await loadProfile()
   if (!userProfile || userProfile.role !== 'admin') {
@@ -29,11 +33,15 @@ export async function loadAdminDashboard() {
     if (error) throw error
     adminIdeas = data || []
     localStorage.setItem('admin_all_ideas', JSON.stringify(adminIdeas))
+
+    const { data: wdData, error: wdErr } = await supabaseClient.from('withdrawals').select('*').order('created_at', { ascending: false })
+    if (!wdErr) adminWithdrawals = wdData || []
   } catch (e) {
     console.warn('Admin load error:', e)
     adminIdeas = JSON.parse(localStorage.getItem('admin_all_ideas') || '[]')
   }
   renderAdminIdeas()
+  renderAdminWithdrawals()
 }
 
 export function switchAdminTab(tab) {
@@ -174,6 +182,127 @@ async function updateIdeaStatus(id, status) {
 
   renderAdminIdeas()
   showToast(status === 'approved' ? '✅ Ide berhasil disetujui!' : '❌ Ide ditolak.')
+}
+
+// ─── ADMIN WITHDRAWAL LOGIC ───────────────────────────────────
+
+export function switchAdminMode(mode) {
+  adminCurrentMode = mode
+  document.getElementById('adminModeIdeasBtn').className = mode === 'ideas' ? 'btn btn-primary' : 'btn btn-outline'
+  document.getElementById('adminModeWithdrawalsBtn').className = mode === 'withdrawals' ? 'btn btn-primary' : 'btn btn-outline'
+  
+  document.getElementById('adminModeIdeas').style.display = mode === 'ideas' ? 'block' : 'none'
+  document.getElementById('adminModeWithdrawals').style.display = mode === 'withdrawals' ? 'block' : 'none'
+  
+  if (mode === 'ideas') renderAdminIdeas()
+  if (mode === 'withdrawals') renderAdminWithdrawals()
+}
+
+export function switchAdminWdTab(tab) {
+  adminCurrentWdTab = tab
+  document.querySelectorAll('.admin-wd-tab').forEach(t => t.classList.remove('active'))
+  
+  let tabId = 'adminWdTabPending'
+  if (tab === 'completed') tabId = 'adminWdTabCompleted'
+  if (tab === 'rejected') tabId = 'adminWdTabRejected'
+  const btn = document.getElementById(tabId)
+  if (btn) btn.classList.add('active')
+  
+  renderAdminWithdrawals()
+}
+
+function renderAdminWithdrawals() {
+  const list = document.getElementById('adminWithdrawalsList')
+  if (!list) return
+
+  const filtered = adminWithdrawals.filter(w => w.status === adminCurrentWdTab)
+
+  if (filtered.length === 0) {
+    list.innerHTML = `<div class="empty-state"><div class="empty-icon"><i class="fas fa-money-check"></i></div><h3>Tidak Ada Data</h3><p>Belum ada permintaan penarikan dengan status ini.</p></div>`
+    return
+  }
+
+  list.innerHTML = filtered.map(wd => {
+    const date = new Date(wd.created_at).toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' })
+    const statusMap = {
+      pending: '<span class="my-idea-status status-pending">⏳ Pending</span>',
+      completed: '<span class="my-idea-status status-approved">✓ Selesai</span>',
+      rejected: '<span class="my-idea-status status-rejected">✗ Ditolak</span>',
+    }
+    
+    const actions = wd.status === 'pending' ? `
+      <button class="admin-btn admin-btn-approve" onclick="window._adminApproveWithdrawal('${wd.id}')"><i class="fas fa-check"></i> Tandai Selesai</button>
+      <button class="admin-btn admin-btn-reject" onclick="window._adminRejectWithdrawal('${wd.id}')"><i class="fas fa-times"></i> Tolak</button>
+    ` : ''
+
+    return `<div class="admin-idea-card">
+      <div class="admin-idea-info">
+        <h4 style="margin-bottom:0.5rem;"><i class="fas fa-university" style="color:#6366f1;"></i> ${wd.bank_name} - ${wd.account_number}</h4>
+        <div class="admin-idea-meta">
+          <span><i class="fas fa-user"></i> A.N: <strong>${wd.account_name}</strong></span>
+          <span style="color:#10b981; font-weight:bold;"><i class="fas fa-money-bill-wave"></i> Rp ${wd.amount.toLocaleString('id-ID')}</span>
+          <span><i class="fas fa-calendar"></i> ${date}</span>
+          ${statusMap[wd.status] || ''}
+        </div>
+      </div>
+      <div class="admin-idea-actions" style="justify-content: flex-end;">
+        ${actions}
+      </div>
+    </div>`
+  }).join('')
+}
+
+export async function adminApproveWithdrawal(id) {
+  if (!confirm('Tandai penarikan ini sebagai selesai? Pastikan Anda sudah mentransfer uangnya.')) return
+  if (!supabaseClient) return
+
+  try {
+    const { error } = await supabaseClient.from('withdrawals').update({ status: 'completed', updated_at: new Date().toISOString() }).eq('id', id)
+    if (error) throw error
+
+    const wd = adminWithdrawals.find(w => w.id === id)
+    if (wd) {
+      wd.status = 'completed'
+      // Kirim Notifikasi
+      await supabaseClient.from('notifications').insert({
+        user_id: wd.user_id,
+        type: 'withdrawal_success',
+        title: '✅ Penarikan Berhasil',
+        message: \`Dana Rp \${wd.amount.toLocaleString('id-ID')} telah ditransfer ke rekening \${wd.bank_name} Anda.\`
+      })
+    }
+    renderAdminWithdrawals()
+    showToast('✅ Status penarikan berhasil diperbarui.')
+  } catch (err) {
+    console.error('Approve WD error:', err)
+    showToast('❌ Gagal memperbarui status penarikan.')
+  }
+}
+
+export async function adminRejectWithdrawal(id) {
+  const reason = prompt('Masukkan alasan penolakan (opsional, akan dikirim ke user):', 'Rekening tidak valid')
+  if (reason === null) return // Canceled
+
+  if (!supabaseClient) return
+
+  try {
+    const { data, error } = await supabaseClient.rpc('admin_reject_withdrawal', {
+      p_withdrawal_id: id,
+      p_note: reason
+    })
+
+    if (error) throw error
+    if (data && !data.success) throw new Error(data.error)
+
+    const wd = adminWithdrawals.find(w => w.id === id)
+    if (wd) wd.status = 'rejected'
+    
+    renderAdminWithdrawals()
+    showToast('✅ Penarikan ditolak dan saldo dikembalikan.')
+  } catch (err) {
+    console.error('Reject WD error:', err)
+    showToast('❌ ' + (err.message || 'Gagal menolak penarikan.'))
+  }
 }
 
 // ─── INIT ADMIN LISTENERS ───────────────────────────────────

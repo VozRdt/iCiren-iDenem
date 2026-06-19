@@ -653,20 +653,41 @@
         </section>
         <section class="admin-section">
             <div class="container">
-                <div class="dashboard-stats">
-                    <div class="dash-stat-card"><div class="dash-stat-icon" style="background: linear-gradient(135deg, #F59E0B, #FBBF24);"><i class="fas fa-clock"></i></div><div class="dash-stat-info"><span class="dash-stat-num" id="adminPendingCount">0</span><span class="dash-stat-label">Menunggu Review</span></div></div>
-                    <div class="dash-stat-card"><div class="dash-stat-icon" style="background: linear-gradient(135deg, #10b981, #34d399);"><i class="fas fa-check-circle"></i></div><div class="dash-stat-info"><span class="dash-stat-num" id="adminApprovedCount">0</span><span class="dash-stat-label">Disetujui</span></div></div>
-                    <div class="dash-stat-card"><div class="dash-stat-icon" style="background: linear-gradient(135deg, #ef4444, #f87171);"><i class="fas fa-times-circle"></i></div><div class="dash-stat-info"><span class="dash-stat-num" id="adminRejectedCount">0</span><span class="dash-stat-label">Ditolak</span></div></div>
-                    <div class="dash-stat-card"><div class="dash-stat-icon" style="background: linear-gradient(135deg, #6366f1, #818cf8);"><i class="fas fa-users"></i></div><div class="dash-stat-info"><span class="dash-stat-num" id="adminTotalUsers">0</span><span class="dash-stat-label">Total User</span></div></div>
+                <!-- Admin Mode Toggle -->
+                <div class="admin-mode-tabs" style="display:flex; gap:1rem; margin-bottom:2rem; justify-content: center;">
+                    <button class="btn btn-primary" id="adminModeIdeasBtn" onclick="window._switchAdminMode('ideas')"><i class="fas fa-lightbulb"></i> Review Ide</button>
+                    <button class="btn btn-outline" id="adminModeWithdrawalsBtn" onclick="window._switchAdminMode('withdrawals')"><i class="fas fa-money-check-alt"></i> Penarikan Dana</button>
                 </div>
-                <div class="admin-tabs">
-                    <button class="filter-tab admin-tab active" id="adminTabPending" onclick="window._switchAdminTab('pending')"><i class="fas fa-clock"></i> Pending</button>
-                    <button class="filter-tab admin-tab" id="adminTabApproved" onclick="window._switchAdminTab('approved')"><i class="fas fa-check"></i> Approved</button>
-                    <button class="filter-tab admin-tab" id="adminTabRejected" onclick="window._switchAdminTab('rejected')"><i class="fas fa-times"></i> Rejected</button>
-                    <button class="filter-tab admin-tab" id="adminTabAll" onclick="window._switchAdminTab('all')"><i class="fas fa-list"></i> Semua</button>
+
+                <!-- Mode: Ideas -->
+                <div id="adminModeIdeas">
+                    <div class="dashboard-stats">
+                        <div class="dash-stat-card"><div class="dash-stat-icon" style="background: linear-gradient(135deg, #F59E0B, #FBBF24);"><i class="fas fa-clock"></i></div><div class="dash-stat-info"><span class="dash-stat-num" id="adminPendingCount">0</span><span class="dash-stat-label">Menunggu Review</span></div></div>
+                        <div class="dash-stat-card"><div class="dash-stat-icon" style="background: linear-gradient(135deg, #10b981, #34d399);"><i class="fas fa-check-circle"></i></div><div class="dash-stat-info"><span class="dash-stat-num" id="adminApprovedCount">0</span><span class="dash-stat-label">Disetujui</span></div></div>
+                        <div class="dash-stat-card"><div class="dash-stat-icon" style="background: linear-gradient(135deg, #ef4444, #f87171);"><i class="fas fa-times-circle"></i></div><div class="dash-stat-info"><span class="dash-stat-num" id="adminRejectedCount">0</span><span class="dash-stat-label">Ditolak</span></div></div>
+                        <div class="dash-stat-card"><div class="dash-stat-icon" style="background: linear-gradient(135deg, #6366f1, #818cf8);"><i class="fas fa-users"></i></div><div class="dash-stat-info"><span class="dash-stat-num" id="adminTotalUsers">0</span><span class="dash-stat-label">Total User</span></div></div>
+                    </div>
+                    <div class="admin-tabs">
+                        <button class="filter-tab admin-tab active" id="adminTabPending" onclick="window._switchAdminTab('pending')"><i class="fas fa-clock"></i> Pending</button>
+                        <button class="filter-tab admin-tab" id="adminTabApproved" onclick="window._switchAdminTab('approved')"><i class="fas fa-check"></i> Approved</button>
+                        <button class="filter-tab admin-tab" id="adminTabRejected" onclick="window._switchAdminTab('rejected')"><i class="fas fa-times"></i> Rejected</button>
+                        <button class="filter-tab admin-tab" id="adminTabAll" onclick="window._switchAdminTab('all')"><i class="fas fa-list"></i> Semua</button>
+                    </div>
+                    <div class="admin-ideas-list" id="adminIdeasList">
+                        <div class="admin-loading"><div class="skeleton-card"></div><div class="skeleton-card"></div><div class="skeleton-card"></div></div>
+                    </div>
                 </div>
-                <div class="admin-ideas-list" id="adminIdeasList">
-                    <div class="admin-loading"><div class="skeleton-card"></div><div class="skeleton-card"></div><div class="skeleton-card"></div></div>
+
+                <!-- Mode: Withdrawals -->
+                <div id="adminModeWithdrawals" style="display:none;">
+                    <div class="admin-tabs">
+                        <button class="filter-tab admin-wd-tab active" id="adminWdTabPending" onclick="window._switchAdminWdTab('pending')"><i class="fas fa-clock"></i> Menunggu Transfer</button>
+                        <button class="filter-tab admin-wd-tab" id="adminWdTabCompleted" onclick="window._switchAdminWdTab('completed')"><i class="fas fa-check"></i> Selesai</button>
+                        <button class="filter-tab admin-wd-tab" id="adminWdTabRejected" onclick="window._switchAdminWdTab('rejected')"><i class="fas fa-times"></i> Ditolak</button>
+                    </div>
+                    <div class="admin-ideas-list" id="adminWithdrawalsList">
+                        <div class="admin-loading"><div class="skeleton-card"></div><div class="skeleton-card"></div></div>
+                    </div>
                 </div>
             </div>
         </section>
