@@ -427,8 +427,8 @@ export async function buyIdea(ideaId) {
 
 function addPurchasedIdeaLocal(idea) {
   const bought = {
-    id: idea.id, title: idea.title, category: idea.category,
-    price: idea.price, desc: idea.desc, emoji: idea.emoji, rating: idea.rating, views: idea.views,
+    id: idea.id, title: idea.title, category: idea.category, platform: idea.platform,
+    price: idea.price, desc: idea.desc, content: idea.content, emoji: idea.emoji, rating: idea.rating, views: idea.views,
     boughtDate: new Date().toLocaleDateString('id-ID'),
   }
   purchasedIdeas.unshift(bought)
