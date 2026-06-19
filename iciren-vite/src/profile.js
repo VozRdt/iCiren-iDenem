@@ -241,28 +241,37 @@ export async function submitWithdraw(e) {
 
   if (supabaseClient && currentUser) {
     try {
-      const { error } = await supabaseClient.from('withdrawals').insert({
-        user_id: currentUser.id,
-        amount: amount,
-        bank_name: userProfile.bank_name,
-        account_number: userProfile.account_number,
-        account_name: userProfile.account_name,
-        status: 'pending'
+      const { data, error } = await supabaseClient.rpc('request_withdrawal', {
+        p_amount: amount,
+        p_bank_name: userProfile.bank_name,
+        p_account_number: userProfile.account_number,
+        p_account_name: userProfile.account_name
       })
+      
       if (error) throw error
+      if (data && !data.success) throw new Error(data.error || 'Penarikan gagal.')
+
+      showToast('✅ Berhasil mengajukan penarikan!')
+
+      // Update profil lokal untuk mengurangi total earnings
+      if (userProfile) {
+        userProfile.total_earnings = earnings - amount
+        localStorage.setItem(getUserKey('profile'), JSON.stringify(userProfile))
+      }
+      
+      // Update UI balance
+      const balEl = document.getElementById('withdrawAvailableBalance')
+      if (balEl) balEl.textContent = 'Rp ' + userProfile.total_earnings.toLocaleString('id-ID')
+      const totalEarnEl = document.getElementById('totalEarnings')
+      if (totalEarnEl) totalEarnEl.textContent = 'Rp ' + userProfile.total_earnings.toLocaleString('id-ID')
+
     } catch (err) {
       console.error('Withdraw error:', err)
       btn.disabled = false
       btn.innerHTML = 'Tarik Sekarang'
-      showToast('❌ Gagal mengajukan penarikan.')
+      showToast('❌ ' + (err.message || 'Gagal mengajukan penarikan.'))
       return
     }
-  }
-
-  // Update profil lokal untuk mengurangi total earnings
-  if (userProfile) {
-    userProfile.total_earnings = earnings - amount
-    localStorage.setItem(getUserKey('profile'), JSON.stringify(userProfile))
   }
 
   btn.disabled = false
