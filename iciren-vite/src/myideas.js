@@ -31,7 +31,7 @@ export function renderMyIdeas() {
   // Update dashboard stats
   const totalEl = document.getElementById('totalIdeasCount')
   if (totalEl) totalEl.textContent = myIdeas.length
-  const approved = myIdeas.filter(i => i.status === 'approved' || i.status === 'sold').length
+  const approved = myIdeas.filter(i => i.status === 'approved' || i.status === 'terjual').length
   const approvedEl = document.getElementById('approvedCount')
   if (approvedEl) approvedEl.textContent = approved
   const earnings = userProfile?.total_earnings || 0
@@ -92,8 +92,8 @@ function renderMyIdeasList() {
           <span>${catLabel[idea.platform || idea.category] || idea.platform || idea.category} &bull; Disubmit ${idea.date}</span>
         </div>
         <div style="display:flex; align-items:center; gap:1rem; flex-shrink:0;">
-          <span class="my-idea-status ${idea.status === 'approved' ? 'status-approved' : (idea.status === 'sold' ? 'status-approved' : 'status-pending')}">
-            ${idea.status === 'approved' ? '✓ Disetujui' : (idea.status === 'sold' ? '🎉 Terjual' : '⏳ Review')}
+          <span class="my-idea-status ${idea.status === 'approved' ? 'status-approved' : (idea.status === 'terjual' ? 'status-approved' : 'status-pending')}">
+            ${idea.status === 'approved' ? '✓ Disetujui' : (idea.status === 'terjual' ? '🎉 Terjual' : '⏳ Review')}
           </span>
           <span class="my-idea-price">Rp ${idea.price.toLocaleString('id-ID')}</span>
           <button onclick="window._deleteIdea(${idAttr})" style="background:rgba(239,68,68,0.1); border:1px solid rgba(239,68,68,0.3); color:#ef4444; border-radius:8px; padding:0.4rem 0.8rem; cursor:pointer; font-family:inherit; font-size:0.85rem;">
