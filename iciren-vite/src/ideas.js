@@ -12,20 +12,7 @@ import { switchMyIdeasTab } from './myideas.js'
 import { userProfile } from './profile.js'
 
 // ─── DATA IDE ────────────────────────────────────────────────
-export const allIdeas = [
-  { id: 1, title: '10 Rahasia TikTok yang Jarang Diketahui', platform: 'tiktok', category: 'pendidikan', price: 75000, desc: 'Konten edukatif tentang algoritma TikTok, tips untuk pemula hingga pro.', emoji: '🎵', views: 4200, rating: 4.9 },
-  { id: 2, title: 'Review Jujur Produk Viral vs Biasa', platform: 'youtube', category: 'review', price: 120000, desc: 'Format review komparatif yang terbukti menghasilkan engagement tinggi.', emoji: '📹', views: 8700, rating: 4.8 },
-  { id: 3, title: 'Day in My Life: Content Creator Indonesia', platform: 'instagram', category: 'lainnya', price: 55000, desc: 'Ide konten storytelling harian yang relatable untuk kreator muda.', emoji: '📸', views: 3100, rating: 4.7 },
-  { id: 4, title: 'Podcast: Obrolan Startup Indonesia', platform: 'podcast', category: 'pendidikan', price: 95000, desc: 'Format podcast diskusi ekosistem startup lokal yang menarik investor & talenta.', emoji: '🎙️', views: 2800, rating: 4.6 },
-  { id: 5, title: '5 Resep Masak Viral dari Media Sosial', platform: 'youtube', category: 'makanan', price: 65000, desc: 'Kompilasi resep trending yang bisa dieksekusi dengan mudah dan cepat.', emoji: '🍳', views: 9500, rating: 5.0 },
-  { id: 6, title: 'Tantangan 30 Hari Produktivitas', platform: 'tiktok', category: 'kesehatan', price: 85000, desc: 'Series tantangan harian yang mendorong engagement konsisten dari followers.', emoji: '⚡', views: 6300, rating: 4.8 },
-  { id: 7, title: 'Tutorial Blog SEO untuk Pemula', platform: 'blog', category: 'pendidikan', price: 110000, desc: 'Panduan lengkap membuat artikel yang nangkring di halaman 1 Google.', emoji: '✍️', views: 4100, rating: 4.9 },
-  { id: 8, title: 'Reels Outfit Check Aesthetic Murah', platform: 'instagram', category: 'review', price: 45000, desc: 'Format konten fashion OOTD budget friendly yang viral di kalangan Gen Z.', emoji: '👗', views: 7200, rating: 4.7 },
-  { id: 9, title: 'Unboxing Gadget Terbaru 2026', platform: 'youtube', category: 'review', price: 135000, desc: 'Script dan struktur unboxing yang engaging dari intro hingga verdict akhir.', emoji: '📦', views: 11200, rating: 4.9 },
-  { id: 10, title: 'Podcast: Mental Health anak Muda', platform: 'podcast', category: 'kesehatan', price: 80000, desc: 'Topik-topik mental health yang relevan dengan anak muda Indonesia.', emoji: '🧠', views: 3400, rating: 4.8 },
-  { id: 11, title: 'Vlog Trip Hemat ke Bali', platform: 'youtube', category: 'review', price: 90000, desc: 'Konsep vlog perjalanan budget yang informatif dan entertaining.', emoji: '🏖️', views: 5600, rating: 4.6 },
-  { id: 12, title: 'Tips Finansial Gen Z: Mulai Investasi', platform: 'tiktok', category: 'pendidikan', price: 70000, desc: 'Edukasi finansial yang disampaikan dengan bahasa ringan dan visual menarik.', emoji: '💰', views: 8900, rating: 4.9 },
-]
+export const allIdeas = []
 
 export let displayedIdeas = 6
 export let currentFilter = 'semua'
