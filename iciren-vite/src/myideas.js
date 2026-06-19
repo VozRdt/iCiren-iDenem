@@ -123,9 +123,12 @@ function renderMyIdeasList() {
           <h4>${idea.title}</h4>
           <span>${catLabel[idea.platform || idea.category] || idea.platform || idea.category} &bull; Dibeli ${idea.boughtDate}</span>
         </div>
-        <div style="display:flex; align-items:center; gap:1rem; flex-shrink:0;">
+        <div style="display:flex; align-items:center; gap:0.5rem; flex-shrink:0;">
           <span class="my-idea-status status-approved">✓ Dimiliki</span>
-          <span class="my-idea-price">Rp ${idea.price.toLocaleString('id-ID')}</span>
+          <span class="my-idea-price" style="margin-right: 0.5rem;">Rp ${idea.price.toLocaleString('id-ID')}</span>
+          <button class="btn btn-outline btn-sm" onclick="window._openModal(${idAttr})" style="padding:0.4rem 0.8rem; font-size:0.85rem; cursor:pointer;">
+            <i class="fas fa-eye"></i> Lihat
+          </button>
           <button onclick="window._deletePurchased(${idAttr})" style="background:rgba(239,68,68,0.1); border:1px solid rgba(239,68,68,0.3); color:#ef4444; border-radius:8px; padding:0.4rem 0.8rem; cursor:pointer; font-family:inherit; font-size:0.85rem;">
             <i class="fas fa-trash"></i>
           </button>

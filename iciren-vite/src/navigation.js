@@ -3,7 +3,7 @@
    ============================================================ */
 import { startProgress, finishProgress } from './utils.js'
 import { isLoggedIn, showAuthRequiredModal, resetAuthForms, PROTECTED_PAGES } from './auth.js'
-import { renderIdeas } from './ideas.js'
+import { renderIdeas, loadMarketplaceIdeas } from './ideas.js'
 import { renderMyIdeas } from './myideas.js'
 import { renderProfile } from './profile.js'
 import { loadAdminDashboard } from './admin.js'
@@ -43,7 +43,9 @@ export function navigateTo(page) {
   }
 
   // Init page data early
-  if (page === 'explore') renderIdeas()
+  if (page === 'explore') {
+    loadMarketplaceIdeas().then(() => renderIdeas())
+  }
   if (page === 'myideas') renderMyIdeas()
   if (page === 'auth') resetAuthForms()
   if (page === 'profile') renderProfile()

@@ -282,9 +282,12 @@ export function openModal(ideaId) {
         <div style="color:#a3a3a3; font-size:0.7rem;">${(idea.views || 0).toLocaleString()} kali dilihat</div>
       </div>
     </div>
-    <button class="btn btn-primary" style="width:100%; margin-bottom:0.4rem; padding:0.6rem 1rem; font-size:0.9rem;" onclick="window._buyIdea(${idAttr})">
-      <i class="fas fa-shopping-cart"></i> Beli Ide Ini
-    </button>
+    ${purchasedIdeas.some(i => i.id === ideaId) 
+      ? `<div style="background: rgba(16,185,129,0.1); border: 1px solid rgba(16,185,129,0.3); color: #10B981; padding: 0.6rem; text-align: center; border-radius: 10px; margin-bottom: 0.6rem; font-weight: 600;"><i class="fas fa-check-circle"></i> Anda sudah memiliki ide ini</div>`
+      : `<button class="btn btn-primary" style="width:100%; margin-bottom:0.4rem; padding:0.6rem 1rem; font-size:0.9rem;" onclick="window._buyIdea(${idAttr})">
+          <i class="fas fa-shopping-cart"></i> Beli Ide Ini
+        </button>`
+    }
     <!-- Review Section -->
     <div class="review-section">
       <h4 style="font-size:0.9rem; margin-bottom:0.4rem;"><i class="fas fa-star"></i> Ulasan & Rating</h4>
@@ -368,11 +371,11 @@ export async function buyIdea(ideaId) {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          transaction_id: transactionId,
-          amount: idea.price,
-          idea_title: idea.title,
-          customer_name: currentUser.name || 'User',
-          customer_email: currentUser.email || 'user@example.com'
+          transaction_id: intentResult.transaction_id,
+          amount: intentResult.amount,
+          idea_title: intentResult.idea_title,
+          customer_name: userProfile?.full_name || currentUser.email.split('@')[0],
+          customer_email: currentUser.email
         })
       });
 
@@ -385,9 +388,21 @@ export async function buyIdea(ideaId) {
       // 3. Trigger Midtrans Snap pop-up
       if (window.snap) {
         window.snap.pay(token, {
-          onSuccess: function(result){
-            // Webhook will handle DB update, but we can update UI optimistically
+          onSuccess: async function(result){
             showToast('✅ Pembayaran berhasil!');
+            
+            // Call process_purchase directly from frontend as a fallback for localhost development
+            try {
+              if (supabaseClient && intentResult && intentResult.transaction_id) {
+                await supabaseClient.rpc('process_purchase', {
+                  p_transaction_id: intentResult.transaction_id,
+                  p_payment_method: result.payment_type || 'midtrans',
+                  p_gateway: 'midtrans',
+                  p_gateway_txn_id: result.transaction_id || ''
+                });
+              }
+            } catch(e) { console.warn('process_purchase local error:', e); }
+
             closeModal();
             addPurchasedIdeaLocal(idea);
           },
