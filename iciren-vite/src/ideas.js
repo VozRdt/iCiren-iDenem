@@ -34,8 +34,8 @@ export async function loadUserData() {
 
       if (!ideasErr && ideasData) {
         myIdeas = ideasData.map(row => ({
-          id: row.id, title: row.title, platform: row.platform, category: row.category, price: row.price,
-          desc: row.description, status: row.status || 'pending',
+          id: row.id, title: row.title, platform: row.platform, category: row.category,
+          price: row.price, desc: row.description, content: row.content, status: row.status || 'pending',
           date: new Date(row.created_at).toLocaleDateString('id-ID'),
         }))
         localStorage.setItem(getUserKey('myIdeas'), JSON.stringify(myIdeas))
@@ -50,7 +50,7 @@ export async function loadUserData() {
       if (!purchErr && purchData) {
         purchasedIdeas = purchData.map(row => ({
           id: row.idea_id, dbId: row.id, title: row.idea_title, platform: row.idea_platform, category: row.idea_category,
-          price: row.idea_price, desc: row.idea_desc, emoji: row.idea_emoji || '💡',
+          price: row.idea_price, desc: row.idea_desc, content: row.idea_content, emoji: row.idea_emoji || '💡',
           rating: row.idea_rating || 0, views: row.idea_views || 0,
           boughtDate: new Date(row.purchased_at).toLocaleDateString('id-ID'),
         }))
@@ -87,7 +87,7 @@ export async function loadMarketplaceIdeas() {
       if (!error && data && data.length > 0) {
         marketplaceIdeas = data.map(d => ({
           id: d.id, title: d.title, platform: d.platform, category: d.category, price: d.price,
-          desc: d.description || d.desc || '', emoji: d.emoji || '💡',
+          desc: d.description || d.desc || '', content: d.content || '', emoji: d.emoji || '💡',
           views: d.views || 0, rating: parseFloat(d.rating) || 0,
           created_at: d.created_at, user_id: d.user_id, fromDB: true
         }))
@@ -270,8 +270,12 @@ export function openModal(ideaId) {
         <div style="color:#a3a3a3; font-size:0.7rem;">${(idea.views || 0).toLocaleString()} kali dilihat</div>
       </div>
     </div>
-    ${purchasedIdeas.some(i => i.id === ideaId) 
-      ? `<div style="background: rgba(16,185,129,0.1); border: 1px solid rgba(16,185,129,0.3); color: #10B981; padding: 0.6rem; text-align: center; border-radius: 10px; margin-bottom: 0.6rem; font-weight: 600;"><i class="fas fa-check-circle"></i> Anda sudah memiliki ide ini</div>`
+    ${
+      (purchasedIdeas.some(i => i.id === ideaId) || (currentUser && idea.user_id === currentUser.id))
+      ? `<div style="background: rgba(16,185,129,0.05); border: 1px solid rgba(16,185,129,0.2); padding: 1rem; border-radius: 10px; margin-bottom: 0.6rem; text-align: left;">
+           <h3 style="color:#10B981; font-size:0.95rem; margin-bottom:0.5rem;"><i class="fas fa-lock-open"></i> Isi Ide (Rahasia)</h3>
+           <p style="color:#f8fafc; font-size:0.85rem; line-height:1.5; white-space: pre-wrap;">${idea.content || 'Isi ide belum tersedia.'}</p>
+         </div>`
       : `<button class="btn btn-primary" style="width:100%; margin-bottom:0.4rem; padding:0.6rem 1rem; font-size:0.9rem;" onclick="window._buyIdea(${idAttr})">
           <i class="fas fa-shopping-cart"></i> Beli Ide Ini
         </button>`

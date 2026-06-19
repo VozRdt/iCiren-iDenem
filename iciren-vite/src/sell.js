@@ -23,6 +23,7 @@ export async function submitIdea(e) {
   const category = document.getElementById('ideaCategory').value
   const price = parseInt(document.getElementById('ideaPrice').value)
   const desc = document.getElementById('ideaDesc').value
+  const content = document.getElementById('ideaContent').value
 
   const submitBtn = e.target.querySelector('button[type="submit"]')
   if (submitBtn) {
@@ -36,13 +37,13 @@ export async function submitIdea(e) {
         .from('ideas')
         .insert({
           user_id: currentUser.id, title, platform, category, price,
-          description: desc, status: 'pending',
+          description: desc, content, status: 'pending',
         })
         .select().single()
       if (error) throw error
 
       const newIdea = {
-        id: data.id, title, platform, category, price, desc,
+        id: data.id, title, platform, category, price, desc, content,
         status: data.status || 'pending',
         date: new Date(data.created_at).toLocaleDateString('id-ID'),
       }
@@ -52,7 +53,7 @@ export async function submitIdea(e) {
     } catch (e) {
       console.warn('⚠️ DB idea insert error, saving to localStorage:', e)
       const newIdea = {
-        id: Date.now(), title, platform, category, price, desc,
+        id: Date.now(), title, platform, category, price, desc, content,
         status: 'pending', date: new Date().toLocaleDateString('id-ID'),
       }
       myIdeas.unshift(newIdea)
@@ -60,7 +61,7 @@ export async function submitIdea(e) {
     }
   } else {
     const newIdea = {
-      id: Date.now(), title, platform, category, price, desc,
+      id: Date.now(), title, platform, category, price, desc, content,
       status: 'pending', date: new Date().toLocaleDateString('id-ID'),
     }
     myIdeas.unshift(newIdea)
