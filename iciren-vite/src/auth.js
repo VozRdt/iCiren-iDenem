@@ -254,6 +254,19 @@ export function closeAuthModal() {
   startLenisScroll()
 }
 
+// ─── PROFILE REQUIRED MODAL ──────────────────────────────────
+export function showProfileRequiredModal() {
+  const modal = document.getElementById('profileRequiredModal')
+  if (modal) modal.classList.add('show')
+  stopLenisScroll()
+}
+
+export function closeProfileModal() {
+  const modal = document.getElementById('profileRequiredModal')
+  if (modal) modal.classList.remove('show')
+  startLenisScroll()
+}
+
 // ─── EMAIL VERIFICATION MODAL ───────────────────────────────
 let lastRegisteredEmail = ''
 
@@ -357,6 +370,8 @@ export function initAuthListeners() {
   document.addEventListener('click', function (e) {
     const modal = document.getElementById('authRequiredModal')
     if (e.target === modal) closeAuthModal()
+    const pModal = document.getElementById('profileRequiredModal')
+    if (e.target === pModal) closeProfileModal()
     const emailModal = document.getElementById('emailVerifyModal')
     if (e.target === emailModal) closeEmailVerifyModal()
     const termsModal = document.getElementById('termsModal')

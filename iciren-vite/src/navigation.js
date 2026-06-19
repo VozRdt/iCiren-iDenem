@@ -2,10 +2,10 @@
    SPA Navigation Module
    ============================================================ */
 import { startProgress, finishProgress } from './utils.js'
-import { isLoggedIn, showAuthRequiredModal, resetAuthForms, PROTECTED_PAGES } from './auth.js'
+import { isLoggedIn, showAuthRequiredModal, showProfileRequiredModal, resetAuthForms, PROTECTED_PAGES } from './auth.js'
 import { renderIdeas, loadMarketplaceIdeas } from './ideas.js'
 import { renderMyIdeas } from './myideas.js'
-import { renderProfile } from './profile.js'
+import { renderProfile, userProfile } from './profile.js'
 import { loadAdminDashboard } from './admin.js'
 import { animateCurrentPage, getLenis } from './animations.js'
 
@@ -18,6 +18,13 @@ export function navigateTo(page) {
   if (PROTECTED_PAGES.includes(page) && !isLoggedIn()) {
     showAuthRequiredModal()
     return
+  }
+
+  if (page === 'sell' && isLoggedIn()) {
+    if (!userProfile || !userProfile.bank_name || !userProfile.account_number || !userProfile.account_name) {
+      showProfileRequiredModal()
+      return
+    }
   }
 
   const currentActive = document.querySelector('.page.active')

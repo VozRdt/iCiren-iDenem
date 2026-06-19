@@ -6,7 +6,7 @@
 import './style.css'
 
 // ─── MODULES ─────────────────────────────────────────────────
-import { updateAuthUI, isLoggedIn, checkSupabaseSession, handleLogin, handleRegister, logoutUser, togglePassword, switchAuthTab, closeAuthModal, closeEmailVerifyModal, resendVerificationEmail, showTermsModal, closeTermsModal, switchTermsTab, showAuthRequiredModal, initAuthListeners } from './auth.js'
+import { updateAuthUI, isLoggedIn, checkSupabaseSession, handleLogin, handleRegister, logoutUser, togglePassword, switchAuthTab, closeAuthModal, closeEmailVerifyModal, resendVerificationEmail, showTermsModal, closeTermsModal, switchTermsTab, showAuthRequiredModal, showProfileRequiredModal, closeProfileModal, initAuthListeners } from './auth.js'
 import { navigateTo, toggleMenu, initNavbarScroll } from './navigation.js'
 import { loadUserData, loadMarketplaceIdeas, renderIdeas, setFilter, filterIdeas, loadMoreIdeas, openModal, closeModal, buyIdea, updatePriceLabel, initIdeaModalListeners } from './ideas.js'
 import { submitIdea } from './sell.js'
@@ -32,6 +32,8 @@ window._showTermsModal = showTermsModal
 window._closeTermsModal = closeTermsModal
 window._switchTermsTab = switchTermsTab
 window._showAuthRequiredModal = showAuthRequiredModal
+window._showProfileRequiredModal = showProfileRequiredModal
+window._closeProfileModal = closeProfileModal
 window._setFilter = setFilter
 window._filterIdeas = filterIdeas
 window._loadMoreIdeas = loadMoreIdeas

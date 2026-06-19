@@ -281,6 +281,19 @@
         </div>
     </div>
 
+    <!-- Profile Required Modal -->
+    <div class="auth-required-modal" id="profileRequiredModal">
+        <div class="auth-required-content">
+            <div class="auth-required-icon"><i class="fas fa-user-edit"></i></div>
+            <h3>Data Pribadi Belum Lengkap</h3>
+            <p>Kamu harus mengisi data profil dan rekening bank sebelum dapat menjual ide.</p>
+            <div class="auth-required-buttons">
+                <button class="btn btn-primary" onclick="window._closeProfileModal(); window._navigateTo('profile')"><i class="fas fa-user"></i> Lengkapi Data Pribadi</button>
+            </div>
+            <button class="auth-required-close" onclick="window._closeProfileModal()"><i class="fas fa-times"></i></button>
+        </div>
+    </div>
+
     <!-- Email Verification Modal -->
     <div class="email-verify-modal" id="emailVerifyModal">
         <div class="email-verify-content">
