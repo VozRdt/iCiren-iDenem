@@ -17,7 +17,7 @@ router.post('/midtrans', async (req, res) => {
     
     // Midtrans sends notification. We need to verify its signature.
     // signature_key = SHA512(order_id + status_code + gross_amount + ServerKey)
-    const { order_id, status_code, gross_amount, signature_key, transaction_status, fraud_status } = notificationJson;
+    const { order_id, status_code, gross_amount, signature_key, transaction_status, fraud_status, payment_type, transaction_id } = notificationJson;
     
     const serverKey = process.env.MIDTRANS_SERVER_KEY || 'dummy_server_key';
     
@@ -38,11 +38,11 @@ router.post('/midtrans', async (req, res) => {
         console.log('Transaction is challenged by FDS');
       } else if (fraud_status == 'accept') {
         // Success
-        await processSuccessfulPurchase(order_id);
+        await processSuccessfulPurchase(order_id, payment_type, transaction_id);
       }
     } else if (transaction_status == 'settlement') {
       // Success
-      await processSuccessfulPurchase(order_id);
+      await processSuccessfulPurchase(order_id, payment_type, transaction_id);
     } else if (transaction_status == 'cancel' || transaction_status == 'deny' || transaction_status == 'expire') {
       // Failed / Canceled
       await markTransactionFailed(order_id);
@@ -59,11 +59,14 @@ router.post('/midtrans', async (req, res) => {
   }
 });
 
-async function processSuccessfulPurchase(transactionId) {
+async function processSuccessfulPurchase(transactionId, payment_type = 'midtrans', midtrans_txn_id = null) {
   try {
     // We can call the Supabase RPC "process_purchase" which takes the transaction_id
     const { data, error } = await supabaseAdmin.rpc('process_purchase', {
-      p_transaction_id: transactionId
+      p_transaction_id: transactionId,
+      p_payment_method: payment_type,
+      p_gateway: 'midtrans',
+      p_gateway_txn_id: midtrans_txn_id
     });
 
     if (error) {
