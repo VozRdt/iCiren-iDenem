@@ -268,7 +268,7 @@ export async function adminApproveWithdrawal(id) {
         user_id: wd.user_id,
         type: 'withdrawal_success',
         title: '✅ Penarikan Berhasil',
-        message: \`Dana Rp \${wd.amount.toLocaleString('id-ID')} telah ditransfer ke rekening \${wd.bank_name} Anda.\`
+        message: `Dana Rp ${wd.amount.toLocaleString('id-ID')} telah ditransfer ke rekening ${wd.bank_name} Anda.`
       })
     }
     renderAdminWithdrawals()
