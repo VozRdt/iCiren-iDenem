@@ -339,8 +339,13 @@ export async function buyIdea(ideaId) {
       console.log('✅ Payment intent created:', transactionId)
 
       // 2. Request Midtrans Snap Token from Backend
-      const backendUrl = 'http://localhost:5000' // or dynamically loaded
-      const tokenResponse = await fetch(`${backendUrl}/api/payment/token`, {
+      // Gunakan localhost jika sedang testing di lokal, jika di hosting (icirenidenem.my.id) harus pakai URL Backend yang sudah di-deploy.
+      const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+      const backendUrl = isLocal ? 'http://localhost:5000' : 'https://api-iciren.up.railway.app'; // Ganti dengan URL backend asli Anda setelah deploy!
+
+      let tokenResponse;
+      try {
+        tokenResponse = await fetch(`${backendUrl}/api/payment/token`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -348,9 +353,19 @@ export async function buyIdea(ideaId) {
           amount: intentResult.amount,
           idea_title: intentResult.idea_title,
           customer_name: userProfile?.full_name || currentUser.email.split('@')[0],
-          customer_email: currentUser.email
+          customer_email: userProfile?.email || currentUser.email
         })
       });
+      } catch (fetchErr) {
+        console.error('Fetch error:', fetchErr);
+        closeModal();
+        if (isLocal) {
+          showToast('❌ Gagal menghubungi server! Pastikan Anda sudah menjalankan backend (node server.js).');
+        } else {
+          showToast('❌ Gagal terhubung ke backend. Pastikan backend sudah di-deploy dan URL-nya benar.');
+        }
+        return;
+      }
 
       if (!tokenResponse.ok) {
         throw new Error('Gagal mendapatkan token pembayaran');
