@@ -14,7 +14,6 @@ import { renderMyIdeas, switchMyIdeasTab, deleteIdea, deletePurchased } from './
 import { renderProfile, saveProfile, openWithdrawModal, closeWithdrawModal, submitWithdraw, uploadAvatar } from './profile.js'
 import { loadAdminDashboard, switchAdminTab, openAdminReview, closeAdminReviewModal, adminApproveIdea, adminRejectIdea, initAdminListeners } from './admin.js'
 import { loadNotifications, toggleNotifPanel, markNotifRead, markAllNotifsRead, setupRealtimeSubscriptions, initNotifListeners } from './notifications.js'
-import { setStarRating, submitReview } from './reviews.js'
 import { initGSAP, animateCurrentPage } from './animations.js'
 
 // ─── EXPOSE TO GLOBAL (for inline onclick handlers in HTML) ─
@@ -58,8 +57,6 @@ window._adminRejectIdea = adminRejectIdea
 window._toggleNotifPanel = toggleNotifPanel
 window._markNotifRead = markNotifRead
 window._markAllNotifsRead = markAllNotifsRead
-window._setStarRating = setStarRating
-window._submitReview = submitReview
 
 // ─── INIT ────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', async () => {

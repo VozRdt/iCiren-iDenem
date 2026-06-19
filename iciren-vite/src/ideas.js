@@ -7,7 +7,6 @@ import { showToast } from './utils.js'
 import { currentUser, isLoggedIn, showAuthRequiredModal } from './auth.js'
 import { navigateTo } from './navigation.js'
 import { stopLenisScroll, startLenisScroll, getLenis } from './animations.js'
-import { loadReviews, setStarRating as _setStarRating, submitReview as _submitReview, selectedStarRating } from './reviews.js'
 import { switchMyIdeasTab } from './myideas.js'
 import { userProfile } from './profile.js'
 
@@ -146,7 +145,6 @@ export function updatePriceLabel() {
 }
 
 function createIdeaCard(idea) {
-  const stars = '⭐'.repeat(Math.min(Math.round(idea.rating || 0), 5))
   const p = idea.platform || idea.category || ''
   const c = idea.category || 'lainnya'
   const platformLabel = { youtube: 'YouTube', tiktok: 'TikTok', instagram: 'Instagram', podcast: 'Podcast', blog: 'Blog' }[p] || p
@@ -167,7 +165,6 @@ function createIdeaCard(idea) {
           <span class="idea-price">Rp ${idea.price.toLocaleString('id-ID')}</span>
           <span style="color:#a3a3a3; font-size:0.85rem;">${(idea.views || 0).toLocaleString()} views</span>
         </div>
-        <div style="margin-top:0.8rem; color:#FBBF24; font-size:0.85rem;">${stars} ${idea.rating || 0}</div>
       </div>
     </div>`
 }
@@ -266,7 +263,6 @@ export function openModal(ideaId) {
         <div style="font-size:1.15rem; font-weight:800; background:linear-gradient(135deg,#F59E0B,#FBBF24); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;">Rp ${idea.price.toLocaleString('id-ID')}</div>
       </div>
       <div style="text-align:right;">
-        <div style="color:#FBBF24; font-size:0.8rem; margin-bottom:0.1rem;">${'⭐'.repeat(Math.min(Math.round(idea.rating || 0), 5))} ${idea.rating || 0}</div>
         <div style="color:#a3a3a3; font-size:0.7rem;">${(idea.views || 0).toLocaleString()} kali dilihat</div>
       </div>
     </div>
@@ -282,31 +278,10 @@ export function openModal(ideaId) {
          <button class="btn btn-primary" style="width:100%; margin-bottom:0.4rem; padding:0.6rem 1rem; font-size:0.9rem;" onclick="window._buyIdea(${idAttr})">
           <i class="fas fa-shopping-cart"></i> Beli Ide Ini
         </button>`
-    }
-    <!-- Review Section -->
-    <div class="review-section">
-      <h4 style="font-size:0.9rem; margin-bottom:0.4rem;"><i class="fas fa-star"></i> Ulasan & Rating</h4>
-      <div class="review-form" id="reviewForm" style="display:${isLoggedIn() ? 'block' : 'none'}">
-        <div class="star-selector" id="starSelector" style="margin-bottom:0.3rem;">
-          <i class="fas fa-star" data-star="1" onclick="window._setStarRating(1)"></i>
-          <i class="fas fa-star" data-star="2" onclick="window._setStarRating(2)"></i>
-          <i class="fas fa-star" data-star="3" onclick="window._setStarRating(3)"></i>
-          <i class="fas fa-star" data-star="4" onclick="window._setStarRating(4)"></i>
-          <i class="fas fa-star" data-star="5" onclick="window._setStarRating(5)"></i>
-        </div>
-        <textarea class="review-input" id="reviewComment" rows="2" placeholder="Tulis ulasan..." style="margin-bottom:0.4rem; padding:0.5rem;"></textarea>
-        <button class="btn btn-outline btn-sm" onclick="window._submitReview(${idAttr})" style="width:100%; padding:0.4rem 0.8rem; font-size:0.8rem;">
-          <i class="fas fa-paper-plane"></i> Kirim Ulasan
-        </button>
-      </div>
-      <div class="review-list" id="reviewList" style="margin-top:0.4rem;">
-        <div class="review-empty">Memuat ulasan...</div>
-      </div>
-    </div>`
+    }`
 
   modal.classList.add('show')
   stopLenisScroll()
-  loadReviews(ideaId)
 }
 
 export function closeModal() {
