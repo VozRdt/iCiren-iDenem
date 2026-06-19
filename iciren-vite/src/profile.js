@@ -74,7 +74,7 @@ export function renderProfile() {
     if (totalIdeasEl) totalIdeasEl.textContent = ideas.length
     const totalPurchasesEl = document.getElementById('profileTotalPurchases')
     if (totalPurchasesEl) totalPurchasesEl.textContent = purchases.length
-    const earnings = ideas.filter(i => i.status === 'approved').reduce((s, i) => s + i.price, 0)
+    const earnings = userProfile?.total_earnings || 0
     const totalEarningsEl = document.getElementById('profileTotalEarnings')
     if (totalEarningsEl) totalEarningsEl.textContent = 'Rp ' + earnings.toLocaleString('id-ID')
 
@@ -209,12 +209,7 @@ export function openWithdrawModal() {
   }
 
   const ideas = JSON.parse(localStorage.getItem(getUserKey('myIdeas')) || '[]')
-  // Menghitung penghasilan, asumsikan 80% dari ide terjual atau dari total_earnings profile
-  let earnings = userProfile.total_earnings || 0
-  if (!earnings) {
-     // fallback
-     earnings = ideas.filter(i => i.status === 'approved').reduce((s, i) => s + i.price, 0)
-  }
+  let earnings = userProfile?.total_earnings || 0
 
   const balEl = document.getElementById('withdrawAvailableBalance')
   if (balEl) balEl.textContent = 'Rp ' + earnings.toLocaleString('id-ID')
@@ -233,7 +228,7 @@ export async function submitWithdraw(e) {
   e.preventDefault()
   const amount = parseInt(document.getElementById('withdrawAmount').value)
   const ideas = JSON.parse(localStorage.getItem(getUserKey('myIdeas')) || '[]')
-  let earnings = userProfile.total_earnings || ideas.filter(i => i.status === 'approved').reduce((s, i) => s + i.price, 0)
+  let earnings = userProfile?.total_earnings || 0
 
   if (amount > earnings) {
     showToast('❌ Saldo tidak mencukupi untuk penarikan sebesar Rp ' + amount.toLocaleString('id-ID'))

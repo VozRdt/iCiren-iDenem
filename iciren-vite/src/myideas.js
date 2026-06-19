@@ -4,6 +4,7 @@
 import { supabaseClient } from './supabase.js'
 import { showToast } from './utils.js'
 import { currentUser } from './auth.js'
+import { userProfile } from './profile.js'
 import { myIdeas, purchasedIdeas, getUserKey } from './ideas.js'
 import { navigateTo } from './navigation.js'
 
@@ -33,7 +34,7 @@ export function renderMyIdeas() {
   const approved = myIdeas.filter(i => i.status === 'approved').length
   const approvedEl = document.getElementById('approvedCount')
   if (approvedEl) approvedEl.textContent = approved
-  const earnings = myIdeas.filter(i => i.status === 'approved').reduce((s, i) => s + i.price, 0)
+  const earnings = userProfile?.total_earnings || 0
   const earningsEl = document.getElementById('totalEarnings')
   if (earningsEl) earningsEl.textContent = 'Rp ' + earnings.toLocaleString('id-ID')
   const viewsEl = document.getElementById('totalViews')
