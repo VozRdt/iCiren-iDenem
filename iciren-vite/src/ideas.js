@@ -9,6 +9,7 @@ import { navigateTo } from './navigation.js'
 import { stopLenisScroll, startLenisScroll, getLenis } from './animations.js'
 import { loadReviews, setStarRating as _setStarRating, submitReview as _submitReview, selectedStarRating } from './reviews.js'
 import { switchMyIdeasTab } from './myideas.js'
+import { userProfile } from './profile.js'
 
 // ─── DATA IDE ────────────────────────────────────────────────
 export const allIdeas = [
