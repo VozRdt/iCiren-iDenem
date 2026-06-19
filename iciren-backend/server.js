@@ -23,6 +23,11 @@ app.get('/api/health', (req, res) => {
 app.use('/api/payment', paymentRoutes);
 app.use('/api/webhooks', webhookRoutes);
 
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
-});
+// Export app for Vercel serverless functions
+export default app;
+
+if (process.env.NODE_ENV !== 'production' && !process.env.VERCEL) {
+  app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
+  });
+}
