@@ -341,7 +341,7 @@ export async function buyIdea(ideaId) {
       // 2. Request Midtrans Snap Token from Backend
       // Gunakan localhost jika sedang testing di lokal, jika di hosting (icirenidenem.my.id) harus pakai URL Backend yang sudah di-deploy.
       const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-      const backendUrl = isLocal ? 'http://localhost:5000' : 'https://api-iciren.up.railway.app'; // Ganti dengan URL backend asli Anda setelah deploy!
+      const backendUrl = isLocal ? 'http://localhost:5000' : 'https://icirenidenem.vercel.app';
 
       let tokenResponse;
       try {
