@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
 import { IdeaCard } from '../components/explore/IdeaCard';
+import { IdeaModal } from '../components/ui/IdeaModal';
 
 export default function ExplorePage() {
   const [ideas, setIdeas] = useState([]);
@@ -9,6 +10,8 @@ export default function ExplorePage() {
   const [platform, setPlatform] = useState('semua');
   const [sort, setSort] = useState('newest');
   const [maxPrice, setMaxPrice] = useState(200000);
+  
+  const [selectedIdea, setSelectedIdea] = useState(null);
 
   useEffect(() => {
     fetchIdeas();
@@ -124,7 +127,7 @@ export default function ExplorePage() {
         <div className="container">
           <div className="ideas-grid ready">
             {filteredIdeas.map(idea => (
-              <IdeaCard key={idea.id} idea={idea} onClick={(idea) => console.log('view', idea)} />
+              <IdeaCard key={idea.id} idea={idea} onClick={(idea) => setSelectedIdea(idea)} />
             ))}
           </div>
           <div className="load-more">
@@ -132,6 +135,13 @@ export default function ExplorePage() {
           </div>
         </div>
       </section>
+
+      <IdeaModal 
+        idea={selectedIdea} 
+        isOpen={selectedIdea !== null} 
+        onClose={() => setSelectedIdea(null)} 
+        isPurchased={false} 
+      />
     </div>
   );
 }

@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { supabase } from '../lib/supabase';
 import toast from 'react-hot-toast';
+import { IdeaModal } from '../components/ui/IdeaModal';
 
 export default function MyIdeasPage() {
   const { user } = useAuth();
@@ -12,6 +13,9 @@ export default function MyIdeasPage() {
   const [purchases, setPurchases] = useState([]);
   const [activeTab, setActiveTab] = useState('submitted');
   const [loading, setLoading] = useState(true);
+  
+  const [selectedIdea, setSelectedIdea] = useState(null);
+  const [isPurchasedModal, setIsPurchasedModal] = useState(false);
 
   useEffect(() => {
     if (!user) {
@@ -135,6 +139,9 @@ export default function MyIdeasPage() {
                     <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flexShrink: 0 }}>
                       {getStatusBadge(idea.status)}
                       <span className="my-idea-price">Rp {idea.price.toLocaleString('id-ID')}</span>
+                      <button className="btn btn-outline btn-sm" onClick={() => { setSelectedIdea(idea); setIsPurchasedModal(false); }} style={{ padding: '0.4rem 0.8rem', fontSize: '0.85rem', cursor: 'pointer' }}>
+                        <i className="fas fa-eye"></i> Lihat
+                      </button>
                       <button onClick={() => handleDeleteIdea(idea.id)} style={{ background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.3)', color: '#ef4444', borderRadius: '8px', padding: '0.4rem 0.8rem', cursor: 'pointer', fontFamily: 'inherit', fontSize: '0.85rem' }}>
                         <i className="fas fa-trash"></i>
                       </button>
@@ -161,6 +168,9 @@ export default function MyIdeasPage() {
                     <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flexShrink: 0 }}>
                       <span className="my-idea-status status-approved">✓ Dimiliki</span>
                       <span className="my-idea-price">Rp {idea.idea_price?.toLocaleString('id-ID') || 0}</span>
+                      <button className="btn btn-outline btn-sm" onClick={() => { setSelectedIdea(idea); setIsPurchasedModal(true); }} style={{ padding: '0.4rem 0.8rem', fontSize: '0.85rem', cursor: 'pointer' }}>
+                        <i className="fas fa-eye"></i> Lihat
+                      </button>
                       <button onClick={() => handleDeletePurchase(idea.id)} style={{ background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.3)', color: '#ef4444', borderRadius: '8px', padding: '0.4rem 0.8rem', cursor: 'pointer', fontFamily: 'inherit', fontSize: '0.85rem' }}>
                         <i className="fas fa-trash"></i>
                       </button>
@@ -172,6 +182,13 @@ export default function MyIdeasPage() {
           </div>
         </div>
       </section>
+
+      <IdeaModal 
+        idea={selectedIdea} 
+        isOpen={selectedIdea !== null} 
+        onClose={() => setSelectedIdea(null)} 
+        isPurchased={isPurchasedModal || (selectedIdea && selectedIdea.user_id === user?.id)} 
+      />
     </div>
   );
 }
