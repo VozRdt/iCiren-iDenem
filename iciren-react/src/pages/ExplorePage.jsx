@@ -18,13 +18,14 @@ export default function ExplorePage() {
     try {
       const { data, error } = await supabase
         .from('ideas')
-        .select('*, profiles(full_name)')
-        .eq('status', 'approved');
+        .select('*')
+        .eq('status', 'approved')
+        .order('created_at', { ascending: false });
       
       if (data) {
         setIdeas(data.map(idea => ({
           ...idea,
-          author_name: idea.profiles?.full_name || 'Kreator Anonim'
+          author_name: 'Kreator Anonim' // Fallback because no direct FK to profiles exists
         })));
       }
     } catch (e) {
