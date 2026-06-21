@@ -38,10 +38,10 @@ export default function MyIdeasPage() {
 
   const getStatusBadge = (status) => {
     switch (status) {
-      case 'approved': return <span className="status-badge status-approved"><i className="fas fa-check-circle"></i> Disetujui</span>;
-      case 'terjual': return <span className="status-badge status-sold"><i className="fas fa-money-bill-wave"></i> Terjual</span>;
-      case 'rejected': return <span className="status-badge status-rejected"><i className="fas fa-times-circle"></i> Ditolak</span>;
-      default: return <span className="status-badge status-pending"><i className="fas fa-clock"></i> Menunggu Review</span>;
+      case 'approved': return <span className="my-idea-status status-approved">✓ Disetujui</span>;
+      case 'terjual': return <span className="my-idea-status status-approved">🎉 Terjual</span>;
+      case 'rejected': return <span className="my-idea-status status-rejected">❌ Ditolak</span>;
+      default: return <span className="my-idea-status status-pending">⏳ Review</span>;
     }
   };
 
@@ -77,18 +77,14 @@ export default function MyIdeasPage() {
               </div>
             ) : (
               ideas.map(idea => (
-                <div key={idea.id} className="myidea-item">
-                  <div className="myidea-main">
-                    <div className="myidea-icon"><i className="fas fa-lightbulb"></i></div>
-                    <div className="myidea-info">
-                      <h4 className="myidea-title">{idea.title}</h4>
-                      <p className="myidea-meta"><span style={{textTransform:'capitalize'}}>{idea.category}</span> &bull; {new Date(idea.created_at).toLocaleDateString('id-ID')}</p>
-                    </div>
+                <div key={idea.id} className="my-idea-item">
+                  <div className="my-idea-info">
+                    <h4>{idea.title}</h4>
+                    <span><span style={{textTransform:'capitalize'}}>{idea.category}</span> &bull; {new Date(idea.created_at).toLocaleDateString('id-ID')}</span>
                   </div>
-                  <div className="myidea-actions">
-                    <div className="myidea-price">Rp {idea.price.toLocaleString('id-ID')}</div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flexShrink: 0 }}>
                     {getStatusBadge(idea.status)}
-                    {/* Add delete button if needed, but not in original design */}
+                    <span className="my-idea-price">Rp {idea.price.toLocaleString('id-ID')}</span>
                   </div>
                 </div>
               ))
