@@ -77,7 +77,6 @@ export default function SellPage() {
 
   return (
     <div className="page active" id="page-sell" style={{ display: 'block' }}>
-      <h1 style={{ color: 'red', fontSize: '5rem', position: 'relative', zIndex: 9999 }}>HELLO WORLD SELL PAGE IS RENDERING</h1>
       <section className="page-hero">
         <div className="container">
           <h1 className="page-hero-title"><i className="fas fa-lightbulb"></i> Jual Ide</h1>
