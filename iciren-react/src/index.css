@@ -2699,20 +2699,9 @@ body {
     }
 
     .nav-user-profile {
-        justify-content: flex-start;
-        padding: 0.5rem 0;
-        width: 100%;
-        background: transparent;
-        border: none;
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 1.2rem;
-        box-shadow: none;
-    }
-
-    .nav-user-profile:hover {
-        border-color: transparent;
-        box-shadow: none;
+        width: max-content;
+        max-width: 100%;
+        margin-top: 0.5rem;
     }
 
     .btn-auth-nav {
