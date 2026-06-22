@@ -105,11 +105,30 @@ export default function ProfilePage() {
       return;
     }
 
+    const amountStr = window.prompt(`Masukkan nominal yang ingin ditarik (Maksimal: Rp ${profile.total_earnings.toLocaleString('id-ID')}):`);
+    if (!amountStr) return; // User cancelled
+
+    const amount = parseInt(amountStr.replace(/[^0-9]/g, ''), 10);
+    if (isNaN(amount) || amount <= 0) {
+      toast.error('Nominal tidak valid.');
+      return;
+    }
+
+    if (amount > profile.total_earnings) {
+      toast.error('Nominal melebihi saldo yang tersedia.');
+      return;
+    }
+    
+    if (amount < 10000) {
+      toast.error('Minimal penarikan adalah Rp 10.000');
+      return;
+    }
+
     setLoading(true);
     try {
       const { error: wdError } = await supabase.from('withdrawals').insert([{
         user_id: user.id,
-        amount: profile.total_earnings,
+        amount: amount,
         bank_name: profile.bank_name,
         account_number: profile.account_number,
         account_name: profile.account_name,
@@ -120,7 +139,7 @@ export default function ProfilePage() {
 
       const { data: updatedProfile, error: updateError } = await supabase
         .from('profiles')
-        .update({ total_earnings: 0 })
+        .update({ total_earnings: profile.total_earnings - amount })
         .eq('id', user.id)
         .select()
         .single();
