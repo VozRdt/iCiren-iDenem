@@ -2700,8 +2700,19 @@ body {
 
     .nav-user-profile {
         justify-content: flex-start;
-        padding: 0.4rem 0;
+        padding: 0.5rem 0;
         width: 100%;
+        background: transparent;
+        border: none;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1.2rem;
+        box-shadow: none;
+    }
+
+    .nav-user-profile:hover {
+        border-color: transparent;
+        box-shadow: none;
     }
 
     .btn-auth-nav {

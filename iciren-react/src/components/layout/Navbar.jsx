@@ -28,12 +28,14 @@ export default function Navbar() {
               <i className="fas fa-bell"></i>
             </button>
           </div>
-          <div className="nav-user-avatar" onClick={() => { navigate('/profile'); setMenuOpen(false); }} style={{ cursor: 'pointer' }} title="Profil Saya">
-            <span>{profile?.full_name ? profile.full_name.charAt(0).toUpperCase() : 'U'}</span>
+          <div className="nav-user-info" onClick={() => { navigate('/profile'); setMenuOpen(false); }} style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', cursor: 'pointer' }} title="Profil Saya">
+            <div className="nav-user-avatar">
+              <span>{profile?.full_name ? profile.full_name.charAt(0).toUpperCase() : 'U'}</span>
+            </div>
+            <span className="nav-user-name">
+              {profile?.full_name || user.email}
+            </span>
           </div>
-          <span className="nav-user-name" onClick={() => { navigate('/profile'); setMenuOpen(false); }} style={{ cursor: 'pointer' }}>
-            {profile?.full_name || user.email}
-          </span>
           <button className="btn btn-outline btn-sm" onClick={() => { signOut(); setMenuOpen(false); }}>
             <i className="fas fa-sign-out-alt"></i> Keluar
           </button>
