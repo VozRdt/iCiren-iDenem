@@ -7,6 +7,7 @@ import toast from 'react-hot-toast';
 export function IdeaModal({ idea, isOpen, onClose, isPurchased }) {
   const { user } = useAuth();
   const [loadingPayment, setLoadingPayment] = useState(false);
+  const [fetchedContent, setFetchedContent] = useState(null);
 
   useEffect(() => {
     // Load Midtrans Snap script
@@ -22,6 +23,24 @@ export function IdeaModal({ idea, isOpen, onClose, isPurchased }) {
       document.body.appendChild(scriptTag);
     }
   }, []);
+
+  useEffect(() => {
+    if (isPurchased && idea && !idea.content && !idea.idea_content && idea.idea_id) {
+      const fetchRealContent = async () => {
+        try {
+          const { data } = await supabase.from('ideas').select('content').eq('id', idea.idea_id).single();
+          if (data && data.content) {
+            setFetchedContent(data.content);
+          }
+        } catch (e) {
+          console.error('Failed to fetch idea content', e);
+        }
+      };
+      fetchRealContent();
+    } else {
+      setFetchedContent(null);
+    }
+  }, [isPurchased, idea]);
 
   const handleBuyIdea = async () => {
     if (!user) {
@@ -103,6 +122,8 @@ export function IdeaModal({ idea, isOpen, onClose, isPurchased }) {
   const p = idea.platform || idea.category || '';
   const c = idea.category || 'lainnya';
   const platformLabel = { youtube: 'YouTube', tiktok: 'TikTok', instagram: 'Instagram', podcast: 'Podcast', blog: 'Blog' }[p] || p;
+  
+  const displayContent = idea.content || idea.idea_content || fetchedContent || 'Isi ide belum tersedia (Atau kamu sedang membuka tabel pembelian yang tidak menyimpan salinan isi).';
 
   const modalElement = (
     <div className="modal show">
@@ -145,7 +166,7 @@ export function IdeaModal({ idea, isOpen, onClose, isPurchased }) {
                 <i className="fas fa-lock-open"></i> Isi Ide (Rahasia)
               </h3>
               <p style={{ color: '#f8fafc', fontSize: '0.85rem', lineHeight: '1.5', whiteSpace: 'pre-wrap' }}>
-                {idea.content || idea.idea_content || 'Isi ide belum tersedia (Atau kamu sedang membuka tabel pembelian yang tidak menyimpan salinan isi).'}
+                {displayContent}
               </p>
             </div>
           ) : (
