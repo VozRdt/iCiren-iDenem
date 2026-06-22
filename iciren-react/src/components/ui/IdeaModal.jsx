@@ -6,16 +6,15 @@ export function IdeaModal({ idea, isOpen, onClose, isPurchased }) {
   
   if (!isOpen || !idea) return null;
 
-  const isOwner = user && idea.user_id === user.id;
-  const canViewContent = isPurchased || isOwner;
+  const canViewContent = isPurchased;
 
   const p = idea.platform || idea.category || '';
   const c = idea.category || 'lainnya';
   const platformLabel = { youtube: 'YouTube', tiktok: 'TikTok', instagram: 'Instagram', podcast: 'Podcast', blog: 'Blog' }[p] || p;
 
   return (
-    <div className="modal show" style={{ display: 'flex' }}>
-      <div className="modal-content" style={{ maxWidth: '380px', margin: 'auto', width: '90%' }}>
+    <div className="modal show" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh' }}>
+      <div className="modal-content" style={{ maxWidth: '380px', width: '90%', margin: 0, maxHeight: '90vh', overflowY: 'auto' }}>
         <span className="close" onClick={onClose}>&times;</span>
         <div className="modal-body">
           <div style={{ textAlign: 'center', marginBottom: '0.3rem', fontSize: '2.2rem' }}>
