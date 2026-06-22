@@ -28,7 +28,7 @@ export default function Navbar() {
               <i className="fas fa-bell"></i>
             </button>
           </div>
-          <div className="nav-user-info" onClick={() => { navigate('/profile'); setMenuOpen(false); }} style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', cursor: 'pointer' }} title="Profil Saya">
+          <div className="nav-user-info" onClick={() => { navigate('/profile'); setMenuOpen(false); }} style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', cursor: 'pointer' }} title="Profil Saya">
             <div className="nav-user-avatar">
               <span>{profile?.full_name ? profile.full_name.charAt(0).toUpperCase() : 'U'}</span>
             </div>
