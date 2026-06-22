@@ -2578,7 +2578,10 @@ body {
 
     .auth-deco-card {
         flex: 1;
-    }
+}
+
+.mobile-only-cta {
+    display: none;
 }
 
 /* ========================================
@@ -2616,8 +2619,8 @@ body {
         right: 0;
         bottom: 0;
         left: auto;
-        width: 200px;
-        max-width: 50vw;
+        width: 280px;
+        max-width: 80vw;
         background: rgba(12, 12, 12, 0.99);
         flex-direction: column;
         padding: 1rem 1.2rem 2rem;
@@ -2699,10 +2702,17 @@ body {
     }
 
     .nav-user-profile {
-        width: max-content;
+        width: 100%;
         margin-top: 0.5rem;
         gap: 0.4rem;
-        padding: 0.3rem 0.75rem 0.3rem 0.3rem;
+        padding: 0.5rem 0.75rem;
+        flex-wrap: wrap;
+        border-radius: 20px;
+    }
+
+    .nav-user-profile .btn-sm {
+        width: 100%;
+        margin-top: 0.25rem;
     }
 
     .nav-user-profile .nav-user-avatar,
