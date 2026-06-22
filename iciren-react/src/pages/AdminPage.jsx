@@ -61,6 +61,94 @@ export default function AdminPage() {
     }
   };
 
+  const handleCompleteWithdrawal = async (wd) => {
+    try {
+      const { error } = await supabase.from('withdrawals').update({ status: 'completed' }).eq('id', wd.id);
+      if (error) throw error;
+      toast.success('Penarikan ditandai selesai!');
+      setWithdrawals(withdrawals.map(w => w.id === wd.id ? { ...w, status: 'completed' } : w));
+    } catch (e) {
+      toast.error('Gagal menyelesaikan penarikan.');
+    }
+  };
+
+  const handleRejectWithdrawal = async (wd) => {
+    try {
+      // 1. Update status to rejected
+      const { error: wdErr } = await supabase.from('withdrawals').update({ status: 'rejected' }).eq('id', wd.id);
+      if (wdErr) throw wdErr;
+
+      // 2. Refund balance to user
+      const { data: userProfile, error: profFetchErr } = await supabase.from('profiles').select('total_earnings').eq('id', wd.user_id).single();
+      if (profFetchErr) throw profFetchErr;
+
+      const { error: profErr } = await supabase.from('profiles').update({ total_earnings: (userProfile.total_earnings || 0) + wd.amount }).eq('id', wd.user_id);
+      if (profErr) throw profErr;
+
+      toast.success('Penarikan ditolak dan saldo dikembalikan ke user.');
+      setWithdrawals(withdrawals.map(w => w.id === wd.id ? { ...w, status: 'rejected' } : w));
+    } catch (e) {
+      console.error(e);
+      toast.error('Gagal menolak penarikan.');
+    }
+  };
+
+  const CountdownTimer = ({ createdAt }) => {
+    const [timeLeft, setTimeLeft] = useState('');
+    const [isExpired, setIsExpired] = useState(false);
+
+    useEffect(() => {
+      const targetDate = new Date(createdAt).getTime() + (72 * 60 * 60 * 1000);
+      const updateTimer = () => {
+        const now = new Date().getTime();
+        const distance = targetDate - now;
+        if (distance <= 0) {
+          setTimeLeft('00:00:00');
+          setIsExpired(true);
+          return;
+        }
+        const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)) + Math.floor(distance / (1000 * 60 * 60 * 24)) * 24;
+        const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+        setTimeLeft(`${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`);
+      };
+      updateTimer();
+      const interval = setInterval(updateTimer, 1000);
+      return () => clearInterval(interval);
+    }, [createdAt]);
+
+    return { timeLeft, isExpired };
+  };
+
+  const AdminWithdrawalCard = ({ wd }) => {
+    const { timeLeft, isExpired } = CountdownTimer({ createdAt: wd.created_at });
+    
+    return (
+      <div className="admin-idea-card" style={{ borderColor: (wd.status === 'pending' && isExpired) ? '#ef4444' : 'rgba(255,255,255,0.05)' }}>
+        <div className="admin-idea-info">
+          <h4 style={{marginBottom:'0.5rem'}}><i className="fas fa-university" style={{color:'#6366f1'}}></i> {wd.bank_name} - {wd.account_number}</h4>
+          <div className="admin-idea-meta">
+            <span><i className="fas fa-user"></i> A.N: <strong>{wd.account_name}</strong></span>
+            <span style={{color:'#10b981', fontWeight:'bold'}}><i className="fas fa-money-bill-wave"></i> Rp {wd.amount.toLocaleString('id-ID')}</span>
+          </div>
+          {wd.status === 'pending' && (
+            <div style={{ marginTop: '0.8rem', padding: '0.5rem', background: isExpired ? 'rgba(239,68,68,0.1)' : 'rgba(245,158,11,0.1)', borderRadius: '6px', fontSize: '0.85rem' }}>
+              <span>Sisa Waktu: </span>
+              <strong style={{ color: isExpired ? '#ef4444' : '#f59e0b', fontFamily: 'monospace' }}>{timeLeft}</strong>
+              {isExpired && <span style={{ color: '#ef4444', marginLeft: '0.5rem', fontWeight: 'bold' }}>EXPIRED</span>}
+            </div>
+          )}
+        </div>
+        {wd.status === 'pending' && (
+          <div className="admin-idea-actions">
+            <button className="admin-btn admin-btn-approve" onClick={() => handleCompleteWithdrawal(wd)}><i className="fas fa-check"></i> Selesai</button>
+            <button className="admin-btn admin-btn-reject" onClick={() => handleRejectWithdrawal(wd)}><i className="fas fa-times"></i> Tolak & Kembalikan</button>
+          </div>
+        )}
+      </div>
+    );
+  };
+
   const handleRejectIdea = async (id) => {
     const note = prompt('Catatan penolakan (opsional):');
     if (note === null) return;
@@ -152,15 +240,7 @@ export default function AdminPage() {
                 {loading ? <div style={{textAlign:'center', padding:'2rem'}}>Loading...</div> : filteredWithdrawals.length === 0 ? (
                   <div className="empty-state"><div className="empty-icon"><i className="fas fa-money-check"></i></div><h3>Tidak Ada Data</h3></div>
                 ) : filteredWithdrawals.map(wd => (
-                  <div key={wd.id} className="admin-idea-card">
-                    <div className="admin-idea-info">
-                      <h4 style={{marginBottom:'0.5rem'}}><i className="fas fa-university" style={{color:'#6366f1'}}></i> {wd.bank_name} - {wd.account_number}</h4>
-                      <div className="admin-idea-meta">
-                        <span><i className="fas fa-user"></i> A.N: <strong>{wd.account_name}</strong></span>
-                        <span style={{color:'#10b981', fontWeight:'bold'}}><i className="fas fa-money-bill-wave"></i> Rp {wd.amount.toLocaleString('id-ID')}</span>
-                      </div>
-                    </div>
-                  </div>
+                  <AdminWithdrawalCard key={wd.id} wd={wd} />
                 ))}
               </div>
             </div>
