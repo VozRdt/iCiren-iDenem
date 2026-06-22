@@ -1,4 +1,5 @@
 import React from 'react';
+import { createPortal } from 'react-dom';
 import { useAuth } from '../../contexts/AuthContext';
 
 export function IdeaModal({ idea, isOpen, onClose, isPurchased }) {
@@ -12,7 +13,7 @@ export function IdeaModal({ idea, isOpen, onClose, isPurchased }) {
   const c = idea.category || 'lainnya';
   const platformLabel = { youtube: 'YouTube', tiktok: 'TikTok', instagram: 'Instagram', podcast: 'Podcast', blog: 'Blog' }[p] || p;
 
-  return (
+  const modalElement = (
     <div className="modal show">
       <div className="modal-content">
         <span className="close" onClick={onClose}>&times;</span>
@@ -74,4 +75,6 @@ export function IdeaModal({ idea, isOpen, onClose, isPurchased }) {
       </div>
     </div>
   );
+
+  return createPortal(modalElement, document.body);
 }
