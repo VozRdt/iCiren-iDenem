@@ -13,13 +13,14 @@ export default function Navbar() {
   return (
     <>
       <div id="nav-progress" className={location.pathname ? '' : 'running'}></div>
+      <div className={`nav-menu-backdrop ${menuOpen ? 'show' : ''}`} onClick={() => setMenuOpen(false)}></div>
       <nav className="navbar" id="navbar">
         <div className="nav-container">
           <Link to="/" className="nav-logo" style={{ cursor: 'pointer', textDecoration: 'none' }}>
             <img src="/logo.png" alt="Logo iCiren iDe'nem" className="custom-logo" />
           </Link>
           
-          <ul className={`nav-menu ${menuOpen ? 'active' : ''}`} id="navMenu">
+          <ul className={`nav-menu ${menuOpen ? 'open' : ''}`} id="navMenu">
             <li className="nav-item">
               <Link to="/" className={`nav-link ${isActive('/')}`} onClick={() => setMenuOpen(false)}>Home</Link>
             </li>
