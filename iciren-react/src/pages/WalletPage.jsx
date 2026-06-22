@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { supabase } from '../lib/supabase';
@@ -251,9 +252,9 @@ export default function WalletPage() {
         </div>
       </section>
 
-      {showWithdrawModal && (
+      {showWithdrawModal && createPortal(
         <div className="modal show" onClick={() => setShowWithdrawModal(false)}>
-          <div className="modal-content" onClick={(e) => e.stopPropagation()} style={{ maxWidth: '400px', margin: '15vh auto', position: 'relative' }}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()} style={{ maxWidth: '400px' }}>
             <span className="close" onClick={() => setShowWithdrawModal(false)}>&times;</span>
             <div className="modal-body">
               <div style={{ textAlign: 'center', marginBottom: '1rem', fontSize: '2.5rem', color: '#f59e0b' }}>
@@ -287,7 +288,8 @@ export default function WalletPage() {
               </button>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );
