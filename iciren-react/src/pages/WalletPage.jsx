@@ -10,6 +10,9 @@ export default function WalletPage() {
   
   const [loading, setLoading] = useState(false);
   const [withdrawals, setWithdrawals] = useState([]);
+  
+  const [showWithdrawModal, setShowWithdrawModal] = useState(false);
+  const [withdrawAmount, setWithdrawAmount] = useState('');
 
   const fetchWithdrawals = async () => {
     if (!user) return;
@@ -35,7 +38,7 @@ export default function WalletPage() {
     }
   }, [user, profile, navigate]);
 
-  const handleWithdraw = async () => {
+  const handleOpenWithdrawModal = () => {
     if (!profile.total_earnings || profile.total_earnings <= 0) {
       toast.error('Saldo tidak cukup untuk ditarik.');
       return;
@@ -47,10 +50,12 @@ export default function WalletPage() {
       return;
     }
 
-    const amountStr = window.prompt(`Masukkan nominal yang ingin ditarik (Maksimal: Rp ${profile.total_earnings.toLocaleString('id-ID')}):`);
-    if (!amountStr) return; // User cancelled
+    setWithdrawAmount('');
+    setShowWithdrawModal(true);
+  };
 
-    const amount = parseInt(amountStr.replace(/[^0-9]/g, ''), 10);
+  const submitWithdrawal = async () => {
+    const amount = parseInt(withdrawAmount.replace(/[^0-9]/g, ''), 10);
     if (isNaN(amount) || amount <= 0) {
       toast.error('Nominal tidak valid.');
       return;
@@ -90,6 +95,7 @@ export default function WalletPage() {
       
       setProfile(updatedProfile);
       toast.success('Permintaan tarik tunai berhasil dikirim!');
+      setShowWithdrawModal(false);
       fetchWithdrawals();
     } catch (error) {
       console.error(error);
@@ -217,7 +223,7 @@ export default function WalletPage() {
               Rp {(profile.total_earnings || 0).toLocaleString('id-ID')}
             </h3>
             
-            <button className="btn btn-primary" style={{ width: '100%', maxWidth: '300px', padding: '1rem', fontSize: '1rem', fontWeight: '600', margin: '0 auto' }} onClick={handleWithdraw} disabled={loading}>
+            <button className="btn btn-primary" style={{ width: '100%', maxWidth: '300px', padding: '1rem', fontSize: '1rem', fontWeight: '600', margin: '0 auto' }} onClick={handleOpenWithdrawModal} disabled={loading}>
               <i className="fas fa-money-check-alt"></i> Ajukan Penarikan Tunai
             </button>
             
@@ -244,6 +250,42 @@ export default function WalletPage() {
           
         </div>
       </section>
+
+      {showWithdrawModal && (
+        <div className="modal-overlay" onClick={() => setShowWithdrawModal(false)}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()} style={{ maxWidth: '400px' }}>
+            <button className="modal-close" onClick={() => setShowWithdrawModal(false)}><i className="fas fa-times"></i></button>
+            <h2 className="modal-title" style={{ fontSize: '1.4rem' }}><i className="fas fa-money-bill-wave"></i> Tarik Tunai</h2>
+            <div className="modal-body">
+              <p style={{ color: '#a3a3a3', marginBottom: '1rem', fontSize: '0.95rem' }}>
+                Masukkan nominal yang ingin ditarik. Maksimal penarikan saat ini adalah <strong>Rp {profile.total_earnings.toLocaleString('id-ID')}</strong>.
+              </p>
+              <div className="form-group">
+                <label>Nominal Penarikan (Rp)</label>
+                <input 
+                  type="number" 
+                  className="form-input" 
+                  placeholder="10000" 
+                  value={withdrawAmount} 
+                  onChange={(e) => setWithdrawAmount(e.target.value)}
+                  min="10000"
+                  max={profile.total_earnings}
+                  autoFocus
+                />
+                <small style={{ color: '#94a3b8', marginTop: '0.5rem', display: 'block' }}>Minimal Rp 10.000</small>
+              </div>
+              <button 
+                className="btn btn-primary" 
+                style={{ width: '100%', padding: '0.8rem' }} 
+                onClick={submitWithdrawal} 
+                disabled={loading || !withdrawAmount || parseInt(withdrawAmount) < 10000 || parseInt(withdrawAmount) > profile.total_earnings}
+              >
+                {loading ? 'Memproses...' : 'Tarik Dana Sekarang'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
