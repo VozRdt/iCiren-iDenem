@@ -13,8 +13,8 @@ export function IdeaModal({ idea, isOpen, onClose, isPurchased }) {
   const platformLabel = { youtube: 'YouTube', tiktok: 'TikTok', instagram: 'Instagram', podcast: 'Podcast', blog: 'Blog' }[p] || p;
 
   return (
-    <div className="modal show" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh' }}>
-      <div className="modal-content" style={{ maxWidth: '380px', width: '90%', margin: 0, maxHeight: '90vh', overflowY: 'auto' }}>
+    <div className="modal show">
+      <div className="modal-content">
         <span className="close" onClick={onClose}>&times;</span>
         <div className="modal-body">
           <div style={{ textAlign: 'center', marginBottom: '0.3rem', fontSize: '2.2rem' }}>
