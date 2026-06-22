@@ -10,6 +10,38 @@ export default function Navbar() {
 
   const isActive = (path) => location.pathname === path ? 'active' : '';
 
+  const ctaContent = (
+    <>
+      {!user ? (
+        <>
+          <button className="btn btn-outline btn-auth-nav" onClick={() => navigate('/auth?tab=login')}>
+            <i className="fas fa-sign-in-alt"></i> Masuk
+          </button>
+          <button className="btn btn-primary btn-auth-nav" onClick={() => navigate('/auth?tab=register')}>
+            <i className="fas fa-user-plus"></i> Daftar
+          </button>
+        </>
+      ) : (
+        <div className="nav-user-profile" style={{ display: 'flex' }}>
+          <div className="nav-notif-wrapper">
+            <button className="nav-notif-btn">
+              <i className="fas fa-bell"></i>
+            </button>
+          </div>
+          <div className="nav-user-avatar" onClick={() => { navigate('/profile'); setMenuOpen(false); }} style={{ cursor: 'pointer' }} title="Profil Saya">
+            <span>{profile?.full_name ? profile.full_name.charAt(0).toUpperCase() : 'U'}</span>
+          </div>
+          <span className="nav-user-name" onClick={() => { navigate('/profile'); setMenuOpen(false); }} style={{ cursor: 'pointer' }}>
+            {profile?.full_name || user.email}
+          </span>
+          <button className="btn btn-outline btn-sm" onClick={() => { signOut(); setMenuOpen(false); }}>
+            <i className="fas fa-sign-out-alt"></i> Keluar
+          </button>
+        </div>
+      )}
+    </>
+  );
+
   return (
     <>
       <div id="nav-progress" className={location.pathname ? '' : 'running'}></div>
@@ -38,36 +70,15 @@ export default function Navbar() {
             <li className="nav-item">
               <Link to="/myideas" className={`nav-link ${isActive('/myideas')}`} onClick={() => setMenuOpen(false)}>Ide Saya</Link>
             </li>
+            <li className="nav-item mobile-only-cta">
+              <div className="nav-cta-mobile-content" style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', width: '100%', marginTop: '1rem', paddingTop: '1rem', borderTop: '1px solid rgba(245, 158, 11, 0.15)' }}>
+                {ctaContent}
+              </div>
+            </li>
           </ul>
 
           <div className="nav-cta">
-            {!user ? (
-              <>
-                <button className="btn btn-outline btn-auth-nav" onClick={() => navigate('/auth?tab=login')}>
-                  <i className="fas fa-sign-in-alt"></i> Masuk
-                </button>
-                <button className="btn btn-primary btn-auth-nav" onClick={() => navigate('/auth?tab=register')}>
-                  <i className="fas fa-user-plus"></i> Daftar
-                </button>
-              </>
-            ) : (
-              <div className="nav-user-profile" style={{ display: 'flex' }}>
-                <div className="nav-notif-wrapper">
-                  <button className="nav-notif-btn">
-                    <i className="fas fa-bell"></i>
-                  </button>
-                </div>
-                <div className="nav-user-avatar" onClick={() => navigate('/profile')} style={{ cursor: 'pointer' }} title="Profil Saya">
-                  <span>{profile?.full_name ? profile.full_name.charAt(0).toUpperCase() : 'U'}</span>
-                </div>
-                <span className="nav-user-name" onClick={() => navigate('/profile')} style={{ cursor: 'pointer' }}>
-                  {profile?.full_name || user.email}
-                </span>
-                <button className="btn btn-outline btn-sm" onClick={signOut}>
-                  <i className="fas fa-sign-out-alt"></i> Keluar
-                </button>
-              </div>
-            )}
+            {ctaContent}
           </div>
 
           <div className={`hamburger ${menuOpen ? 'open' : ''}`} onClick={() => setMenuOpen(!menuOpen)}>

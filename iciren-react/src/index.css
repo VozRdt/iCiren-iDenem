@@ -2691,17 +2691,11 @@ body {
     }
 
     .nav-cta {
-        display: none;
-        flex-direction: column;
-        gap: 0.5rem;
-        padding: 0.8rem 0 0;
-        margin-top: 0.5rem;
-        border-top: 1px solid rgba(245, 158, 11, 0.15);
-        width: 100%;
+        display: none !important;
     }
 
-    .nav-cta.open {
-        display: flex;
+    .mobile-only-cta {
+        display: block !important;
     }
 
     .nav-user-profile {
