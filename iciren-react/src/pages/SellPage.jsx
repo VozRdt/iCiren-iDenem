@@ -123,8 +123,8 @@ export default function SellPage() {
                     </div>
                   </div>
                   <div className="form-group">
-                    <label htmlFor="ideaDesc">Deskripsi Singkat (Publik) <span className="required">*</span></label>
-                    <textarea id="ideaDesc" className="form-input form-textarea" rows="3" placeholder="Jelaskan ide kontenmu secara singkat (teaser)..." required value={formData.description} onChange={handleChange}></textarea>
+                    <label htmlFor="ideaDescription">Deskripsi Singkat (Publik) <span className="required">*</span></label>
+                    <textarea id="ideaDescription" className="form-input form-textarea" rows="3" placeholder="Jelaskan ide kontenmu secara singkat (teaser)..." required value={formData.description} onChange={handleChange}></textarea>
                   </div>
                   <div className="form-group">
                     <label htmlFor="ideaContent">Isi Ide (Rahasia - Hanya untuk Pembeli) <span className="required">*</span></label>
