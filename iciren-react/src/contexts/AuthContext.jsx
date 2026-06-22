@@ -45,6 +45,20 @@ export const AuthProvider = ({ children }) => {
       
       if (!error && data) {
         setProfile(data);
+      } else if (error && error.code === 'PGRST116') {
+        // Profile doesn't exist, create it automatically
+        const { data: newProfile, error: insertError } = await supabase
+          .from('profiles')
+          .insert({ 
+            id: userId, 
+            full_name: 'User' // Default name, can be updated by user later
+          })
+          .select()
+          .single();
+          
+        if (!insertError && newProfile) {
+          setProfile(newProfile);
+        }
       }
     } catch (error) {
       console.error('Error fetching profile:', error);

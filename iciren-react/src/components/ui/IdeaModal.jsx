@@ -15,7 +15,7 @@ export function IdeaModal({ idea, isOpen, onClose, isPurchased }) {
 
   return (
     <div className="modal show" style={{ display: 'flex' }}>
-      <div className="modal-content" style={{ maxWidth: '380px', margin: '0 auto', width: '90%' }}>
+      <div className="modal-content" style={{ maxWidth: '380px', margin: 'auto', width: '90%' }}>
         <span className="close" onClick={onClose}>&times;</span>
         <div className="modal-body">
           <div style={{ textAlign: 'center', marginBottom: '0.3rem', fontSize: '2.2rem' }}>
@@ -54,7 +54,7 @@ export function IdeaModal({ idea, isOpen, onClose, isPurchased }) {
                 <i className="fas fa-lock-open"></i> Isi Ide (Rahasia)
               </h3>
               <p style={{ color: '#f8fafc', fontSize: '0.85rem', lineHeight: '1.5', whiteSpace: 'pre-wrap' }}>
-                {idea.content || 'Isi ide belum tersedia (Atau kamu sedang membuka tabel pembelian yang tidak menyimpan salinan isi).'}
+                {idea.content || idea.idea_content || 'Isi ide belum tersedia (Atau kamu sedang membuka tabel pembelian yang tidak menyimpan salinan isi).'}
               </p>
             </div>
           ) : (

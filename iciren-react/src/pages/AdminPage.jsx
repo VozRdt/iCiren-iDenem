@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { supabase } from '../lib/supabase';
 import toast from 'react-hot-toast';
+import { IdeaModal } from '../components/ui/IdeaModal';
 
 export default function AdminPage() {
   const { user, profile } = useAuth();
@@ -15,6 +16,8 @@ export default function AdminPage() {
   const [ideas, setIdeas] = useState([]);
   const [withdrawals, setWithdrawals] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  const [selectedIdea, setSelectedIdea] = useState(null);
 
   useEffect(() => {
     if (!user || profile?.role !== 'admin') {
@@ -124,7 +127,7 @@ export default function AdminPage() {
                       <p className="admin-idea-desc">{idea.description}</p>
                     </div>
                     <div className="admin-idea-actions">
-                      <button className="admin-btn admin-btn-view" onClick={() => alert('View Detail')}><i className="fas fa-eye"></i> Detail</button>
+                      <button className="admin-btn admin-btn-view" onClick={() => setSelectedIdea(idea)}><i className="fas fa-eye"></i> Detail</button>
                       {idea.status === 'pending' && (
                         <>
                           <button className="admin-btn admin-btn-approve" onClick={() => handleApproveIdea(idea.id)}><i className="fas fa-check"></i> Approve</button>
@@ -164,6 +167,13 @@ export default function AdminPage() {
           )}
         </div>
       </section>
+
+      <IdeaModal 
+        idea={selectedIdea} 
+        isOpen={selectedIdea !== null} 
+        onClose={() => setSelectedIdea(null)} 
+        isPurchased={true} 
+      />
     </div>
   );
 }

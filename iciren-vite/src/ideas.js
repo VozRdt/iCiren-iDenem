@@ -276,7 +276,7 @@ export function openModal(ideaId) {
       (purchasedIdeas.some(i => i.id === ideaId) || (currentUser && idea.user_id === currentUser.id))
       ? `<div style="background: rgba(16,185,129,0.05); border: 1px solid rgba(16,185,129,0.2); padding: 1rem; border-radius: 10px; margin-bottom: 0.6rem; text-align: left;">
            <h3 style="color:#10B981; font-size:0.95rem; margin-bottom:0.5rem;"><i class="fas fa-lock-open"></i> Isi Ide (Rahasia)</h3>
-           <p style="color:#f8fafc; font-size:0.85rem; line-height:1.5; white-space: pre-wrap;">${idea.content || 'Isi ide belum tersedia.'}</p>
+           <p style="color:#f8fafc; font-size:0.85rem; line-height:1.5; white-space: pre-wrap;">${idea.content || idea.idea_content || 'Isi ide belum tersedia.'}</p>
          </div>`
       : `<div style="text-align: center; margin-bottom: 0.5rem; font-size: 0.75rem; color: #9ca3af;">
            <i class="fas fa-info-circle"></i> Harga belum termasuk biaya transaksi Midtrans.
