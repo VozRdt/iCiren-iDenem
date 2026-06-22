@@ -127,7 +127,7 @@ export default function ProfilePage() {
                   <div className="profile-stat-mini"><span className="psm-num">0</span><span className="psm-label">Ide Dijual</span></div>
                   <div className="profile-stat-mini"><span className="psm-num">0</span><span className="psm-label">Ide Terjual</span></div>
                 </div>
-                <div className="wallet-card" style={{ marginTop: '2rem', paddingTop: '1.5rem', borderTop: '1px solid rgba(255,255,255,0.05)', textAlign: 'center' }}>
+                <div className="wallet-card" style={{ textAlign: 'center' }}>
                   <p className="wallet-label" style={{ color: '#a3a3a3', fontSize: '0.95rem', marginBottom: '0.5rem' }}>Saldo Penghasilan</p>
                   <h3 className="wallet-balance" style={{ fontSize: '2rem', fontWeight: '800', marginBottom: '1.2rem', color: '#f8fafc' }}>Rp {(profile.total_earnings || 0).toLocaleString('id-ID')}</h3>
                   <button className="btn btn-primary" style={{ width: '100%', padding: '0.8rem 1rem', fontSize: '0.95rem', fontWeight: '600' }} onClick={() => navigate('/wallet')}>
