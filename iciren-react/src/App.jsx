@@ -14,6 +14,7 @@ import AuthPage from './pages/AuthPage';
 import SellPage from './pages/SellPage';
 import MyIdeasPage from './pages/MyIdeasPage';
 import ProfilePage from './pages/ProfilePage';
+import WalletPage from './pages/WalletPage';
 import AdminPage from './pages/AdminPage';
 
 // Scroll to top on route change
@@ -45,6 +46,7 @@ function App() {
           <Route path="/sell" element={<SellPage />} />
           <Route path="/myideas" element={<MyIdeasPage />} />
           <Route path="/profile" element={<ProfilePage />} />
+          <Route path="/wallet" element={<WalletPage />} />
           <Route path="/admin" element={<AdminPage />} />
         </Routes>
         <Footer />
