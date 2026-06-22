@@ -163,7 +163,7 @@ export function IdeaModal({ idea, isOpen, onClose, isPurchased }) {
           {canViewContent ? (
             <div style={{ background: 'rgba(16,185,129,0.05)', border: '1px solid rgba(16,185,129,0.2)', padding: '1rem', borderRadius: '10px', marginBottom: '0.6rem', textAlign: 'left' }}>
               <h3 style={{ color: '#10B981', fontSize: '0.95rem', marginBottom: '0.5rem' }}>
-                <i className="fas fa-lock-open"></i> Isi Ide (Rahasia)
+                <i className="fas fa-lock-open"></i> Isi Ide (Terbuka)
               </h3>
               <p style={{ color: '#f8fafc', fontSize: '0.85rem', lineHeight: '1.5', whiteSpace: 'pre-wrap' }}>
                 {displayContent}
