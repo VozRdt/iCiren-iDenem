@@ -27,7 +27,10 @@ body {
     font-family: 'Poppins', sans-serif;
     line-height: 1.6;
     color: #e5e5e5;
-    background: #080808;
+    background: linear-gradient(rgba(8, 8, 8, 0.7), rgba(8, 8, 8, 0.85)), url('/bg-batik.jpg');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
     overflow-x: hidden;
 }
 
@@ -145,11 +148,6 @@ body {
    ======================================= */
 .hero {
     padding: 100px 0 40px;
-    /* Menambahkan background batik dengan overlay gelap agar teks tetap terbaca */
-    background: linear-gradient(rgba(8, 8, 8, 0.7), rgba(8, 8, 8, 0.85)), url('/bg-batik.jpg');
-    background-size: cover;
-    background-position: center;
-    background-attachment: fixed; /* Opsi ini membuat efek parallax (background tetap saat di-scroll) */
     color: #e5e5e5;
     min-height: 100vh;
     min-height: 100dvh;
@@ -182,7 +180,7 @@ body {
     left: 0;
     right: 0;
     height: 120px;
-    background: linear-gradient(to bottom, transparent 0%, #080808 100%);
+    background: transparent;
     pointer-events: none;
     z-index: 1;
 }
@@ -355,7 +353,7 @@ body {
    ======================================= */
 .how-it-works {
     padding: 120px 0;
-    background: #080808;
+    background: transparent;
     position: relative;
 }
 
@@ -426,7 +424,7 @@ body {
    ======================================= */
 .ideas-section {
     padding: 2rem 0 4rem;
-    background: #080808;
+    background: transparent;
     position: relative;
 }
 
@@ -553,7 +551,7 @@ body {
 .benefits,
 .testimonials {
     padding: 120px 0;
-    background: #080808;
+    background: transparent;
     position: relative;
 }
 
@@ -1669,7 +1667,7 @@ body {
 .auth-section {
     min-height: 100vh;
     padding: 120px 0 80px;
-    background: #080808;
+    background: transparent;
     display: flex;
     align-items: center;
     position: relative;
