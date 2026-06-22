@@ -252,15 +252,18 @@ export default function WalletPage() {
       </section>
 
       {showWithdrawModal && (
-        <div className="modal-overlay" onClick={() => setShowWithdrawModal(false)}>
-          <div className="modal-content" onClick={(e) => e.stopPropagation()} style={{ maxWidth: '400px' }}>
-            <button className="modal-close" onClick={() => setShowWithdrawModal(false)}><i className="fas fa-times"></i></button>
-            <h2 className="modal-title" style={{ fontSize: '1.4rem' }}><i className="fas fa-money-bill-wave"></i> Tarik Tunai</h2>
+        <div className="modal show" onClick={() => setShowWithdrawModal(false)}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()} style={{ maxWidth: '400px', margin: '15vh auto', position: 'relative' }}>
+            <span className="close" onClick={() => setShowWithdrawModal(false)}>&times;</span>
             <div className="modal-body">
-              <p style={{ color: '#a3a3a3', marginBottom: '1rem', fontSize: '0.95rem' }}>
+              <div style={{ textAlign: 'center', marginBottom: '1rem', fontSize: '2.5rem', color: '#f59e0b' }}>
+                <i className="fas fa-money-bill-wave"></i>
+              </div>
+              <h2 className="modal-title" style={{ fontSize: '1.4rem', textAlign: 'center', marginBottom: '0.5rem', color: '#f8fafc' }}>Tarik Tunai</h2>
+              <p style={{ color: '#a3a3a3', marginBottom: '1.5rem', fontSize: '0.95rem', textAlign: 'center' }}>
                 Masukkan nominal yang ingin ditarik. Maksimal penarikan saat ini adalah <strong>Rp {profile.total_earnings.toLocaleString('id-ID')}</strong>.
               </p>
-              <div className="form-group">
+              <div className="form-group" style={{ textAlign: 'left' }}>
                 <label>Nominal Penarikan (Rp)</label>
                 <input 
                   type="number" 
@@ -276,7 +279,7 @@ export default function WalletPage() {
               </div>
               <button 
                 className="btn btn-primary" 
-                style={{ width: '100%', padding: '0.8rem' }} 
+                style={{ width: '100%', padding: '0.8rem', marginTop: '1rem' }} 
                 onClick={submitWithdrawal} 
                 disabled={loading || !withdrawAmount || parseInt(withdrawAmount) < 10000 || parseInt(withdrawAmount) > profile.total_earnings}
               >
