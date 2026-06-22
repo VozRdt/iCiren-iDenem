@@ -25,11 +25,28 @@ export default function ExplorePage() {
         .eq('status', 'approved')
         .order('created_at', { ascending: false });
       
-      if (data) {
+      if (error) throw error;
+      
+      if (data && data.length > 0) {
+        const userIds = [...new Set(data.map(i => i.user_id))];
+        const { data: profiles } = await supabase
+          .from('profiles')
+          .select('id, full_name')
+          .in('id', userIds);
+          
+        const profileMap = {};
+        if (profiles) {
+          profiles.forEach(p => {
+            profileMap[p.id] = p.full_name || 'Kreator Anonim';
+          });
+        }
+
         setIdeas(data.map(idea => ({
           ...idea,
-          author_name: 'Kreator Anonim' // Fallback because no direct FK to profiles exists
+          author_name: profileMap[idea.user_id] || 'Kreator Anonim'
         })));
+      } else {
+        setIdeas([]);
       }
     } catch (e) {
       console.error(e);
