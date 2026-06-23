@@ -2578,10 +2578,11 @@ body {
 
     .auth-deco-card {
         flex: 1;
+    }
 }
 
 .mobile-only-cta {
-    display: none;
+    display: none !important;
 }
 
 /* ========================================
@@ -2713,6 +2714,8 @@ body {
     .nav-user-profile .btn-sm {
         width: 100%;
         margin-top: 0.25rem;
+        padding: 0.3rem 0.6rem;
+        font-size: 0.75rem;
     }
 
     .nav-user-profile .nav-user-avatar,
@@ -2720,11 +2723,6 @@ body {
         width: 32px;
         height: 32px;
         font-size: 0.8rem;
-    }
-
-    .nav-user-profile .btn-sm {
-        padding: 0.3rem 0.6rem;
-        font-size: 0.75rem;
     }
 
     .nav-user-profile .nav-user-name {
