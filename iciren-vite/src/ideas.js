@@ -247,6 +247,18 @@ export function openModal(ideaId) {
     idea = purchasedIdeas.find(i => i.id === ideaId)
   }
   if (!idea) return
+  
+  // Increment local views
+  idea.views = (idea.views || 0) + 1;
+
+  // Increment views in Supabase
+  if (supabaseClient) {
+    const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(String(ideaId));
+    if (isUUID) {
+      supabaseClient.rpc('increment_idea_view', { p_idea_id: ideaId }).catch(err => console.warn('Failed to increment view:', err));
+    }
+  }
+
   currentModalIdeaId = ideaId
   const modal = document.getElementById('ideaModal')
   const body = document.getElementById('modalBody')

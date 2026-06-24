@@ -42,6 +42,16 @@ export function IdeaModal({ idea, isOpen, onClose, isPurchased }) {
     }
   }, [isPurchased, idea]);
 
+  useEffect(() => {
+    if (isOpen && idea) {
+      const ideaId = idea.id || idea.idea_id;
+      const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(String(ideaId));
+      if (isUUID) {
+        supabase.rpc('increment_idea_view', { p_idea_id: ideaId }).catch(err => console.warn('Failed to increment view:', err));
+      }
+    }
+  }, [isOpen, idea]);
+
   const handleBuyIdea = async () => {
     if (!user) {
       toast.error('Silakan login terlebih dahulu untuk membeli ide.');

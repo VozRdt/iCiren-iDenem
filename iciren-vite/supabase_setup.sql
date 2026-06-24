@@ -468,12 +468,13 @@ BEGIN
     updated_at = now()
   WHERE id = v_idea.user_id;
 
+  
   -- 9. Kirim notifikasi ke seller
   INSERT INTO notifications (user_id, type, title, message)
   VALUES (
     v_idea.user_id,
     'idea_sold',
-    '💰 Ide Terjual!',
+    '?? Ide Terjual!',
     'Ide "' || v_idea.title || '" telah dibeli! Penghasilan +Rp ' || v_idea.price || '.'
   );
 
@@ -482,8 +483,8 @@ BEGIN
   VALUES (
     v_user_id,
     'purchase',
-    '🛒 Pembelian Berhasil!',
-    'Kamu berhasil membeli ide "' || v_idea.title || '". Cek di Ide Saya → Dibeli.'
+    '?? Pembelian Berhasil!',
+    'Kamu berhasil membeli ide "' || v_idea.title || '". Cek di Ide Saya ? Dibeli.'
   );
 
   RETURN json_build_object(
@@ -493,6 +494,19 @@ BEGIN
     'idea_title', v_idea.title,
     'amount', v_idea.price
   );
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+-- =============================================================
+-- FUNCTION: increment_idea_view()
+-- Dipanggil saat modal ide dibuka untuk menambah jumlah view
+-- =============================================================
+CREATE OR REPLACE FUNCTION public.increment_idea_view(p_idea_id UUID)
+RETURNS void AS $$
+BEGIN
+  UPDATE public.ideas
+  SET views = COALESCE(views, 0) + 1
+  WHERE id = p_idea_id;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
