@@ -177,7 +177,7 @@ export default function AdminPage() {
       </section>
       <section className="admin-section">
         <div className="container">
-          <div className="admin-mode-tabs" style={{ display: 'flex', gap: '1rem', marginBottom: '2rem', justifyContent: 'center' }}>
+          <div className="admin-mode-tabs" style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem', marginBottom: '2rem', justifyContent: 'center' }}>
             <button className={`btn ${adminMode === 'ideas' ? 'btn-primary' : 'btn-outline'}`} onClick={() => setAdminMode('ideas')}>
               <i className="fas fa-lightbulb"></i> Review Ide
             </button>

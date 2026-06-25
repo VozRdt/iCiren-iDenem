@@ -96,7 +96,7 @@ export default function MyIdeasPage() {
             <div className="dash-stat-card"><div className="dash-stat-icon"><i className="fas fa-eye"></i></div><div className="dash-stat-info"><span className="dash-stat-num">{purchases.length}</span><span className="dash-stat-label">Ide Dibeli</span></div></div>
           </div>
           
-          <div id="myideas-tabs" style={{ display: 'flex', gap: '0.75rem', marginBottom: '1.5rem', marginTop: '2rem' }}>
+          <div id="myideas-tabs" style={{ display: 'flex', flexWrap: 'wrap', gap: '0.75rem', marginBottom: '1.5rem', marginTop: '2rem' }}>
             <button 
               className={`filter-tab myideas-tab ${activeTab === 'submitted' ? 'active' : ''}`} 
               onClick={() => setActiveTab('submitted')}
