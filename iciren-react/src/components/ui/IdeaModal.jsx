@@ -50,7 +50,11 @@ export function IdeaModal({ idea, isOpen, onClose, isPurchased }) {
       const ideaId = idea.id || idea.idea_id;
       const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(String(ideaId));
       if (isUUID) {
-        supabase.rpc('increment_idea_view', { p_idea_id: ideaId }).catch(err => console.warn('Failed to increment view:', err));
+        const incrementView = async () => {
+          const { error } = await supabase.rpc('increment_idea_view', { p_idea_id: ideaId });
+          if (error) console.warn('Failed to increment view:', error);
+        };
+        incrementView();
       }
     }
   }, [isOpen, idea]);
