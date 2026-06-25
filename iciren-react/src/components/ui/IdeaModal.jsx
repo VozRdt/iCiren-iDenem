@@ -132,11 +132,14 @@ export function IdeaModal({ idea, isOpen, onClose, isPurchased }) {
 
   const canViewContent = isPurchased;
 
-  const p = idea.platform || idea.category || '';
+  const p = (idea.platform || idea.category || '').toLowerCase();
   const c = idea.category || 'lainnya';
-  const platformLabel = { youtube: 'YouTube', tiktok: 'TikTok', instagram: 'Instagram', podcast: 'Podcast', blog: 'Blog' }[p] || p;
+  const platformLabel = { youtube: 'YouTube', tiktok: 'TikTok', instagram: 'Instagram', podcast: 'Podcast', blog: 'Blog' }[p] || (idea.platform || idea.category || '');
   
   const displayContent = idea.content || idea.idea_content || fetchedContent || 'Isi ide belum tersedia (Atau kamu sedang membuka tabel pembelian yang tidak menyimpan salinan isi).';
+
+  const priceValue = idea.price || idea.idea_price || 0;
+  const viewsValue = idea.views || idea.idea_views || 0;
 
   const modalElement = (
     <div className="modal show">
@@ -163,12 +166,12 @@ export function IdeaModal({ idea, isOpen, onClose, isPurchased }) {
             <div>
               <div style={{ color: '#a3a3a3', fontSize: '0.7rem', marginBottom: '0.1rem' }}>Harga</div>
               <div style={{ fontSize: '1.15rem', fontWeight: '800', background: 'linear-gradient(135deg,#F59E0B,#FBBF24)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
-                Rp {Number(idea.price || idea.idea_price || 0).toLocaleString('id-ID')}
+                Rp {Number(priceValue).toLocaleString('id-ID')}
               </div>
             </div>
             <div style={{ textAlign: 'right' }}>
               <div style={{ color: '#a3a3a3', fontSize: '0.7rem' }}>
-                {Number(idea.views || idea.idea_views || 0).toLocaleString('id-ID')} kali dilihat
+                {Number(viewsValue).toLocaleString('id-ID')} kali dilihat
               </div>
             </div>
           </div>

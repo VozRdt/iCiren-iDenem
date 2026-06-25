@@ -2,6 +2,7 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation, useNavigationType } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
 import { Toaster } from 'react-hot-toast';
+import { ErrorBoundary } from './components/ErrorBoundary';
 
 import Navbar from './components/layout/Navbar';
 import Footer from './components/layout/Footer';
@@ -47,26 +48,28 @@ function ScrollToTop() {
 
 function App() {
   return (
-    <AuthProvider>
-      <Router>
-        <ScrollToTop />
-        <Navbar />
-        {/* Main Routes */}
-        <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/explore" element={<ExplorePage />} />
-          <Route path="/about" element={<AboutPage />} />
-          <Route path="/auth" element={<AuthPage />} />
-          <Route path="/sell" element={<SellPage />} />
-          <Route path="/myideas" element={<MyIdeasPage />} />
-          <Route path="/profile" element={<ProfilePage />} />
-          <Route path="/wallet" element={<WalletPage />} />
-          <Route path="/admin" element={<AdminPage />} />
-        </Routes>
-        <Footer />
-        <Toaster position="bottom-right" />
-      </Router>
-    </AuthProvider>
+    <ErrorBoundary>
+      <AuthProvider>
+        <Router>
+          <ScrollToTop />
+          <Navbar />
+          {/* Main Routes */}
+          <Routes>
+            <Route path="/" element={<HomePage />} />
+            <Route path="/explore" element={<ExplorePage />} />
+            <Route path="/about" element={<AboutPage />} />
+            <Route path="/auth" element={<AuthPage />} />
+            <Route path="/sell" element={<SellPage />} />
+            <Route path="/myideas" element={<MyIdeasPage />} />
+            <Route path="/profile" element={<ProfilePage />} />
+            <Route path="/wallet" element={<WalletPage />} />
+            <Route path="/admin" element={<AdminPage />} />
+          </Routes>
+          <Footer />
+          <Toaster position="bottom-right" />
+        </Router>
+      </AuthProvider>
+    </ErrorBoundary>
   );
 }
 
