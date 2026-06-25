@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { supabase } from '../lib/supabase';
 import toast from 'react-hot-toast';
@@ -7,6 +7,7 @@ import toast from 'react-hot-toast';
 export default function ProfilePage() {
   const { user, profile, setProfile } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
@@ -36,6 +37,15 @@ export default function ProfilePage() {
       });
     }
   }, [user, profile, navigate]);
+
+  useEffect(() => {
+    if (location.hash === '#bank-info') {
+      const element = document.getElementById('bank-info');
+      if (element) {
+        setTimeout(() => element.scrollIntoView({ behavior: 'smooth' }), 100);
+      }
+    }
+  }, [location.hash]);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.id]: e.target.value });
@@ -161,7 +171,7 @@ export default function ProfilePage() {
                   <button type="submit" className="btn btn-primary" disabled={loading}>Simpan Profil</button>
                 </form>
               </div>
-              <div className="form-card" style={{ marginTop: '2rem' }}>
+              <div className="form-card" id="bank-info" style={{ marginTop: '2rem' }}>
                 <h2 className="form-title">Informasi Rekening Bank</h2>
                 <form id="bankForm" onSubmit={handleSaveBank}>
                   <div className="form-row">
@@ -178,6 +188,7 @@ export default function ProfilePage() {
                     <label htmlFor="account_name">Nama Pemilik Rekening <span className="required">*</span></label>
                     <input type="text" id="account_name" className="form-input" required value={formData.account_name} onChange={handleChange} />
                     <small style={{ color: '#a3a3a3', marginTop: '5px', display: 'block' }}>* Nama pemilik rekening harus sesuai dengan nama profil untuk keamanan penarikan dana.</small>
+                    <small style={{ color: '#a3a3a3', marginTop: '5px', display: 'block' }}>* Data rekening digunakan untuk penarikan tunai.</small>
                   </div>
                   <button type="submit" className="btn btn-primary" disabled={loading}>Simpan Rekening Bank</button>
                 </form>
