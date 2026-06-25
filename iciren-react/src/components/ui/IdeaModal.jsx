@@ -11,7 +11,10 @@ export function IdeaModal({ idea, isOpen, onClose, isPurchased }) {
 
   useEffect(() => {
     // Load Midtrans Snap script
-    const snapScriptUrl = 'https://app.sandbox.midtrans.com/snap/snap.js';
+    const isProd = import.meta.env.VITE_MIDTRANS_IS_PRODUCTION === 'true';
+    const snapScriptUrl = isProd 
+      ? 'https://app.midtrans.com/snap/snap.js' 
+      : 'https://app.sandbox.midtrans.com/snap/snap.js';
     const clientKey = import.meta.env.VITE_MIDTRANS_CLIENT_KEY || 'SB-Mid-client-dummy';
     
     let scriptTag = document.querySelector(`script[src="${snapScriptUrl}"]`);
@@ -160,12 +163,12 @@ export function IdeaModal({ idea, isOpen, onClose, isPurchased }) {
             <div>
               <div style={{ color: '#a3a3a3', fontSize: '0.7rem', marginBottom: '0.1rem' }}>Harga</div>
               <div style={{ fontSize: '1.15rem', fontWeight: '800', background: 'linear-gradient(135deg,#F59E0B,#FBBF24)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
-                Rp {(idea.price || idea.idea_price || 0).toLocaleString('id-ID')}
+                Rp {Number(idea.price || idea.idea_price || 0).toLocaleString('id-ID')}
               </div>
             </div>
             <div style={{ textAlign: 'right' }}>
               <div style={{ color: '#a3a3a3', fontSize: '0.7rem' }}>
-                {(idea.views || idea.idea_views || 0).toLocaleString()} kali dilihat
+                {Number(idea.views || idea.idea_views || 0).toLocaleString('id-ID')} kali dilihat
               </div>
             </div>
           </div>

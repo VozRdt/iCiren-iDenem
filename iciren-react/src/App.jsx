@@ -28,6 +28,20 @@ function ScrollToTop() {
     }
   }, [pathname, navType]);
 
+  React.useEffect(() => {
+    // Detect Supabase auth errors from URL hash (e.g. expired link)
+    const hash = window.location.hash;
+    if (hash && hash.includes('error=')) {
+      const params = new URLSearchParams(hash.substring(1));
+      const errorDesc = params.get('error_description');
+      if (errorDesc) {
+        toast.error('Auth Error: ' + decodeURIComponent(errorDesc).replace(/\+/g, ' '), { duration: 5000 });
+      }
+      // Clean up the hash after reading
+      window.history.replaceState(null, '', window.location.pathname + window.location.search);
+    }
+  }, []);
+
   return null;
 }
 

@@ -44,7 +44,7 @@ export default function AuthPage() {
     try {
       const { error } = await signUp(email, password, name);
       if (error) throw error;
-      toast.success('Pendaftaran berhasil! Silakan login.');
+      toast.success('Pendaftaran berhasil! Silakan cek email kamu untuk verifikasi sebelum login.');
       setActiveTab('login');
     } catch (err) {
       toast.error(err.message || 'Daftar gagal.');
