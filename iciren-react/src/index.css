@@ -3562,6 +3562,15 @@ body {
         align-items: stretch;
     }
     .af-group {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+    .af-select {
+        width: 100%;
+    }
+    .af-range-wrapper {
+        width: 100%;
         justify-content: space-between;
     }
     .af-range {
@@ -3576,8 +3585,11 @@ body {
     .af-select {
         font-size: 0.78rem;
     }
-    .af-range {
-        width: 100px;
+    .af-range-wrapper {
+        gap: 0.4rem;
+    }
+    .af-range-label {
+        font-size: 0.75rem;
     }
 }
 
