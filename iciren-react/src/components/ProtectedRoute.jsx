@@ -8,13 +8,13 @@ export const ProtectedRoute = ({ children, requireBankInfo = false }) => {
 
   if (!user) {
     return (
-      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: 'calc(100vh - 100px)', marginTop: '100px', padding: '2rem' }}>
-        <div style={{ background: 'rgba(25, 25, 25, 0.95)', border: '1px solid rgba(245, 158, 11, 0.3)', borderRadius: '16px', padding: '2.5rem', textAlign: 'center', maxWidth: '400px', width: '100%', boxShadow: '0 15px 35px rgba(0,0,0,0.6)' }}>
+      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: 'calc(100vh - 100px)', marginTop: '100px', padding: '1rem' }}>
+        <div style={{ background: 'rgba(25, 25, 25, 0.95)', border: '1px solid rgba(245, 158, 11, 0.3)', borderRadius: '16px', padding: '2rem 1.5rem', textAlign: 'center', maxWidth: '400px', width: '100%', boxShadow: '0 15px 35px rgba(0,0,0,0.6)' }}>
           <div style={{ fontSize: '3.5rem', color: '#f59e0b', marginBottom: '1.2rem', textShadow: '0 0 20px rgba(245,158,11,0.4)' }}>
             <i className="fas fa-lock"></i>
           </div>
           <h2 style={{ color: '#f8fafc', marginBottom: '1rem', fontSize: '1.5rem', fontWeight: 'bold' }}>Akses Terbatas</h2>
-          <p style={{ color: '#a3a3a3', marginBottom: '2rem', lineHeight: '1.6', fontSize: '0.95rem' }}>
+          <p style={{ color: '#a3a3a3', marginBottom: '1.5rem', lineHeight: '1.6', fontSize: '0.95rem' }}>
             Anda harus mendaftar atau login terlebih dahulu untuk mengakses halaman ini.
           </p>
           <button 
@@ -33,13 +33,13 @@ export const ProtectedRoute = ({ children, requireBankInfo = false }) => {
     const hasBankInfo = profile?.bank_name && profile?.account_number && profile?.account_name;
     if (!hasBankInfo) {
       return (
-        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: 'calc(100vh - 100px)', marginTop: '100px', padding: '2rem' }}>
-          <div style={{ background: 'rgba(25, 25, 25, 0.95)', border: '1px solid rgba(245, 158, 11, 0.3)', borderRadius: '16px', padding: '2.5rem', textAlign: 'center', maxWidth: '400px', width: '100%', boxShadow: '0 15px 35px rgba(0,0,0,0.6)' }}>
+        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: 'calc(100vh - 100px)', marginTop: '100px', padding: '1rem' }}>
+          <div style={{ background: 'rgba(25, 25, 25, 0.95)', border: '1px solid rgba(245, 158, 11, 0.3)', borderRadius: '16px', padding: '2rem 1.5rem', textAlign: 'center', maxWidth: '400px', width: '100%', boxShadow: '0 15px 35px rgba(0,0,0,0.6)' }}>
             <div style={{ fontSize: '3.5rem', color: '#f59e0b', marginBottom: '1.2rem', textShadow: '0 0 20px rgba(245,158,11,0.4)' }}>
               <i className="fas fa-money-check-alt"></i>
             </div>
             <h2 style={{ color: '#f8fafc', marginBottom: '1rem', fontSize: '1.5rem', fontWeight: 'bold' }}>Data Rekening Kosong</h2>
-            <p style={{ color: '#a3a3a3', marginBottom: '2rem', lineHeight: '1.6', fontSize: '0.95rem' }}>
+            <p style={{ color: '#a3a3a3', marginBottom: '1.5rem', lineHeight: '1.6', fontSize: '0.95rem' }}>
               Silakan lengkapi informasi rekening bank Anda terlebih dahulu sebelum mulai menjual ide.
             </p>
             <button 
