@@ -171,7 +171,7 @@ export default function ProfilePage() {
                   <button type="submit" className="btn btn-primary" disabled={loading}>Simpan Profil</button>
                 </form>
               </div>
-              <div className="form-card" id="bank-info" style={{ marginTop: '2rem', scrollMarginTop: '100px' }}>
+              <div className="form-card" id="bank-info" style={{ marginTop: '2rem', scrollMarginTop: '150px' }}>
                 <h2 className="form-title">Informasi Rekening Bank</h2>
                 <form id="bankForm" onSubmit={handleSaveBank}>
                   <div className="form-row">
