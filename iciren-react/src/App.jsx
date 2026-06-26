@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Routes, Route, useLocation, useNavigationType 
 import { AuthProvider } from './contexts/AuthContext';
 import { Toaster } from 'react-hot-toast';
 import { ErrorBoundary } from './components/ErrorBoundary';
-
+import { ProtectedRoute } from './components/ProtectedRoute';
 import Navbar from './components/layout/Navbar';
 import Footer from './components/layout/Footer';
 
@@ -56,11 +56,23 @@ function App() {
           {/* Main Routes */}
           <Routes>
             <Route path="/" element={<HomePage />} />
-            <Route path="/explore" element={<ExplorePage />} />
+            <Route path="/explore" element={
+              <ProtectedRoute>
+                <ExplorePage />
+              </ProtectedRoute>
+            } />
             <Route path="/about" element={<AboutPage />} />
             <Route path="/auth" element={<AuthPage />} />
-            <Route path="/sell" element={<SellPage />} />
-            <Route path="/myideas" element={<MyIdeasPage />} />
+            <Route path="/sell" element={
+              <ProtectedRoute requireBankInfo={true}>
+                <SellPage />
+              </ProtectedRoute>
+            } />
+            <Route path="/myideas" element={
+              <ProtectedRoute>
+                <MyIdeasPage />
+              </ProtectedRoute>
+            } />
             <Route path="/profile" element={<ProfilePage />} />
             <Route path="/wallet" element={<WalletPage />} />
             <Route path="/admin" element={<AdminPage />} />

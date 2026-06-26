@@ -16,13 +16,20 @@ export function navigateTo(page) {
   if (isNavigating) return
 
   if (PROTECTED_PAGES.includes(page) && !isLoggedIn()) {
-    showAuthRequiredModal()
+    alert('Silakan daftar atau login terlebih dahulu untuk mengakses halaman ini.');
+    navigateTo('auth');
     return
   }
 
   if (page === 'sell' && isLoggedIn()) {
     if (!userProfile || !userProfile.bank_name || !userProfile.account_number || !userProfile.account_name) {
-      showProfileRequiredModal()
+      alert('Silakan lengkapi data rekening Anda terlebih dahulu untuk menjual ide.');
+      navigateTo('profile');
+      // Scroll to bank info if needed
+      setTimeout(() => {
+        const bankSection = document.getElementById('bank-info');
+        if (bankSection) bankSection.scrollIntoView({ behavior: 'smooth' });
+      }, 500);
       return
     }
   }
