@@ -18,15 +18,7 @@ export default function SellPage() {
     content: ''
   });
 
-  useEffect(() => {
-    if (!user) {
-      toast.error('Silakan login terlebih dahulu untuk menjual ide.');
-      navigate('/auth');
-    } else if (profile && (!profile.bank_name || !profile.account_number)) {
-      toast.error('Silakan lengkapi data rekening Anda terlebih dahulu sebelum mulai menjual ide.');
-      navigate('/profile#bank-info');
-    }
-  }, [user, profile, navigate]);
+  // Authorization check is now handled by ProtectedRoute
 
   const handleChange = (e) => {
     const { id, value } = e.target;
