@@ -387,6 +387,9 @@ export function animateCurrentPage(page) {
         break
     }
     initMagneticButtons()
+    setTimeout(() => {
+      ScrollTrigger.refresh()
+    }, 200)
   })
 }
 

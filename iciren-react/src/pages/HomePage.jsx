@@ -10,10 +10,10 @@ export default function HomePage() {
       <section className="hero">
         <div className="hero-container">
           <div className="hero-content">
-            <div className="hero-badge"><i className="fas fa-fire"></i> Platform #1 Ide Konten Indonesia</div>
-            <h1 className="hero-title">Temukan Ide Kontenmu yang Viral</h1>
-            <p className="hero-subtitle">Platform marketplace untuk jual beli ide konten kreatif. Ribuan ide siap mengubah channelmu!</p>
-            <div className="hero-buttons">
+            <div className="hero-badge" data-gsap="hero"><i className="fas fa-fire"></i> Platform #1 Ide Konten Indonesia</div>
+            <h1 className="hero-title" data-gsap="hero">Temukan Ide Kontenmu yang Viral</h1>
+            <p className="hero-subtitle" data-gsap="hero">Platform marketplace untuk jual beli ide konten kreatif. Ribuan ide siap mengubah channelmu!</p>
+            <div className="hero-buttons" data-gsap="hero">
               <button className="btn btn-primary btn-large" onClick={() => navigate('/explore')} style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', height: '60px', padding: '0 2.5rem' }}>
                 <i className="fas fa-compass" style={{ marginRight: '8px' }}></i> Jelajahi Ide
               </button>
@@ -21,7 +21,7 @@ export default function HomePage() {
                 <img src="/logo.png" alt="Jual Ide" style={{ height: '3.5rem', width: 'auto', objectFit: 'contain' }} />
               </button>
             </div>
-            <div className="hero-stats">
+            <div className="hero-stats" data-gsap="hero">
               <div className="stat-item">
                 <span className="stat-number">2.500+</span>
                 <span className="stat-label">Ide Tersedia</span>
@@ -43,7 +43,7 @@ export default function HomePage() {
       </section>
 
       {/* Cara Kerja Section */}
-      <section className="how-it-works">
+      <section className="how-it-works" data-gsap-section>
         <div className="container">
           <h2 className="section-title">Cara Kerja iCiren iDe'nem</h2>
           <p className="section-subtitle">Simpel, cepat, dan menguntungkan untuk semua pihak</p>
@@ -71,7 +71,7 @@ export default function HomePage() {
       </section>
 
       {/* Benefits Section */}
-      <section className="benefits">
+      <section className="benefits" data-gsap-section>
         <div className="container">
           <h2 className="section-title">Mengapa Memilih iCiren iDe'nem?</h2>
           <p className="section-subtitle">Keunggulan yang membuat kami berbeda dari platform lainnya</p>
@@ -85,7 +85,7 @@ export default function HomePage() {
       </section>
 
       {/* Testimonials Section */}
-      <section className="testimonials">
+      <section className="testimonials" data-gsap-section>
         <div className="container">
           <h2 className="section-title">Apa Kata Kreator?</h2>
           <div className="testimonials-grid">
