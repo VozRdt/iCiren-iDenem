@@ -395,6 +395,7 @@ export function animateCurrentPage(page) {
 
 // ─── INIT GSAP SYSTEM ───────────────────────────────────────
 export function initGSAP() {
+  gsap.config({ nullTargetWarn: false })
   gsap.defaults({ ease: 'power3.out', duration: 0.8 })
   initLenis()
   animateNavbar()
