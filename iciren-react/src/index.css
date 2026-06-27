@@ -4347,3 +4347,125 @@ body {
 .gsap-border-glow {
     animation: borderGlow 3s ease-in-out infinite;
 }
+
+/* ========================================
+   GSAP ANIMATION INITIAL STATES
+   ======================================= */
+
+/* Hero elements start hidden - GSAP will animate them in */
+[data-gsap="hero"] {
+    opacity: 0;
+    transform: translateY(40px);
+}
+
+/* Section titles and subtitles - hidden until scroll trigger */
+[data-gsap-section] .section-title,
+[data-gsap-section] .section-subtitle {
+    opacity: 0;
+    transform: translateY(30px);
+}
+
+/* Cards inside animated sections */
+[data-gsap-section] .step-card,
+[data-gsap-section] .benefit-item,
+[data-gsap-section] .testimonial-card {
+    opacity: 0;
+    transform: translateY(50px) scale(0.95);
+}
+
+/* Golden shimmer effect for hero title */
+@keyframes goldenShimmer {
+    0% {
+        background-position: -200% center;
+    }
+    100% {
+        background-position: 200% center;
+    }
+}
+
+.hero-title.gsap-shimmer {
+    background-size: 200% auto;
+    animation: goldenShimmer 4s linear infinite;
+}
+
+/* Floating animation for step-number circles */
+@keyframes floatGently {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-6px);
+    }
+}
+
+.step-number.gsap-float {
+    animation: floatGently 3s ease-in-out infinite;
+}
+
+/* Glowing pulse for stat numbers after GSAP animates them in */
+.stat-number.gsap-glow {
+    text-shadow: 0 0 20px rgba(245, 158, 11, 0.4);
+}
+
+/* Smooth parallax depth feel for hero section */
+.hero.gsap-ready {
+    will-change: transform;
+}
+
+/* Idea cards reveal - for dynamically rendered cards */
+.idea-card.gsap-reveal {
+    opacity: 0;
+    transform: translateY(30px) scale(0.97);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+.idea-card.gsap-visible {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+}
+
+/* About page elements - animate in */
+.about-heading,
+.about-text p,
+.about-stats,
+.about-card-visual,
+.team-card,
+.value-card {
+    opacity: 0;
+    transform: translateY(30px);
+}
+
+/* Footer reveal */
+.footer-content,
+.footer-bottom {
+    opacity: 0;
+    transform: translateY(20px);
+}
+
+/* Sell page elements */
+.form-card,
+.sell-benefit-card {
+    opacity: 0;
+    transform: translateY(30px);
+}
+
+/* Dashboard stat cards */
+.dash-stat-card {
+    opacity: 0;
+    transform: translateY(20px) scale(0.95);
+}
+
+/* Auth page decorations */
+.auth-card,
+.auth-deco-card {
+    opacity: 0;
+    transform: translateY(30px);
+}
+
+/* Page hero titles on sub-pages */
+.page-hero-title,
+.page-hero-subtitle {
+    opacity: 0;
+    transform: translateY(20px);
+}
+

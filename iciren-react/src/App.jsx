@@ -6,6 +6,7 @@ import { ErrorBoundary } from './components/ErrorBoundary';
 import { ProtectedRoute } from './components/ProtectedRoute';
 import Navbar from './components/layout/Navbar';
 import Footer from './components/layout/Footer';
+import { initGSAP, animateCurrentPage, getLenis } from './lib/animations';
 
 // Pages
 import HomePage from './pages/HomePage';
@@ -18,15 +19,41 @@ import ProfilePage from './pages/ProfilePage';
 import WalletPage from './pages/WalletPage';
 import AdminPage from './pages/AdminPage';
 
-// Scroll to top on route change
 function ScrollToTop() {
   const { pathname } = useLocation();
   const navType = useNavigationType();
 
+  // Initialize GSAP once
+  React.useEffect(() => {
+    initGSAP();
+  }, []);
+
   React.useEffect(() => {
     if (navType !== 'POP') {
-      window.scrollTo(0, 0);
+      const lenis = getLenis();
+      if (lenis) {
+        lenis.scrollTo(0, { immediate: true });
+      } else {
+        window.scrollTo(0, 0);
+      }
     }
+
+    // Trigger page animations after DOM updates
+    const timer = setTimeout(() => {
+      let pageName = 'home';
+      if (pathname === '/') pageName = 'home';
+      else if (pathname.startsWith('/explore')) pageName = 'explore';
+      else if (pathname.startsWith('/sell')) pageName = 'sell';
+      else if (pathname.startsWith('/about')) pageName = 'about';
+      else if (pathname.startsWith('/myideas')) pageName = 'myideas';
+      else if (pathname.startsWith('/auth')) pageName = 'auth';
+      else if (pathname.startsWith('/profile')) pageName = 'profile';
+      else if (pathname.startsWith('/admin')) pageName = 'admin';
+      
+      animateCurrentPage(pageName);
+    }, 100);
+
+    return () => clearTimeout(timer);
   }, [pathname, navType]);
 
   React.useEffect(() => {
