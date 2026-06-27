@@ -158,7 +158,7 @@ export function animateFooter() {
 
 // ─── NAVBAR SMART ANIMATION ─────────────────────────────────
 export function animateNavbar() {
-  gsap.from('.navbar', { y: -80, duration: 0.7, delay: 0.1, ease: 'power3.out' })
+  gsap.from('.navbar', { y: -80, duration: 0.7, delay: 0.1, ease: 'power3.out', clearProps: 'all' })
 
   gsap.from('.nav-item', {
     opacity: 0, y: -20, duration: 0.5, stagger: 0.08, delay: 0.4, ease: 'power2.out', clearProps: 'all'
