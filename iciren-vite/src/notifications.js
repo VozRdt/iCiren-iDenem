@@ -7,13 +7,14 @@ import { currentUser } from './auth.js'
 import { getUserKey } from './ideas.js'
 
 let userNotifications = []
+const PANEL_LIMIT = 10
 
 export async function loadNotifications() {
   if (supabaseClient && currentUser && currentUser.id) {
     try {
       const { data, error } = await supabaseClient
         .from('notifications').select('*').eq('user_id', currentUser.id)
-        .order('created_at', { ascending: false }).limit(20)
+        .order('created_at', { ascending: false }).limit(50)
       if (!error && data) userNotifications = data
     } catch (e) { console.warn('⚠️ Notif load error:', e) }
   }
@@ -34,37 +35,113 @@ function renderNotifBadge() {
 export function toggleNotifPanel() {
   const panel = document.getElementById('notifPanel')
   if (!panel) return
+  const isOpen = panel.classList.contains('show')
   panel.classList.toggle('show')
-  if (panel.classList.contains('show')) renderNotifList()
+  if (!isOpen) {
+    // Panel baru dibuka — refresh & render
+    loadNotifications().then(() => renderNotifList())
+  }
+}
+
+const iconMap = {
+  idea_approved: { icon: 'fa-check-circle', cls: 'type-approved' },
+  idea_rejected: { icon: 'fa-times-circle', cls: 'type-rejected' },
+  purchase: { icon: 'fa-shopping-cart', cls: 'type-purchase' },
+  idea_sold: { icon: 'fa-coins', cls: 'type-idea_sold' },
+  welcome: { icon: 'fa-gift', cls: 'type-welcome' },
+  system: { icon: 'fa-info-circle', cls: 'type-system' },
+}
+
+function buildNotifItemHTML(n) {
+  const ic = iconMap[n.type] || iconMap.system
+  const ago = timeAgo(n.created_at)
+  return `<div class="notif-item ${n.is_read ? '' : 'unread'}" onclick="window._markNotifRead('${n.id}')">
+    <div class="notif-icon ${ic.cls}"><i class="fas ${ic.icon}"></i></div>
+    <div class="notif-info">
+      <h5>${n.title}</h5>
+      <p>${n.message}</p>
+      <div class="notif-time">${ago}</div>
+    </div>
+  </div>`
 }
 
 function renderNotifList() {
   const list = document.getElementById('notifPanelList')
   if (!list) return
+
   if (userNotifications.length === 0) {
     list.innerHTML = '<div class="notif-empty"><i class="fas fa-bell-slash"></i><p>Belum ada notifikasi</p></div>'
     return
   }
-  const iconMap = {
-    idea_approved: { icon: 'fa-check-circle', cls: 'type-approved' },
-    idea_rejected: { icon: 'fa-times-circle', cls: 'type-rejected' },
-    purchase: { icon: 'fa-shopping-cart', cls: 'type-purchase' },
-    idea_sold: { icon: 'fa-coins', cls: 'type-idea_sold' },
-    welcome: { icon: 'fa-gift', cls: 'type-welcome' },
-    system: { icon: 'fa-info-circle', cls: 'type-system' },
+
+  const visible = userNotifications.slice(0, PANEL_LIMIT)
+  const hasMore = userNotifications.length > PANEL_LIMIT
+
+  list.innerHTML = visible.map(buildNotifItemHTML).join('') +
+    (hasMore
+      ? `<div class="notif-show-more-wrap">
+           <button class="notif-show-more-btn" id="notifShowMoreBtn" onclick="window._openNotifHistoryModal()">
+             <i class="fas fa-list"></i> Lihat Semua (${userNotifications.length})
+           </button>
+         </div>`
+      : `<div class="notif-show-more-wrap">
+           <button class="notif-show-more-btn" id="notifShowMoreBtn" onclick="window._openNotifHistoryModal()">
+             <i class="fas fa-history"></i> Lihat Riwayat
+           </button>
+         </div>`)
+}
+
+export function openNotifHistoryModal() {
+  let modal = document.getElementById('notifHistoryModal')
+  if (!modal) {
+    modal = document.createElement('div')
+    modal.id = 'notifHistoryModal'
+    modal.className = 'notif-history-modal'
+    modal.innerHTML = `
+      <div class="notif-history-content">
+        <div class="notif-history-header">
+          <div class="notif-history-title">
+            <i class="fas fa-bell"></i>
+            <h3>Riwayat Notifikasi</h3>
+          </div>
+          <div class="notif-history-actions">
+            <button class="notif-mark-all-modal" onclick="window._markAllNotifsRead()">
+              <i class="fas fa-check-double"></i> Tandai Semua Dibaca
+            </button>
+            <button class="notif-history-close" id="notifHistoryCloseBtn" onclick="window._closeNotifHistoryModal()">
+              <i class="fas fa-times"></i>
+            </button>
+          </div>
+        </div>
+        <div class="notif-history-list" id="notifHistoryList"></div>
+      </div>`
+    document.body.appendChild(modal)
+    // Tutup saat klik backdrop
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) window._closeNotifHistoryModal()
+    })
   }
-  list.innerHTML = userNotifications.map(n => {
-    const ic = iconMap[n.type] || iconMap.system
-    const ago = timeAgo(n.created_at)
-    return `<div class="notif-item ${n.is_read ? '' : 'unread'}" onclick="window._markNotifRead('${n.id}')">
-      <div class="notif-icon ${ic.cls}"><i class="fas ${ic.icon}"></i></div>
-      <div class="notif-info">
-        <h5>${n.title}</h5>
-        <p>${n.message}</p>
-        <div class="notif-time">${ago}</div>
-      </div>
-    </div>`
-  }).join('')
+
+  const listEl = document.getElementById('notifHistoryList')
+  if (listEl) {
+    if (userNotifications.length === 0) {
+      listEl.innerHTML = '<div class="notif-empty" style="padding:3rem 1rem"><i class="fas fa-bell-slash"></i><p>Belum ada riwayat notifikasi</p></div>'
+    } else {
+      listEl.innerHTML = userNotifications.map(buildNotifItemHTML).join('')
+    }
+  }
+
+  modal.classList.add('show')
+  document.body.style.overflow = 'hidden'
+  // Tutup panel dropdown juga
+  const panel = document.getElementById('notifPanel')
+  if (panel) panel.classList.remove('show')
+}
+
+export function closeNotifHistoryModal() {
+  const modal = document.getElementById('notifHistoryModal')
+  if (modal) modal.classList.remove('show')
+  document.body.style.overflow = ''
 }
 
 export async function markNotifRead(id) {
@@ -76,6 +153,12 @@ export async function markNotifRead(id) {
   localStorage.setItem(getUserKey('notifications'), JSON.stringify(userNotifications))
   renderNotifBadge()
   renderNotifList()
+  // Jika modal terbuka, refresh juga
+  const modal = document.getElementById('notifHistoryModal')
+  if (modal && modal.classList.contains('show')) {
+    const listEl = document.getElementById('notifHistoryList')
+    if (listEl) listEl.innerHTML = userNotifications.map(buildNotifItemHTML).join('')
+  }
 }
 
 export async function markAllNotifsRead() {
@@ -86,6 +169,12 @@ export async function markAllNotifsRead() {
   localStorage.setItem(getUserKey('notifications'), JSON.stringify(userNotifications))
   renderNotifBadge()
   renderNotifList()
+  // Refresh modal jika terbuka
+  const modal = document.getElementById('notifHistoryModal')
+  if (modal && modal.classList.contains('show')) {
+    const listEl = document.getElementById('notifHistoryList')
+    if (listEl) listEl.innerHTML = userNotifications.map(buildNotifItemHTML).join('')
+  }
   showToast('✅ Semua notifikasi ditandai dibaca.')
 }
 
@@ -101,6 +190,7 @@ export function setupRealtimeSubscriptions() {
         const notif = payload.new
         userNotifications.unshift(notif)
         renderNotifBadge()
+        renderNotifList()
         showToast(`🔔 ${notif.title}`)
       })
       .subscribe()
@@ -117,4 +207,9 @@ export function initNotifListeners() {
       if (panel) panel.classList.remove('show')
     }
   })
+  // Escape key tutup modal
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closeNotifHistoryModal()
+  })
 }
+

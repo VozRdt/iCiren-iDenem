@@ -17,7 +17,7 @@ import {
   adminApproveIdea, adminRejectIdea, initAdminListeners,
   switchAdminMode, switchAdminWdTab, adminApproveWithdrawal, adminRejectWithdrawal
 } from './admin.js'
-import { loadNotifications, toggleNotifPanel, markNotifRead, markAllNotifsRead, setupRealtimeSubscriptions, initNotifListeners } from './notifications.js'
+import { loadNotifications, toggleNotifPanel, markNotifRead, markAllNotifsRead, openNotifHistoryModal, closeNotifHistoryModal, setupRealtimeSubscriptions, initNotifListeners } from './notifications.js'
 import { initGSAP, animateCurrentPage } from './animations.js'
 
 // ─── EXPOSE TO GLOBAL (for inline onclick handlers in HTML) ─
@@ -65,6 +65,8 @@ window._adminRejectWithdrawal = adminRejectWithdrawal
 window._toggleNotifPanel = toggleNotifPanel
 window._markNotifRead = markNotifRead
 window._markAllNotifsRead = markAllNotifsRead
+window._openNotifHistoryModal = openNotifHistoryModal
+window._closeNotifHistoryModal = closeNotifHistoryModal
 
 // ─── INIT ────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', async () => {
