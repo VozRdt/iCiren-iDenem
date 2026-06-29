@@ -5,3 +5,9 @@ dist/
 .env
 
 .tmp.driveupload/
+
+# wrangler files
+.wrangler
+.dev.vars*
+!.dev.vars.example
+!.env.example
