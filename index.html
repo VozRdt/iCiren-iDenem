@@ -10,8 +10,8 @@
     <meta name="description"
         content="Platform marketplace terbaik untuk jual beli ide konten kreatif. Ribuan ide viral siap mengubah channelmu!">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-  <script type="module" crossorigin src="./assets/index-B8KK9jb2.js"></script>
-  <link rel="stylesheet" crossorigin href="./assets/index-CQUmzVKS.css">
+  <script type="module" crossorigin src="./assets/index-DBqW7zhH.js"></script>
+  <link rel="stylesheet" crossorigin href="./assets/index-B71KE-8c.css">
 </head>
 
 <body>
@@ -73,7 +73,9 @@
                             </div>
                         </div>
                     </div>
-                    <div class="nav-user-avatar" id="navUserAvatar" onclick="window._navigateTo('profile')" style="cursor:pointer;" title="Profil Saya">U</div>
+                    <div class="nav-user-avatar" id="navUserAvatar" onclick="window._navigateTo('profile')" style="cursor:pointer;" title="Profil Saya">
+                        <span id="navUserAvatarText">U</span>
+                    </div>
                     <span class="nav-user-name" id="navUserName" onclick="window._navigateTo('profile')" style="cursor:pointer;">User</span>
                     <button class="btn btn-outline btn-sm" id="navLogoutBtn" onclick="window._logoutUser()">
                         <i class="fas fa-sign-out-alt"></i> Keluar
@@ -281,6 +283,19 @@
         </div>
     </div>
 
+    <!-- Profile Required Modal -->
+    <div class="auth-required-modal" id="profileRequiredModal">
+        <div class="auth-required-content">
+            <div class="auth-required-icon"><i class="fas fa-user-edit"></i></div>
+            <h3>Data Pribadi Belum Lengkap</h3>
+            <p>Kamu harus mengisi data profil dan rekening bank sebelum dapat menjual ide.</p>
+            <div class="auth-required-buttons">
+                <button class="btn btn-primary" onclick="window._closeProfileModal(); window._navigateTo('profile')"><i class="fas fa-user"></i> Lengkapi Data Pribadi</button>
+            </div>
+            <button class="auth-required-close" onclick="window._closeProfileModal()"><i class="fas fa-times"></i></button>
+        </div>
+    </div>
+
     <!-- Email Verification Modal -->
     <div class="email-verify-modal" id="emailVerifyModal">
         <div class="email-verify-content">
@@ -457,15 +472,22 @@
                                     </div>
                                 </div>
                                 <div class="form-group">
-                                    <label for="ideaDesc">Deskripsi Ide <span class="required">*</span></label>
-                                    <textarea id="ideaDesc" class="form-input form-textarea" rows="5" placeholder="Jelaskan ide kontenmu secara detail: konsep, target audiens, potensi viral, dll..." required></textarea>
+                                    <label for="ideaDesc">Deskripsi Singkat (Publik) <span class="required">*</span></label>
+                                    <textarea id="ideaDesc" class="form-input form-textarea" rows="3" placeholder="Jelaskan ide kontenmu secara singkat (teaser)..." required></textarea>
                                 </div>
-                                <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem;"><i class="fas fa-paper-plane"></i> Submit Ide Sekarang</button>
+                                <div class="form-group">
+                                    <label for="ideaContent">Isi Ide (Rahasia - Hanya untuk Pembeli) <span class="required">*</span></label>
+                                    <textarea id="ideaContent" class="form-input form-textarea" rows="6" placeholder="Tuliskan detail rahasia idemu di sini (script, konsep detail, hashtag rahasia, dll)..." required></textarea>
+                                </div>
+                                <div style="margin-bottom: 1rem; padding: 0.8rem; background: rgba(245,158,11,0.1); border: 1px solid rgba(245,158,11,0.2); border-radius: 8px; font-size: 0.85rem; color: #FCD34D;">
+                                    <i class="fas fa-info-circle"></i> <strong>Perhatian:</strong> Terdapat potongan <strong>Service Fee sebesar 15%</strong> dari harga ide untuk pemeliharaan platform saat idemu terjual.
+                                </div>
+                                <button type="submit" class="btn btn-primary" style="width: 100%;"><i class="fas fa-paper-plane"></i> Submit Ide Sekarang</button>
                             </form>
                         </div>
                     </div>
                     <div class="sell-benefits">
-                        <div class="sell-benefit-card"><div class="sb-icon"><i class="fas fa-money-bill-wave"></i></div><h3>Penghasilan Menarik</h3><p>Dapatkan 80% dari setiap penjualan ideamu langsung ke rekeningmu.</p></div>
+                        <div class="sell-benefit-card"><div class="sb-icon"><i class="fas fa-money-bill-wave"></i></div><h3>Penghasilan Menarik</h3><p>Dapatkan 85% dari setiap penjualan ideamu langsung ke rekeningmu.</p></div>
                         <div class="sell-benefit-card"><div class="sb-icon"><i class="fas fa-users"></i></div><h3>Jangkauan Luas</h3><p>Idemu akan dilihat oleh ribuan kreator aktif setiap harinya.</p></div>
                         <div class="sell-benefit-card"><div class="sb-icon"><i class="fas fa-star"></i></div><h3>Bangun Reputasi</h3><p>Kumpulkan rating dan review positif untuk meningkatkan kepercayaan.</p></div>
                         <div class="sell-benefit-card"><div class="sb-icon"><i class="fas fa-chart-bar"></i></div><h3>Statistik Lengkap</h3><p>Pantau performa penjualan idemu secara real-time dengan dashboard.</p></div>
@@ -574,7 +596,11 @@
                 <div class="profile-layout">
                     <div class="profile-card-wrapper">
                         <div class="profile-card">
-                            <div class="profile-avatar-large" id="profileAvatarLarge">U</div>
+                            <div class="profile-avatar-large" id="profileAvatarLarge" onclick="document.getElementById('avatarUploadInput').click()">
+                                <span id="profileAvatarLargeText">U</span>
+                                <div class="avatar-overlay"><i class="fas fa-camera"></i></div>
+                            </div>
+                            <input type="file" id="avatarUploadInput" accept="image/png, image/jpeg, image/jpg" style="display:none;" onchange="window._uploadAvatar(event)">
                             <h2 class="profile-name" id="profileName">User</h2>
                             <p class="profile-email" id="profileEmail">email@example.com</p>
                             <div class="profile-role-badge" id="profileRoleBadge"><i class="fas fa-user"></i> Member</div>
@@ -629,20 +655,41 @@
         </section>
         <section class="admin-section">
             <div class="container">
-                <div class="dashboard-stats">
-                    <div class="dash-stat-card"><div class="dash-stat-icon" style="background: linear-gradient(135deg, #F59E0B, #FBBF24);"><i class="fas fa-clock"></i></div><div class="dash-stat-info"><span class="dash-stat-num" id="adminPendingCount">0</span><span class="dash-stat-label">Menunggu Review</span></div></div>
-                    <div class="dash-stat-card"><div class="dash-stat-icon" style="background: linear-gradient(135deg, #10b981, #34d399);"><i class="fas fa-check-circle"></i></div><div class="dash-stat-info"><span class="dash-stat-num" id="adminApprovedCount">0</span><span class="dash-stat-label">Disetujui</span></div></div>
-                    <div class="dash-stat-card"><div class="dash-stat-icon" style="background: linear-gradient(135deg, #ef4444, #f87171);"><i class="fas fa-times-circle"></i></div><div class="dash-stat-info"><span class="dash-stat-num" id="adminRejectedCount">0</span><span class="dash-stat-label">Ditolak</span></div></div>
-                    <div class="dash-stat-card"><div class="dash-stat-icon" style="background: linear-gradient(135deg, #6366f1, #818cf8);"><i class="fas fa-users"></i></div><div class="dash-stat-info"><span class="dash-stat-num" id="adminTotalUsers">0</span><span class="dash-stat-label">Total User</span></div></div>
+                <!-- Admin Mode Toggle -->
+                <div class="admin-mode-tabs" style="display:flex; gap:1rem; margin-bottom:2rem; justify-content: center;">
+                    <button class="btn btn-primary" id="adminModeIdeasBtn" onclick="window._switchAdminMode('ideas')"><i class="fas fa-lightbulb"></i> Review Ide</button>
+                    <button class="btn btn-outline" id="adminModeWithdrawalsBtn" onclick="window._switchAdminMode('withdrawals')"><i class="fas fa-money-check-alt"></i> Penarikan Dana</button>
                 </div>
-                <div class="admin-tabs">
-                    <button class="filter-tab admin-tab active" id="adminTabPending" onclick="window._switchAdminTab('pending')"><i class="fas fa-clock"></i> Pending</button>
-                    <button class="filter-tab admin-tab" id="adminTabApproved" onclick="window._switchAdminTab('approved')"><i class="fas fa-check"></i> Approved</button>
-                    <button class="filter-tab admin-tab" id="adminTabRejected" onclick="window._switchAdminTab('rejected')"><i class="fas fa-times"></i> Rejected</button>
-                    <button class="filter-tab admin-tab" id="adminTabAll" onclick="window._switchAdminTab('all')"><i class="fas fa-list"></i> Semua</button>
+
+                <!-- Mode: Ideas -->
+                <div id="adminModeIdeas">
+                    <div class="dashboard-stats">
+                        <div class="dash-stat-card"><div class="dash-stat-icon" style="background: linear-gradient(135deg, #F59E0B, #FBBF24);"><i class="fas fa-clock"></i></div><div class="dash-stat-info"><span class="dash-stat-num" id="adminPendingCount">0</span><span class="dash-stat-label">Menunggu Review</span></div></div>
+                        <div class="dash-stat-card"><div class="dash-stat-icon" style="background: linear-gradient(135deg, #10b981, #34d399);"><i class="fas fa-check-circle"></i></div><div class="dash-stat-info"><span class="dash-stat-num" id="adminApprovedCount">0</span><span class="dash-stat-label">Disetujui</span></div></div>
+                        <div class="dash-stat-card"><div class="dash-stat-icon" style="background: linear-gradient(135deg, #ef4444, #f87171);"><i class="fas fa-times-circle"></i></div><div class="dash-stat-info"><span class="dash-stat-num" id="adminRejectedCount">0</span><span class="dash-stat-label">Ditolak</span></div></div>
+                        <div class="dash-stat-card"><div class="dash-stat-icon" style="background: linear-gradient(135deg, #6366f1, #818cf8);"><i class="fas fa-users"></i></div><div class="dash-stat-info"><span class="dash-stat-num" id="adminTotalUsers">0</span><span class="dash-stat-label">Total User</span></div></div>
+                    </div>
+                    <div class="admin-tabs">
+                        <button class="filter-tab admin-tab active" id="adminTabPending" onclick="window._switchAdminTab('pending')"><i class="fas fa-clock"></i> Pending</button>
+                        <button class="filter-tab admin-tab" id="adminTabApproved" onclick="window._switchAdminTab('approved')"><i class="fas fa-check"></i> Approved</button>
+                        <button class="filter-tab admin-tab" id="adminTabRejected" onclick="window._switchAdminTab('rejected')"><i class="fas fa-times"></i> Rejected</button>
+                        <button class="filter-tab admin-tab" id="adminTabAll" onclick="window._switchAdminTab('all')"><i class="fas fa-list"></i> Semua</button>
+                    </div>
+                    <div class="admin-ideas-list" id="adminIdeasList">
+                        <div class="admin-loading"><div class="skeleton-card"></div><div class="skeleton-card"></div><div class="skeleton-card"></div></div>
+                    </div>
                 </div>
-                <div class="admin-ideas-list" id="adminIdeasList">
-                    <div class="admin-loading"><div class="skeleton-card"></div><div class="skeleton-card"></div><div class="skeleton-card"></div></div>
+
+                <!-- Mode: Withdrawals -->
+                <div id="adminModeWithdrawals" style="display:none;">
+                    <div class="admin-tabs">
+                        <button class="filter-tab admin-wd-tab active" id="adminWdTabPending" onclick="window._switchAdminWdTab('pending')"><i class="fas fa-clock"></i> Menunggu Transfer</button>
+                        <button class="filter-tab admin-wd-tab" id="adminWdTabCompleted" onclick="window._switchAdminWdTab('completed')"><i class="fas fa-check"></i> Selesai</button>
+                        <button class="filter-tab admin-wd-tab" id="adminWdTabRejected" onclick="window._switchAdminWdTab('rejected')"><i class="fas fa-times"></i> Ditolak</button>
+                    </div>
+                    <div class="admin-ideas-list" id="adminWithdrawalsList">
+                        <div class="admin-loading"><div class="skeleton-card"></div><div class="skeleton-card"></div></div>
+                    </div>
                 </div>
             </div>
         </section>
@@ -698,7 +745,7 @@
 
     <!-- Modal Detail Ide -->
     <div class="modal" id="ideaModal">
-        <div class="modal-content">
+        <div class="modal-content" style="max-width: 380px !important; margin: 0 auto; width: 90%;">
             <span class="close" onclick="window._closeModal()">&times;</span>
             <div class="modal-body" id="modalBody" data-lenis-prevent></div>
         </div>
@@ -734,7 +781,7 @@
     <!-- Midtrans Snap.js (Sandbox) -->
     <script type="text/javascript"
             src="https://app.sandbox.midtrans.com/snap/snap.js"
-            data-client-key="YOUR_MIDTRANS_CLIENT_KEY"></script>
+            data-client-key="Mid-client-QsHixgl3IH6HJ1k1"></script>
 
 </body>
 

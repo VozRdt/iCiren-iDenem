@@ -6,7 +6,7 @@ import toast from 'react-hot-toast';
 import { IdeaModal } from '../components/ui/IdeaModal';
 
 export default function MyIdeasPage() {
-  const { user } = useAuth();
+  const { user, profile } = useAuth();
   const navigate = useNavigate();
   
   const [ideas, setIdeas] = useState([]);
@@ -92,7 +92,7 @@ export default function MyIdeasPage() {
           <div className="dashboard-stats">
             <div className="dash-stat-card"><div className="dash-stat-icon"><i className="fas fa-lightbulb"></i></div><div className="dash-stat-info"><span className="dash-stat-num">{ideas.length}</span><span className="dash-stat-label">Total Ide</span></div></div>
             <div className="dash-stat-card"><div className="dash-stat-icon"><i className="fas fa-check-circle"></i></div><div className="dash-stat-info"><span className="dash-stat-num">{ideas.filter(i=>i.status==='approved' || i.status === 'terjual').length}</span><span className="dash-stat-label">Disetujui</span></div></div>
-            <div className="dash-stat-card"><div className="dash-stat-icon"><i className="fas fa-money-bill-wave"></i></div><div className="dash-stat-info"><span className="dash-stat-num">Rp 0</span><span className="dash-stat-label">Total Penghasilan</span></div></div>
+            <div className="dash-stat-card"><div className="dash-stat-icon"><i className="fas fa-money-bill-wave"></i></div><div className="dash-stat-info"><span className="dash-stat-num">Rp {(profile?.total_earnings || 0).toLocaleString('id-ID')}</span><span className="dash-stat-label">Total Penghasilan</span></div></div>
             <div className="dash-stat-card"><div className="dash-stat-icon"><i className="fas fa-eye"></i></div><div className="dash-stat-info"><span className="dash-stat-num">{purchases.length}</span><span className="dash-stat-label">Ide Dibeli</span></div></div>
           </div>
           
