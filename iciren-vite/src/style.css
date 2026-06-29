@@ -2712,6 +2712,19 @@ body {
         width: 100%;
     }
 
+    /* Mobile notif bell: show outside drawer */
+    .nav-notif-mobile {
+        display: flex !important;
+        align-items: center;
+        position: relative;
+        margin-right: 0.5rem;
+    }
+
+    /* Hide the desktop bell inside nav-cta on mobile (it's in the drawer) */
+    .nav-cta .nav-notif-wrapper:not(.nav-notif-mobile) {
+        display: none !important;
+    }
+
     .btn-auth-nav {
         width: 100%;
         text-align: center;
@@ -3568,6 +3581,12 @@ body {
    ======================================= */
 .nav-notif-wrapper {
     position: relative;
+}
+
+/* Mobile-only bell: hidden on desktop */
+.nav-notif-mobile {
+    display: none !important;
+    align-items: center;
 }
 
 .nav-notif-btn {

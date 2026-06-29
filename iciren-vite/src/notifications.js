@@ -25,11 +25,17 @@ export async function loadNotifications() {
 }
 
 function renderNotifBadge() {
-  const badge = document.getElementById('notifBadge')
-  if (!badge) return
   const unread = userNotifications.filter(n => !n.is_read).length
-  badge.textContent = unread > 9 ? '9+' : unread
-  badge.style.display = unread > 0 ? 'flex' : 'none'
+  const badgeText = unread > 9 ? '9+' : String(unread)
+  const badgeDisplay = unread > 0 ? 'flex' : 'none'
+
+  // Desktop badge
+  const badge = document.getElementById('notifBadge')
+  if (badge) { badge.textContent = badgeText; badge.style.display = badgeDisplay }
+
+  // Mobile badge (mirror)
+  const badgeMobile = document.getElementById('notifBadgeMobile')
+  if (badgeMobile) { badgeMobile.textContent = badgeText; badgeMobile.style.display = badgeDisplay }
 }
 
 export function toggleNotifPanel() {
@@ -200,16 +206,55 @@ export function setupRealtimeSubscriptions() {
 
 // ─── INIT NOTIF LISTENERS ───────────────────────────────────
 export function initNotifListeners() {
+  // Helper: bind a bell button to toggle panel
+  function bindBellBtn(btnId, wrapperMobileId) {
+    const btn = document.getElementById(btnId)
+    if (!btn) return
+    btn.removeAttribute('onclick')
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation()
+      // For mobile button, move the panel under it
+      if (wrapperMobileId) {
+        const mobileWrapper = document.getElementById(wrapperMobileId)
+        const panel = document.getElementById('notifPanel')
+        if (mobileWrapper && panel && !mobileWrapper.contains(panel)) {
+          mobileWrapper.appendChild(panel)
+        }
+      }
+      toggleNotifPanel()
+    })
+  }
+
+  bindBellBtn('navNotifBtn', null)
+  bindBellBtn('navNotifBtnMobile', 'navNotifWrapperMobile')
+
+  // Show/hide mobile bell based on login state
+  // (auth.js handles navUserProfile, we mirror visibility for mobile bell)
+  const observer = new MutationObserver(() => {
+    const profile = document.getElementById('navUserProfile')
+    const mobileBell = document.getElementById('navNotifWrapperMobile')
+    if (profile && mobileBell) {
+      mobileBell.style.display = profile.style.display === 'none' ? 'none' : 'flex'
+    }
+  })
+  const profile = document.getElementById('navUserProfile')
+  if (profile) observer.observe(profile, { attributes: true, attributeFilter: ['style'] })
+
+  // Close panel when clicking outside both wrappers
   document.addEventListener('click', (e) => {
     const wrapper = document.getElementById('navNotifWrapper')
-    if (wrapper && !wrapper.contains(e.target)) {
+    const wrapperMobile = document.getElementById('navNotifWrapperMobile')
+    const inWrapper = (wrapper && wrapper.contains(e.target)) || (wrapperMobile && wrapperMobile.contains(e.target))
+    if (!inWrapper) {
       const panel = document.getElementById('notifPanel')
       if (panel) panel.classList.remove('show')
     }
   })
-  // Escape key tutup modal
+
+  // Escape key closes modal
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') closeNotifHistoryModal()
   })
 }
+
 
